@@ -2,6 +2,8 @@ import math
 
 import pygame
 
+player_sprite = pygame.image.load('D:\ДЕНИСА\pythonProject9\Rogue\data\images\chelik\chelik.png')
+
 
 class Entity:
     def __init__(self, x, y, width, height, move=(0, 0)):
@@ -15,6 +17,8 @@ class Entity:
         self.collision = {"up": False, "bottom": False, "right": False, "left": False}
         self.jump_count = 10
         self.is_jump = False
+        self.right = False
+        self.left = False
 
     def update(self):
         self.animation_tick += 1
@@ -39,9 +43,8 @@ class Entity:
 
 class Player(Entity):
     def draw(self, surface):
-        pygame.draw.rect(surface, (0, 255, 0), (self.x, self.y,
-                                                self.width,
-                                                self.height))
+        surface.blit(player_sprite, (self.x, self.y))
+
 
     def shot(self):
         mx, my = pygame.mouse.get_pos()
