@@ -10,6 +10,8 @@ class Entity:
         self.move = list(move)
         self.animation_tick = 0
         self.animation_images = []
+        self.jump_count = 10
+        self.is_jump = False
 
     def update(self):
         self.animation_tick += 1
@@ -18,6 +20,18 @@ class Entity:
 
     def draw(self, surface):
         pass
+
+    def jump(self):
+        if self.is_jump:
+            if self.jump_count >= - 10:
+                if self.jump_count < 0:
+                    self.y += (self.jump_count ** 2) / 2
+                else:
+                    self.y -= (self.jump_count ** 2) / 2
+                self.jump_count -= 1
+            else:
+                self.jump_count = 10
+                self.is_jump = False
 
 
 class Player(Entity):
