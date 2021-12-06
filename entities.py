@@ -18,19 +18,48 @@ class Entity:
 
     def update(self):
         self.animation_tick += 1
+        if self.move[0] > 0 and self.collision['right']:
+            self.move[0] = 0
+        elif self.move[0] < 0 and self.collision['left']:
+            self.move[0] = 0
+        if self.move[1] > 0 and self.collision['bottom']:
+            self.move[1] = 0
+        elif self.move[1] < 0 and self.collision['up']:
+            self.move[1] = 0
         self.x += self.move[0]
         self.y += self.move[1]
 
     def draw(self, surface):
         pass
 
+    def check_collision_with_objects(self, objects):
+        self.collision['right'] = False
+        self.collision['left'] = False
+        self.collision['up'] = False
+        self.collision['bottom'] = False
+        for i in objects:
+            if ((self.y < i.y < self.y + self.height) or
+                    (i.y < self.y < i.y + i.height)):
+                if (self.x + self.move[0] < i.x < self.x + self.move[0] + self.width):
+                    self.collision['right'] = True
+                if (i.x < self.x + self.move[0] < i.x + i.width):
+                    self.collision['left'] = True
+            elif ((self.x < i.x < self.x + self.width) or
+                    (i.x < self.x < i.x + i.width)):
+                if (self.y + self.move[1] < i.y < self.y + self.move[1] + self.height):
+                    self.collision['bottom'] = True
+                    self.is_jump = False
+                    self.jump_count = 10
+                if (i.y < self.y + self.move[1] < i.y + i.height):
+                    self.collision['up'] = True
+                    self.is_jump = False
+                    self.jump_count = 10
+
     def jump(self):
         if self.is_jump:
-            if self.jump_count >= - 10:
-                if self.jump_count < 0:
-                    self.y += (self.jump_count ** 2) / 2
-                else:
-                    self.y -= (self.jump_count ** 2) / 2
+            if self.jump_count >= 0:
+                self.move[1] += -(self.jump_count ** 2) / 2
+                # self.y += -(self.jump_count ** 2) / 2
                 self.jump_count -= 1
             else:
                 self.jump_count = 10

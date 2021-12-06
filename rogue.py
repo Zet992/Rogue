@@ -1,7 +1,7 @@
 import pygame
 
 from entities import Player, Enemy1
-
+from location import Location
 
 pygame.init()
 size = width, height = 1024, 576
@@ -12,6 +12,7 @@ x, y = 150, 150
 running = True
 clock = pygame.time.Clock()
 player = Player(200, 200, 50, 50)
+location = Location("arena.txt")
 bullets = []
 enemies = []
 enemies.append(Enemy1(800, 200, 50, 50))
@@ -36,6 +37,7 @@ while running:
         player.jump()
 
     screen.fill((0, 0, 0))
+    player.check_collision_with_objects(location.walls)
     player.update()
     player.draw(screen)
 
@@ -44,11 +46,11 @@ while running:
         bullet.draw(screen)
         if bullet.x > width:
             bullets.remove(bullet)
-        if bullet.y > height:
+        elif bullet.y > height:
             bullets.remove(bullet)
-        if bullet.x + bullet.width < 0:
+        elif bullet.x + bullet.width < 0:
             bullets.remove(bullet)
-        if bullet.y + bullet.height < 0:
+        elif bullet.y + bullet.height < 0:
             bullets.remove(bullet)
         enemy = bullet.check_collisions_with_entity(enemies)
         if enemy:
@@ -59,6 +61,9 @@ while running:
         enemy.find_player(player)
         enemy.update()
         enemy.draw(screen)
+
+    for wall in location.walls:
+        wall.draw(screen)
 
     pygame.display.flip()
     clock.tick(60)
