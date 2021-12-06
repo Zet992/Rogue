@@ -12,6 +12,7 @@ class Entity:
         self.move = list(move)
         self.animation_tick = 0
         self.animation_images = []
+        self.collision = {"up": False, "bottom": False, "right": False, "left": False}
 
     def update(self):
         self.animation_tick += 1
@@ -24,7 +25,7 @@ class Entity:
 
 class Player(Entity):
     def draw(self, surface):
-        pygame.draw.rect(surface, (255, 0, 0), (self.x, self.y,
+        pygame.draw.rect(surface, (0, 255, 0), (self.x, self.y,
                                                 self.width,
                                                 self.height))
 
@@ -37,20 +38,35 @@ class Player(Entity):
         bullet = Bullet(start_pos[0], start_pos[1], 1, 1, move=move)
         return bullet
 
+
 class Enemy(Entity):
     pass
 
 
 class Enemy1(Enemy):
-    pass
+    def draw(self, surface):
+        pygame.draw.rect(surface, (255, 0, 0),
+                         (self.x, self.y, self.width, self.height))
+
+    def find_player(self, player):
+        if self.x < player.x:
+            self.move = (5, 0)
+        if self.x > player.x:
+            self.move = (-5, 0)
 
 
 class Enemy2(Enemy):
     pass
 
 
-
 class Bullet(Entity):
     def draw(self, surface):
         pygame.draw.line(surface, (255, 255, 0), (self.x, self.y),
                          (self.x + self.width, self.y + self.height))
+
+    def check_collisions_with_entity(self, entities):
+        for i in entities:
+            if ((self.x + self.width > i.x > self.x) or (i.x < self.x < i.x + i.width)):
+                if (self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height):
+                    return i
+        return None
