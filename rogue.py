@@ -11,7 +11,7 @@ x, y = 150, 150
 
 running = True
 clock = pygame.time.Clock()
-player = Player(150, 150, 50, 50)
+player = Player(200, 200, 50, 50)
 
 while running:
     for event in pygame.event.get():
