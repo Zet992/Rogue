@@ -46,7 +46,8 @@ class Player(Entity):
     def shot(self):
         mx, my = pygame.mouse.get_pos()
         start_pos = (self.x + self.width // 2, self.y + self.height // 2)
-        rot = math.degrees(math.atan2(my - start_pos[0], mx - start_pos[1]))
+        print(start_pos, mx, my)
+        rot = math.degrees(math.atan2(my - start_pos[1], mx - start_pos[0]))
         rot = math.radians(rot)
         move = math.cos(rot) * 10, math.sin(rot) * 10
         bullet = Bullet(start_pos[0], start_pos[1], 1, 1, move=move)
