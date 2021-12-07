@@ -30,7 +30,7 @@ while running:
         player.move[0] = -7
     if not keys[pygame.K_a] and not keys[pygame.K_d]:
         player.move[0] = 0
-    if keys[pygame.K_SPACE]:
+    if keys[pygame.K_SPACE] and player.collision['bottom']:
         player.is_jump = True
 
     if player.is_jump:
