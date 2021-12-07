@@ -2,8 +2,6 @@ import math
 
 import pygame
 
-player_sprite = pygame.image.load('D:\ДЕНИСА\pythonProject9\Rogue\data\images\chelik\chelik.png')
-
 
 class Entity:
     def __init__(self, x, y, width, height, move=(0, 0)):
@@ -43,7 +41,7 @@ class Entity:
 
 class Player(Entity):
     def draw(self, surface):
-        surface.blit(player_sprite, (self.x, self.y))
+        pygame.draw.rect(surface, (0, 255, 0), (self.x, self.y, self.width, self.height))
 
 
     def shot(self):
@@ -88,3 +86,4 @@ class Bullet(Entity):
                 if (self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height):
                     return i
         return None
+
