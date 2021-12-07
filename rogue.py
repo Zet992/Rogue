@@ -9,34 +9,58 @@ screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Rogue")
 
 running = False
+main_menu = True
+choose_save_menu = False
+
 clock = pygame.time.Clock()
 player = Player(200, 200, 50, 50)
 bullets = []
 enemies = []
 enemies.append(Enemy1(800, 200, 50, 50))
-main_menu = True
 
 # Button functions
 
-buttons = []
+main_menu_buttons = []
+choose_save_menu_buttons = []
 
 
 def start_game():
     global main_menu, running
     main_menu = False
-    running = True
 
 
 def open_help_menu():
     print('Help menu have not created yet')
 
 
-# Buttons
-play_button = Button(screen, width // 2 - 100, height // 2 - 92, 200, 46, 'Играть', start_game)
-buttons.append(play_button)
+def open_choose_save_menu():
+    global choose_save_menu, main_menu
+    choose_save_menu = True
+    main_menu = False
 
-help_button = Button(screen, width // 2 - 100, height // 2 - 20, 200, 46, 'Помощь', open_help_menu)
-buttons.append(help_button)
+
+def read_first_save():
+    global running, choose_save_menu
+    running = True
+    choose_save_menu = False
+
+
+# Buttons
+play_button = Button(screen, width // 2 - 100, height // 2 - 92, 200, 46, 'Play', open_choose_save_menu)
+main_menu_buttons.append(play_button)
+
+help_button = Button(screen, width // 2 - 100, height // 2 - 20, 200, 46, 'Help', open_help_menu)
+main_menu_buttons.append(help_button)
+
+# Все три кнопки сейчас указывают только на один сейв
+first_save_button = Button(screen, width // 2 - 100, height // 3, 200, 46, 'Save #1', read_first_save)
+choose_save_menu_buttons.append(first_save_button)
+
+second_save_button = Button(screen, width // 2 - 100, height // 3 + 92, 200, 46, 'Save #2', read_first_save)
+choose_save_menu_buttons.append(second_save_button)
+
+third_save_button = Button(screen, width // 2 - 100, height // 3 + 184, 200, 46, 'Save #3', read_first_save)
+choose_save_menu_buttons.append(third_save_button)
 
 while main_menu:
     for event in pygame.event.get():
@@ -44,18 +68,38 @@ while main_menu:
             main_menu = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             x_cursor, y_cursor = event.pos
-            for button in buttons:
+            for button in main_menu_buttons:
                 if button.check_click(x_cursor, y_cursor):
                     button.clicked()
-
         if event.type == pygame.MOUSEMOTION:
-            for button in buttons:
+            for button in main_menu_buttons:
                 x_cursor, y_cursor = event.pos
                 button.check_hover(x_cursor, y_cursor)
 
     screen.fill((80, 80, 80))
 
-    for button in buttons:
+    for button in main_menu_buttons:
+        button.draw()
+    pygame.display.flip()
+    clock.tick(60)
+
+while choose_save_menu:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            choose_save_menu = False
+            main_menu = True
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            x_cursor, y_cursor = event.pos
+            for button in choose_save_menu_buttons:
+                if button.check_click(x_cursor, y_cursor):
+                    button.clicked()
+        if event.type == pygame.MOUSEMOTION:
+            for button in choose_save_menu_buttons:
+                x_cursor, y_cursor = event.pos
+                button.check_hover(x_cursor, y_cursor)
+
+    screen.fill((80, 80, 80))
+    for button in choose_save_menu_buttons:
         button.draw()
     pygame.display.flip()
     clock.tick(60)
