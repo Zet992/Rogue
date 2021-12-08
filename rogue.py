@@ -28,6 +28,8 @@ bullets = []
 enemies = []
 enemies.append(Enemy2(800, 200, 50, 50))
 
+pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
+
 # Button functions #####################################################################################
 
 main_menu_buttons = []
@@ -99,7 +101,7 @@ tree = TreeSpruce(screen, 230, WINDOW_SIZE[1] - 170)
 decorations.append(tree)
 
 ############################################################################################################
-
+pygame.mixer.music.play()
 while main_menu:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -157,6 +159,8 @@ while choose_save_menu:
     pygame.display.flip()
     clock.tick(60)
 
+pygame.mixer.music.load("data/sounds/DOOM.mp3")
+pygame.mixer.music.play()
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
