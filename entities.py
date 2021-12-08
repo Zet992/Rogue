@@ -62,9 +62,6 @@ class Player(Entity):
         self.shot_sound.play()
 
 
-
-
-
 class Enemy(Entity):
     pass
 

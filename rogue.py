@@ -8,9 +8,17 @@ size = width, height = 1024, 576
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Rogue")
 
-running = False
+# Главное меню
 main_menu = True
+
+# Меню выбора сохранений
 choose_save_menu = False
+
+# Игровой процесс
+running = False
+
+# Меню при нажатии на esc
+esc_menu = False
 
 clock = pygame.time.Clock()
 player = Player(200, 200, 50, 50)
@@ -45,32 +53,37 @@ def read_first_save():
     choose_save_menu = False
 
 
+##############################################################################################
+
 # Buttons
-play_button = Button(screen, width // 2 - 100, height // 2 - 92, 200, 46, 'Play', open_choose_save_menu)
+play_button = Button(screen, width // 2 - 100, height // 2 - 92, 200, 46, 'Играть', open_choose_save_menu)
 main_menu_buttons.append(play_button)
 
-help_button = Button(screen, width // 2 - 100, height // 2 - 20, 200, 46, 'Help', open_help_menu)
+help_button = Button(screen, width // 2 - 100, height // 2 - 20, 200, 46, 'Помощь', open_help_menu)
 main_menu_buttons.append(help_button)
 
 # Все три кнопки сейчас указывают только на один сейв
-first_save_button = Button(screen, width // 2 - 100, height // 3, 200, 46, 'Save #1', read_first_save)
+first_save_button = Button(screen, width // 2 - 100, height // 3, 200, 46, 'Игра #1', read_first_save)
 choose_save_menu_buttons.append(first_save_button)
 
-second_save_button = Button(screen, width // 2 - 100, height // 3 + 92, 200, 46, 'Save #2', read_first_save)
+second_save_button = Button(screen, width // 2 - 100, height // 3 + 92, 200, 46, 'Игра #2', read_first_save)
 choose_save_menu_buttons.append(second_save_button)
 
-third_save_button = Button(screen, width // 2 - 100, height // 3 + 184, 200, 46, 'Save #3', read_first_save)
+third_save_button = Button(screen, width // 2 - 100, height // 3 + 184, 200, 46, 'Игра #3', read_first_save)
 choose_save_menu_buttons.append(third_save_button)
+
+#############################################################################################################
 
 while main_menu:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             main_menu = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            x_cursor, y_cursor = event.pos
-            for button in main_menu_buttons:
-                if button.check_click(x_cursor, y_cursor):
-                    button.clicked()
+            if event.button == 1:
+                x_cursor, y_cursor = event.pos
+                for button in main_menu_buttons:
+                    if button.check_click(x_cursor, y_cursor):
+                        button.clicked()
         if event.type == pygame.MOUSEMOTION:
             for button in main_menu_buttons:
                 x_cursor, y_cursor = event.pos
@@ -111,6 +124,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 bullets.append(player.shot())
+
     keys = pygame.key.get_pressed()
     if keys[pygame.K_d]:
         player.move[0] = 7
