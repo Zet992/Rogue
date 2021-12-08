@@ -13,8 +13,10 @@ class Entity:
         self.animation_tick = 0
         self.animation_images = []
         self.collision = {"up": False, "bottom": False, "right": False, "left": False}
-        self.jump_count = 10 
+        self.jump_count = 10
         self.is_jump = False
+        self.right = False
+        self.left = False
 
     def update(self):
         self.animation_tick += 1
@@ -74,9 +76,12 @@ class Entity:
 
 
 class Player(Entity):
-    def draw(self, surface, scroll):
-        pygame.draw.rect(surface, (0, 255, 0),
-                         (self.x - scroll[0], self.y - scroll[1], self.width, self.height))
+    def __init__(self, x, y, width, height, move=(0, 0)):
+        super(Player, self).__init__(x, y, width, height, move=(0, 0))
+        self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, (0, 255, 0), (self.x, self.y, self.width, self.height))
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()
@@ -84,7 +89,11 @@ class Player(Entity):
         rot = math.atan2(my + scroll[1] - start_pos[1], mx + scroll[0] - start_pos[0])
         move = math.cos(rot) * 10, math.sin(rot) * 10
         bullet = Bullet(start_pos[0], start_pos[1], 1, 1, move=move)
+        self.play_shot_sound()
         return bullet
+
+    def play_shot_sound(self):
+        self.shot_sound.play()
 
 
 class Enemy(Entity):
