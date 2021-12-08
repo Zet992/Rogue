@@ -58,20 +58,20 @@ def read_first_save():
 ##############################################################################################
 
 # Buttons ################
-play_button = Button(screen, width // 2 - 100, height // 2 - 92, 200, 46, 'Играть', open_choose_save_menu)
+play_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 92, 200, 46, 'Играть', open_choose_save_menu)
 main_menu_buttons.append(play_button)
 
-help_button = Button(screen, width // 2 - 100, height // 2 - 20, 200, 46, 'Помощь', open_help_menu)
+help_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 20, 200, 46, 'Помощь', open_help_menu)
 main_menu_buttons.append(help_button)
 
-# Все три кнопки сейчас указывают только на один сейв
-first_save_button = Button(screen, width // 2 - 100, height // 3, 200, 46, 'Игра #1', read_first_save)
+# Все три кнопки сейчас указывают только на одинWINDOW_SIZE[0]
+first_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3, 200, 46, 'Игра #1', read_first_save)
 choose_save_menu_buttons.append(first_save_button)
 
-second_save_button = Button(screen, width // 2 - 100, height // 3 + 92, 200, 46, 'Игра #2', read_first_save)
+second_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 92, 200, 46, 'Игра #2', read_first_save)
 choose_save_menu_buttons.append(second_save_button)
 
-third_save_button = Button(screen, width // 2 - 100, height // 3 + 184, 200, 46, 'Игра #3', read_first_save)
+third_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 184, 200, 46, 'Игра #3', read_first_save)
 choose_save_menu_buttons.append(third_save_button)
 
 #############################################################################################################
@@ -81,21 +81,21 @@ choose_save_menu_buttons.append(third_save_button)
 
 background_elements = list()
 
-sky = BackGroundSky(screen, width, height)
+sky = BackGroundSky(screen, WINDOW_SIZE[0], WINDOW_SIZE[1])
 background_elements.append(sky)
 
-grass = BackGroundGrass(screen, width, height)
+grass = BackGroundGrass(screen, WINDOW_SIZE[0], WINDOW_SIZE[1])
 background_elements.append(grass)
 
 decorations = list()
 
-tree = TreeSpruce(screen, 50, height - 70)
+tree = TreeSpruce(screen, 50, WINDOW_SIZE[1] - 70)
 decorations.append(tree)
 
-tree = TreeSpruce(screen, width - 200, height - 130)
+tree = TreeSpruce(screen, WINDOW_SIZE[0] - 200, WINDOW_SIZE[1] - 130)
 decorations.append(tree)
 
-tree = TreeSpruce(screen, 230, height - 170)
+tree = TreeSpruce(screen, 230, WINDOW_SIZE[1] - 170)
 decorations.append(tree)
 
 ############################################################################################################
