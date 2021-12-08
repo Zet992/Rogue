@@ -80,8 +80,9 @@ class Player(Entity):
         super(Player, self).__init__(x, y, width, height, move=(0, 0))
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
-    def draw(self, surface):
-        pygame.draw.rect(surface, (0, 255, 0), (self.x, self.y, self.width, self.height))
+    def draw(self, surface, scroll):
+        pygame.draw.rect(surface, (0, 255, 0), (self.x - scroll[0], self.y - scroll[1],
+                                                self.width, self.height))
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()

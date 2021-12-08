@@ -203,7 +203,7 @@ while running:
     for enemy in enemies:
         enemy.find_player(player)
         enemy.update()
-        enemy.draw(screen)
+        enemy.draw(screen, location.scroll)
 
     for wall in location.walls:
         wall.draw(screen, location.scroll)
