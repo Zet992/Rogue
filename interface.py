@@ -3,7 +3,7 @@ import pygame
 
 class Button:
     def __init__(self, surface, x, y, width, height, text, func, font_size=36, font_color=(255, 255, 255),
-                 hover_font_color=(66, 245, 96)):
+                 hover_font_color=(66, 245, 96), border_radius=8):
         self.surface = surface
         self.x = x
         self.y = y
@@ -17,9 +17,11 @@ class Button:
         self.hover_font_color = hover_font_color
         self.hovered = False
         self.button_pressed_sound = pygame.mixer.Sound('data\\sounds\\interface\\button_pressed.wav')
+        self.border_radius = border_radius
 
     def draw(self):
-        pygame.draw.rect(self.surface, (115, 155, 235), (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(self.surface, (115, 155, 235), (self.x, self.y, self.width, self.height),
+                         border_radius=self.border_radius)
         if not self.hovered:
             self.title = self.font.render(str(self.text), 1, self.font_color)
             text_rect = self.title.get_rect(center=(self.x + self.width // 2, self.y + self.height // 2))
