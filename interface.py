@@ -22,11 +22,11 @@ class Button:
         pygame.draw.rect(self.surface, (115, 155, 235), (self.x, self.y, self.width, self.height))
         if not self.hovered:
             self.title = self.font.render(str(self.text), 1, self.font_color)
+            text_rect = self.title.get_rect(center=(self.x + self.width // 2, self.y + self.height // 2))
         else:
             self.title = self.font.render(str(self.text), 1, self.hover_font_color)
-        # Нужно будет пофиксить, чтобы надпись была по центру кнопки!
-        self.surface.blit(self.title,
-                          (self.x + self.width // 2 - self.font_size, self.y - self.height // 2 + self.font_size))
+            text_rect = self.title.get_rect(center=(self.x + self.width // 2, self.y + self.height // 2))
+        self.surface.blit(self.title, text_rect)
 
     def check_click(self, x_cursor, y_cursor):
         if self.x < x_cursor < self.x + self.width and self.y < y_cursor < self.y + self.height:
