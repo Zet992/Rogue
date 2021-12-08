@@ -93,3 +93,4 @@ class Bullet(Entity):
                 if (self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height):
                     return i
         return None
+

@@ -1,5 +1,6 @@
 import pygame
 
+from decorations import TreeSpruce, BackGroundSky, BackGroundGrass
 from entities import Player, Enemy1
 from interface import Button
 
@@ -26,7 +27,7 @@ bullets = []
 enemies = []
 enemies.append(Enemy1(800, 200, 50, 50))
 
-# Button functions
+# Button functions #####################################################################################
 
 main_menu_buttons = []
 choose_save_menu_buttons = []
@@ -55,7 +56,7 @@ def read_first_save():
 
 ##############################################################################################
 
-# Buttons
+# Buttons ################
 play_button = Button(screen, width // 2 - 100, height // 2 - 92, 200, 46, 'Играть', open_choose_save_menu)
 main_menu_buttons.append(play_button)
 
@@ -74,6 +75,30 @@ choose_save_menu_buttons.append(third_save_button)
 
 #############################################################################################################
 
+
+# Decorations ##############################################################################################
+
+background_elements = list()
+
+sky = BackGroundSky(screen, width, height)
+background_elements.append(sky)
+
+grass = BackGroundGrass(screen, width, height)
+background_elements.append(grass)
+
+decorations = list()
+
+tree = TreeSpruce(screen, 50, height - 70)
+decorations.append(tree)
+
+tree = TreeSpruce(screen, width - 200, height - 130)
+decorations.append(tree)
+
+tree = TreeSpruce(screen, 230, height - 170)
+decorations.append(tree)
+
+############################################################################################################
+
 while main_menu:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -89,10 +114,17 @@ while main_menu:
                 x_cursor, y_cursor = event.pos
                 button.check_hover(x_cursor, y_cursor)
 
-    screen.fill((80, 80, 80))
+    screen.fill((0, 0, 0))
+
+    for background_element in background_elements:
+        background_element.draw()
+
+    for decoration in decorations:
+        decoration.draw()
 
     for button in main_menu_buttons:
         button.draw()
+
     pygame.display.flip()
     clock.tick(60)
 
@@ -111,7 +143,14 @@ while choose_save_menu:
                 x_cursor, y_cursor = event.pos
                 button.check_hover(x_cursor, y_cursor)
 
-    screen.fill((80, 80, 80))
+    screen.fill((0, 0, 0))
+
+    for background_element in background_elements:
+        background_element.draw()
+
+    for decoration in decorations:
+        decoration.draw()
+
     for button in choose_save_menu_buttons:
         button.draw()
     pygame.display.flip()
