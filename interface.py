@@ -3,7 +3,7 @@ import pygame
 
 class Button:
     def __init__(self, surface, x, y, width, height, text, func, font_size=36, font_color=(255, 255, 255),
-                 hover_font_color=(255, 0, 0)):
+                 hover_font_color=(66, 245, 96)):
         self.surface = surface
         self.x = x
         self.y = y
@@ -16,6 +16,7 @@ class Button:
         self.text = text
         self.hover_font_color = hover_font_color
         self.hovered = False
+        self.button_pressed_sound = pygame.mixer.Sound('data\\sounds\\interface\\button_pressed.wav')
 
     def draw(self):
         pygame.draw.rect(self.surface, (115, 155, 235), (self.x, self.y, self.width, self.height))
@@ -39,4 +40,5 @@ class Button:
             self.hovered = False
 
     def clicked(self):
+        self.button_pressed_sound.play()
         self.func()

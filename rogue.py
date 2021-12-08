@@ -109,7 +109,8 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            bullets.append(player.shot())
+            if event.button == 1:
+                bullets.append(player.shot())
     keys = pygame.key.get_pressed()
     if keys[pygame.K_d]:
         player.move[0] = 7
@@ -121,7 +122,6 @@ while running:
         player.is_jump = True
     if keys[pygame.K_a] and keys[pygame.K_d]:
         player.move[0] = 0
-
     if player.is_jump:
         player.jump()
 
