@@ -1,11 +1,10 @@
 import pygame
 
-from entities import Player, Enemy1
-from location import Location
+from entities import Player, Enemy1, Enemy2
+from location import Location, WINDOW_SIZE
 
 pygame.init()
-size = width, height = 1024, 576
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Rogue")
 x, y = 150, 150
 
@@ -15,14 +14,14 @@ player = Player(200, 200, 50, 50)
 location = Location("arena.txt")
 bullets = []
 enemies = []
-enemies.append(Enemy1(800, 200, 50, 50))
+enemies.append(Enemy2(800, 200, 50, 50))
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            bullets.append(player.shot())
+            bullets.append(player.shot(location.scroll))
     keys = pygame.key.get_pressed()
     if keys[pygame.K_d]:
         player.move[0] = 7
@@ -39,14 +38,14 @@ while running:
     screen.fill((0, 0, 0))
     player.check_collision_with_objects(location.walls)
     player.update()
-    player.draw(screen)
+    player.draw(screen, location.scroll)
 
     for bullet in bullets[:]:
         bullet.update()
-        bullet.draw(screen)
-        if bullet.x > width:
+        bullet.draw(screen, location.scroll)
+        if bullet.x > location.size[0]:
             bullets.remove(bullet)
-        elif bullet.y > height:
+        elif bullet.y > location.size[1]:
             bullets.remove(bullet)
         elif bullet.x + bullet.width < 0:
             bullets.remove(bullet)
@@ -60,11 +59,12 @@ while running:
     for enemy in enemies:
         enemy.find_player(player)
         enemy.update()
-        enemy.draw(screen)
+        enemy.draw(screen, location.scroll)
 
     for wall in location.walls:
-        wall.draw(screen)
+        wall.draw(screen, location.scroll)
 
+    location.update_scroll(player)
     pygame.display.flip()
     clock.tick(60)
 

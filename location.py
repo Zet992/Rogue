@@ -2,13 +2,18 @@ import pygame
 
 
 CELL_SIZE = (64, 64)
+WINDOW_SIZE = WINDOW_WIDTH, WINDOW_HEIGHT = (1024, 576)
 
 
 class Location:
     def __init__(self, name):
         self.map = []
         self.walls = []
+        self.size = (0, 0)
+        self.step = (450, 300)
+        self.max_scroll = (WINDOW_SIZE[0] - CELL_SIZE[0], WINDOW_SIZE[1] - CELL_SIZE[1])
         self.load_map(name)
+        self.scroll = [0, 0]
 
     def load_map(self, name):
         file = open("data/rooms/" + name, 'r')
@@ -17,6 +22,22 @@ class Location:
             for x, cell in enumerate(row):
                 if cell == "@":
                     self.walls.append(Wall(x * 64, y * 64))
+        self.size = (x * 64, y * 64)
+
+    def update_scroll(self, player):
+        if player.x - self.scroll[0] != self.step[0]:
+            self.scroll[0] = player.x - self.step[0]
+        if player.y - self.scroll[1] != self.step[1]:
+            self.scroll[1] = player.y - self.step[1]
+
+        if self.scroll[0] < 0:
+            self.scroll[0] = 0
+        elif self.scroll[0] > self.size[0] - self.max_scroll[0]:
+            self.scroll[0] = self.size[0] - self.max_scroll[0]
+        if self.scroll[1] < 0:
+            self.scroll[1] = 0
+        elif self.scroll[1] > self.size[1] - self.max_scroll[1]:
+            self.scroll[1] = self.size[1] - self.max_scroll[1]
 
 
 class Wall:
@@ -29,6 +50,6 @@ class Wall:
     def update(self):
         pass
 
-    def draw(self, surface):
+    def draw(self, surface, scroll):
         pygame.draw.rect(surface, (100, 100, 100),
-                         (self.x, self.y, CELL_SIZE[0], CELL_SIZE[1]))
+                         (self.x - scroll[0], self.y - scroll[1], CELL_SIZE[0], CELL_SIZE[1]))
