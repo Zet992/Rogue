@@ -106,11 +106,11 @@ back_save_menu_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1]
 
 choose_save_menu_buttons.append(back_save_menu_button)
 
-continue_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 100, 200, 46, 'Продолжить',
+continue_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 - 46, 400, 46, 'Продолжить',
                          continue_game)
 game_menu_buttons.append(continue_button)
 
-quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 + 100, 200, 46, 'Выйти в меню', quit_game)
+quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46, 400, 46, 'Выйти в меню', quit_game)
 game_menu_buttons.append(quit_button)
 # Decorations
 background_elements = list()
