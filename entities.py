@@ -2,6 +2,9 @@ import math
 
 import pygame
 
+LEFT = 1
+RIGHT = 2
+
 
 class Entity:
     def __init__(self, x, y, width, height, move=(0, 0)):
@@ -14,22 +17,23 @@ class Entity:
         self.animation_images = []
         self.collision = {"up": False, "bottom": False, "right": False, "left": False}
         self.fall_count = 1
-        self.jump_count = 20
+        self.jump_count = -1
         self.jumps = 0
-        self.is_jump = False
-        self.right = False
-        self.left = False
+        self.dash_count = 0
+        self.side = RIGHT
 
     def update(self):
         self.animation_tick += 1
-        if not self.collision['bottom'] and not self.is_jump:
+        if not self.collision['bottom'] and self.jump_count == -1:
             self.move[1] = self.fall_count ** 2 / 10
             if self.fall_count < 15:
                 self.fall_count += 1
+
         if self.collision['right'] and self.move[0] > 0:
             self.move[0] = 0
         elif self.collision['left'] and self.move[0] < 0:
             self.move[0] = 0
+
         if self.collision['bottom'] and self.move[1] > 0:
             self.fall_count = 1
             self.jumps = 0
@@ -37,8 +41,21 @@ class Entity:
             self.y -= 3
         elif self.collision['up'] and self.move[1] < 0:
             self.move[1] = 0
-            self.is_jump = False
-            self.jump_count = 20
+            self.jumps = 0
+            self.jump_count = -1
+
+        if self.move[0] > 0:
+            self.side = RIGHT
+        elif self.move[0] < 0:
+            self.side = LEFT
+
+        if self.dash_count != 0:
+            if self.side == RIGHT:
+                self.move[0] = 20
+            if self.side == LEFT:
+                self.move[0] = -20
+            self.dash_count -= 1
+
         self.x += self.move[0]
         self.y += self.move[1]
 
@@ -71,14 +88,17 @@ class Entity:
                 self.collision['up'] = True
                 self.y = i.y + i.height + 2
 
+    def dash(self):
+        self.dash_count = 5
+
     def jump(self):
-        if self.is_jump:
+        if self.jumps == 1 or self.jumps == 2:
             if self.jump_count >= 0:
                 self.move[1] = -(self.jump_count ** 2) / 10
                 self.jump_count -= 1
             else:
-                self.jump_count = 20
-                self.is_jump = False
+                if self.jumps == 2:
+                    self.jumps = 0
 
 
 class Player(Entity):

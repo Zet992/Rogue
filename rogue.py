@@ -156,28 +156,31 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 bullets.append(player.shot(location.scroll))
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                if player.jumps == 1 and player.jump_count < 15:
+                    player.jump_count = 18
+                    player.fall_count = 1
+                    player.jumps = 2
+            elif event.key == pygame.K_LCTRL:
+                player.dash()
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_d]:
+    if keys[pygame.K_d] and player.dash_count == 0:
         player.move[0] = 7
-    if keys[pygame.K_a]:
+    if keys[pygame.K_a] and player.dash_count == 0:
         player.move[0] = -7
     if not keys[pygame.K_a] and not keys[pygame.K_d]:
         player.move[0] = 0
     if keys[pygame.K_SPACE] and player.collision['bottom']:
-        print(1)
-        player.is_jump = True
-        player.jumps = 1
-    if keys[pygame.K_SPACE] and player.jumps < 2 and player.jump_count < 15:
-        print(2)
         player.jump_count = 20
-        player.jumps = 2
+        player.jumps = 1
     if keys[pygame.K_a] and keys[pygame.K_d]:
         player.move[0] = 0
-    if player.is_jump:
+    if player.jumps:
         player.jump()
 
     screen.fill((0, 0, 0))
