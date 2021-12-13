@@ -28,10 +28,7 @@ bullets = []
 enemies = []
 enemies.append(Enemy2(800, 200, 50, 50))
 
-pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
-
-# Button functions #####################################################################################
-
+# Button functions
 main_menu_buttons = []
 choose_save_menu_buttons = []
 
@@ -57,50 +54,43 @@ def read_first_save():
     choose_save_menu = False
 
 
-##############################################################################################
-
-# Buttons ################
-play_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 92, 200, 46, 'Играть', open_choose_save_menu)
+# Buttons
+play_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 92,
+                     200, 46, 'Играть', open_choose_save_menu)
 main_menu_buttons.append(play_button)
 
-help_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 20, 200, 46, 'Помощь', open_help_menu)
+help_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 20,
+                     200, 46, 'Помощь', open_help_menu)
 main_menu_buttons.append(help_button)
 
-# Все три кнопки сейчас указывают только на одинWINDOW_SIZE[0]
-first_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3, 200, 46, 'Игра #1', read_first_save)
+first_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3,
+                           200, 46, 'Игра #1', read_first_save)
 choose_save_menu_buttons.append(first_save_button)
 
-second_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 92, 200, 46, 'Игра #2', read_first_save)
+second_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 92,
+                            200, 46, 'Игра #2', read_first_save)
 choose_save_menu_buttons.append(second_save_button)
 
-third_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 184, 200, 46, 'Игра #3', read_first_save)
+third_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 184,
+                           200, 46, 'Игра #3', read_first_save)
 choose_save_menu_buttons.append(third_save_button)
 
-#############################################################################################################
-
-
-# Decorations ##############################################################################################
-
+# Decorations
 background_elements = list()
-
 sky = BackGroundSky(screen, WINDOW_SIZE[0], WINDOW_SIZE[1])
 background_elements.append(sky)
-
 grass = BackGroundGrass(screen, WINDOW_SIZE[0], WINDOW_SIZE[1])
 background_elements.append(grass)
 
 decorations = list()
-
 tree = TreeSpruce(screen, 50, WINDOW_SIZE[1] - 70)
 decorations.append(tree)
-
 tree = TreeSpruce(screen, WINDOW_SIZE[0] - 200, WINDOW_SIZE[1] - 130)
 decorations.append(tree)
-
 tree = TreeSpruce(screen, 230, WINDOW_SIZE[1] - 170)
 decorations.append(tree)
 
-############################################################################################################
+pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
 pygame.mixer.music.play()
 while main_menu:
     for event in pygame.event.get():
@@ -159,6 +149,7 @@ while choose_save_menu:
     pygame.display.flip()
     clock.tick(60)
 
+FONT = pygame.font.SysFont("arial", 20)
 pygame.mixer.music.load("data/sounds/DOOM.mp3")
 pygame.mixer.music.play()
 while running:
@@ -211,6 +202,9 @@ while running:
 
     for wall in location.walls:
         wall.draw(screen, location.scroll)
+
+    follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
+    screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))
 
     location.update_scroll(player)
     pygame.display.flip()
