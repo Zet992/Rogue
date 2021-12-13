@@ -23,9 +23,9 @@ class Entity:
         if not self.collision['bottom'] and not self.is_jump:
             self.move[1] = 10
         if self.collision['right'] and self.move[0] > 0:
-            self.x -= 7
+            self.move[0] = 0
         elif self.collision['left'] and self.move[0] < 0:
-            self.x += 7
+            self.move[0] = 0
         if self.collision['bottom'] and self.move[1] > 0:
             self.move[1] = 10
             self.y -= 10
@@ -53,8 +53,8 @@ class Entity:
                 self.x = i.x - self.width - 2
             elif x_col and self.move[0] < 0:
                 self.collision['left'] = True
-                self.x = i.x + i.width + 3
-        rect_y = pygame.Rect(self.x + self.move[0], self.y + self.move[1], self.width, self.height)
+                self.x = i.x + i.width + 2
+        rect_y = pygame.Rect(self.x, self.y + self.move[1], self.width, self.height)
         for i in objects:
             rect_obj = pygame.Rect(i.x, i.y, i.width, i.height)
             y_col = rect_obj.colliderect(rect_y)
@@ -63,7 +63,7 @@ class Entity:
                 self.y = i.y - self.height - 2
             if y_col and self.move[1] < 0:
                 self.collision['up'] = True
-                self.y = i.y + i.height
+                self.y = i.y + i.height + 2
 
     def jump(self):
         if self.is_jump:
