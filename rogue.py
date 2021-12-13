@@ -228,6 +228,10 @@ while main:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         continue_game()
+                if event.type == pygame.MOUSEMOTION:
+                    for button in game_menu_buttons:
+                        x_cursor, y_cursor = event.pos
+                        button.check_hover(x_cursor, y_cursor)
 
             location.update_scroll(player)
             player.check_collision_with_objects(location.walls)
