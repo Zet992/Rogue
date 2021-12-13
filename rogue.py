@@ -1,16 +1,22 @@
 import pygame
 
 from decorations import TreeSpruce, BackGroundSky, BackGroundGrass
+from entities import Player, Enemy2
 from interface import Button
-from entities import Player, Enemy1, Enemy2
 from location import Location, WINDOW_SIZE
 
 pygame.init()
 screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Rogue")
 
+# Главный цикл, включающий все остальные циклы
+main = True
+
 # Главное меню
 main_menu = True
+
+# Внутриигровое меню
+game_menu = False
 
 # Меню выбора сохранений
 choose_save_menu = False
@@ -31,6 +37,7 @@ enemies.append(Enemy2(800, 200, 50, 50))
 # Button functions
 main_menu_buttons = []
 choose_save_menu_buttons = []
+game_menu_buttons = []
 
 
 def start_game():
@@ -54,6 +61,25 @@ def read_first_save():
     choose_save_menu = False
 
 
+def back_to_menu():
+    global choose_save_menu, main_menu
+    choose_save_menu = False
+    main_menu = True
+
+
+def continue_game():
+    global game_menu, running
+    game_menu = False
+    running = True
+
+
+def quit_game():
+    global game_menu, main_menu, running
+    main_menu = True
+    game_menu = False
+    running = False
+
+
 # Buttons
 play_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 92,
                      200, 46, 'Играть', open_choose_save_menu)
@@ -75,6 +101,17 @@ third_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 
                            200, 46, 'Игра #3', read_first_save)
 choose_save_menu_buttons.append(third_save_button)
 
+back_save_menu_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 272, 200, 46, 'Назад',
+                               back_to_menu)
+
+choose_save_menu_buttons.append(back_save_menu_button)
+
+continue_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 100, 200, 46, 'Продолжить',
+                         continue_game)
+game_menu_buttons.append(continue_button)
+
+quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 + 100, 200, 46, 'Выйти в меню', quit_game)
+game_menu_buttons.append(quit_button)
 # Decorations
 background_elements = list()
 sky = BackGroundSky(screen, WINDOW_SIZE[0], WINDOW_SIZE[1])
@@ -90,124 +127,153 @@ decorations.append(tree)
 tree = TreeSpruce(screen, 230, WINDOW_SIZE[1] - 170)
 decorations.append(tree)
 
-pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
-pygame.mixer.music.play()
-while main_menu:
+FONT = pygame.font.SysFont("arial", 20)
+
+while main:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            main_menu = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                x_cursor, y_cursor = event.pos
+            main = False
+            pygame.quit()
+    if main_menu:
+        pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
+        pygame.mixer.music.play()
+    while main_menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                main_menu = False
+                main = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    x_cursor, y_cursor = event.pos
+                    for button in main_menu_buttons:
+                        if button.check_click(x_cursor, y_cursor):
+                            button.clicked()
+            if event.type == pygame.MOUSEMOTION:
                 for button in main_menu_buttons:
+                    x_cursor, y_cursor = event.pos
+                    button.check_hover(x_cursor, y_cursor)
+
+        screen.fill((0, 0, 0))
+
+        for background_element in background_elements:
+            background_element.draw()
+
+        for decoration in decorations:
+            decoration.draw()
+
+        for button in main_menu_buttons:
+            button.draw()
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    while choose_save_menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                choose_save_menu = False
+                main_menu = True
+                main = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                x_cursor, y_cursor = event.pos
+                for button in choose_save_menu_buttons:
                     if button.check_click(x_cursor, y_cursor):
                         button.clicked()
-        if event.type == pygame.MOUSEMOTION:
-            for button in main_menu_buttons:
-                x_cursor, y_cursor = event.pos
-                button.check_hover(x_cursor, y_cursor)
+            if event.type == pygame.MOUSEMOTION:
+                for button in choose_save_menu_buttons:
+                    x_cursor, y_cursor = event.pos
+                    button.check_hover(x_cursor, y_cursor)
 
-    screen.fill((0, 0, 0))
+        screen.fill((0, 0, 0))
 
-    for background_element in background_elements:
-        background_element.draw()
+        for background_element in background_elements:
+            background_element.draw()
 
-    for decoration in decorations:
-        decoration.draw()
+        for decoration in decorations:
+            decoration.draw()
 
-    for button in main_menu_buttons:
-        button.draw()
+        for button in choose_save_menu_buttons:
+            button.draw()
+        pygame.display.flip()
+        clock.tick(60)
 
-    pygame.display.flip()
-    clock.tick(60)
+    if running:
+        pygame.mixer.music.load("data/sounds/DOOM.mp3")
+        pygame.mixer.music.play()
 
-while choose_save_menu:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            choose_save_menu = False
-            main_menu = True
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            x_cursor, y_cursor = event.pos
-            for button in choose_save_menu_buttons:
-                if button.check_click(x_cursor, y_cursor):
-                    button.clicked()
-        if event.type == pygame.MOUSEMOTION:
-            for button in choose_save_menu_buttons:
-                x_cursor, y_cursor = event.pos
-                button.check_hover(x_cursor, y_cursor)
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+                main = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    bullets.append(player.shot(location.scroll))
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    game_menu = True
+        while game_menu:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    game_menu = False
+                    main = False
+                    running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    x_cursor, y_cursor = event.pos
+                    for button in game_menu_buttons:
+                        if button.check_click(x_cursor, y_cursor):
+                            button.clicked()
+            for button in game_menu_buttons:
+                button.draw()
 
-    screen.fill((0, 0, 0))
+            pygame.display.flip()
+            clock.tick(60)
 
-    for background_element in background_elements:
-        background_element.draw()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_d]:
+            player.move[0] = 7
+        if keys[pygame.K_a]:
+            player.move[0] = -7
+        if not keys[pygame.K_a] and not keys[pygame.K_d]:
+            player.move[0] = 0
+        if keys[pygame.K_SPACE] and player.collision['bottom']:
+            player.is_jump = True
+        if keys[pygame.K_a] and keys[pygame.K_d]:
+            player.move[0] = 0
+        if player.is_jump:
+            player.jump()
 
-    for decoration in decorations:
-        decoration.draw()
+        screen.fill((0, 0, 0))
+        player.check_collision_with_objects(location.walls)
+        player.update()
+        player.draw(screen, location.scroll)
 
-    for button in choose_save_menu_buttons:
-        button.draw()
-    pygame.display.flip()
-    clock.tick(60)
+        for bullet in bullets[:]:
+            bullet.update()
+            bullet.draw(screen, location.scroll)
+            if bullet.x > location.size[0]:
+                bullets.remove(bullet)
+            elif bullet.y > location.size[1]:
+                bullets.remove(bullet)
+            elif bullet.x + bullet.width < 0:
+                bullets.remove(bullet)
+            elif bullet.y + bullet.height < 0:
+                bullets.remove(bullet)
+            enemy = bullet.check_collisions_with_entity(enemies)
+            if enemy:
+                enemies.remove(enemy)
+                bullets.remove(bullet)
 
-FONT = pygame.font.SysFont("arial", 20)
-pygame.mixer.music.load("data/sounds/DOOM.mp3")
-pygame.mixer.music.play()
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                bullets.append(player.shot(location.scroll))
+        for enemy in enemies:
+            enemy.find_player(player)
+            enemy.update()
+            enemy.draw(screen, location.scroll)
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_d]:
-        player.move[0] = 7
-    if keys[pygame.K_a]:
-        player.move[0] = -7
-    if not keys[pygame.K_a] and not keys[pygame.K_d]:
-        player.move[0] = 0
-    if keys[pygame.K_SPACE] and player.collision['bottom']:
-        player.is_jump = True
-    if keys[pygame.K_a] and keys[pygame.K_d]:
-        player.move[0] = 0
-    if player.is_jump:
-        player.jump()
+        for wall in location.walls:
+            wall.draw(screen, location.scroll)
 
-    screen.fill((0, 0, 0))
-    player.check_collision_with_objects(location.walls)
-    player.update()
-    player.draw(screen, location.scroll)
+        follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
+        screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))
 
-    for bullet in bullets[:]:
-        bullet.update()
-        bullet.draw(screen, location.scroll)
-        if bullet.x > location.size[0]:
-            bullets.remove(bullet)
-        elif bullet.y > location.size[1]:
-            bullets.remove(bullet)
-        elif bullet.x + bullet.width < 0:
-            bullets.remove(bullet)
-        elif bullet.y + bullet.height < 0:
-            bullets.remove(bullet)
-        enemy = bullet.check_collisions_with_entity(enemies)
-        if enemy:
-            enemies.remove(enemy)
-            bullets.remove(bullet)
-
-    for enemy in enemies:
-        enemy.find_player(player)
-        enemy.update()
-        enemy.draw(screen, location.scroll)
-
-    for wall in location.walls:
-        wall.draw(screen, location.scroll)
-
-    follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
-    screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))
-
-    location.update_scroll(player)
-    pygame.display.flip()
-    clock.tick(60)
-
-pygame.quit()
+        location.update_scroll(player)
+        pygame.display.flip()
+        clock.tick(60)
