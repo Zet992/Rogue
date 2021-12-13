@@ -168,7 +168,13 @@ while running:
     if not keys[pygame.K_a] and not keys[pygame.K_d]:
         player.move[0] = 0
     if keys[pygame.K_SPACE] and player.collision['bottom']:
+        print(1)
         player.is_jump = True
+        player.jumps = 1
+    if keys[pygame.K_SPACE] and player.jumps < 2 and player.jump_count < 15:
+        print(2)
+        player.jump_count = 20
+        player.jumps = 2
     if keys[pygame.K_a] and keys[pygame.K_d]:
         player.move[0] = 0
     if player.is_jump:
