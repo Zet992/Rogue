@@ -9,6 +9,9 @@ pygame.init()
 screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Rogue")
 
+transparent_game_menu_background = pygame.Surface((WINDOW_SIZE[0], WINDOW_SIZE[1]), pygame.SRCALPHA)
+transparent_game_menu_background.fill((0, 0, 0, 128))
+
 # Главный цикл, включающий все остальные циклы
 main = True
 
@@ -222,6 +225,21 @@ while main:
                     for button in game_menu_buttons:
                         if button.check_click(x_cursor, y_cursor):
                             button.clicked()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        continue_game()
+
+            location.update_scroll(player)
+            player.check_collision_with_objects(location.walls)
+            player.draw(screen, location.scroll)
+
+            for enemy in enemies:
+                enemy.draw(screen, location.scroll)
+            for wall in location.walls:
+                wall.draw(screen, location.scroll)
+            for bullet in bullets[:]:
+                bullet.draw(screen, location.scroll)
+            screen.blit(transparent_game_menu_background, (0, 0))
             for button in game_menu_buttons:
                 button.draw()
 
