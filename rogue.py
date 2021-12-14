@@ -1,6 +1,6 @@
 import pygame
 
-from decorations import TreeSpruce, BackGroundSky, BackGroundGrass
+from decorations import TreeSpruce
 from entities import Player, Enemy2
 from interface import Button
 from location import Location, WINDOW_SIZE
@@ -31,7 +31,7 @@ running = False
 esc_menu = False
 
 clock = pygame.time.Clock()
-player = Player(200, 200, 50, 50)
+player = Player(200, 200, 54, 72)
 location = Location("arena.txt")
 bullets = []
 enemies = []
@@ -116,19 +116,13 @@ game_menu_buttons.append(continue_button)
 quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46, 400, 46, 'Выйти в меню', quit_game)
 game_menu_buttons.append(quit_button)
 # Decorations
-background_elements = list()
-sky = BackGroundSky(screen, WINDOW_SIZE[0], WINDOW_SIZE[1])
-background_elements.append(sky)
-grass = BackGroundGrass(screen, WINDOW_SIZE[0], WINDOW_SIZE[1])
-background_elements.append(grass)
 
-decorations = list()
-tree = TreeSpruce(screen, 50, WINDOW_SIZE[1] - 70)
-decorations.append(tree)
-tree = TreeSpruce(screen, WINDOW_SIZE[0] - 200, WINDOW_SIZE[1] - 130)
-decorations.append(tree)
-tree = TreeSpruce(screen, 230, WINDOW_SIZE[1] - 170)
-decorations.append(tree)
+background = pygame.image.load('data\\images\\environment\\environment.jpg')
+
+
+def draw(screen, background):
+    screen.blit(background, (0, 0))
+
 
 FONT = pygame.font.SysFont("arial", 20)
 
@@ -138,8 +132,9 @@ while main:
             main = False
             pygame.quit()
     if main_menu:
-        pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
-        pygame.mixer.music.play()
+        pass
+        #pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
+        #pygame.mixer.music.play()
     while main_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -157,12 +152,7 @@ while main:
                     button.check_hover(x_cursor, y_cursor)
 
         screen.fill((0, 0, 0))
-
-        for background_element in background_elements:
-            background_element.draw()
-
-        for decoration in decorations:
-            decoration.draw()
+        draw(screen, background)
 
         for button in main_menu_buttons:
             button.draw()
@@ -188,11 +178,7 @@ while main:
 
         screen.fill((0, 0, 0))
 
-        for background_element in background_elements:
-            background_element.draw()
-
-        for decoration in decorations:
-            decoration.draw()
+        draw(screen, background)
 
         for button in choose_save_menu_buttons:
             button.draw()
@@ -200,8 +186,9 @@ while main:
         clock.tick(60)
 
     if running:
-        pygame.mixer.music.load("data/sounds/DOOM.mp3")
-        pygame.mixer.music.play()
+        pass
+        #pygame.mixer.music.load("data/sounds/DOOM.mp3")
+        #pygame.mixer.music.play()
 
     while running:
         for event in pygame.event.get():
@@ -232,7 +219,8 @@ while main:
                     for button in game_menu_buttons:
                         x_cursor, y_cursor = event.pos
                         button.check_hover(x_cursor, y_cursor)
-
+            screen.fill('black')
+            draw(screen, background)
             location.update_scroll(player)
             player.check_collision_with_objects(location.walls)
             player.draw(screen, location.scroll)
@@ -265,6 +253,7 @@ while main:
             player.jump()
 
         screen.fill((0, 0, 0))
+        draw(screen, background)
         player.check_collision_with_objects(location.walls)
         player.update()
         player.draw(screen, location.scroll)

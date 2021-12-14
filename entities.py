@@ -2,6 +2,14 @@ import math
 
 import pygame
 
+idle_player = [pygame.image.load('data\\images\\player\\idle_1.png'),
+               pygame.image.load('data\\images\\player\\idle_2.png'),
+               pygame.image.load('data\\images\\player\\idle_3.png'),
+               pygame.image.load('data\\images\\player\\idle_4.png')]
+
+for i in range(len(idle_player)):
+    idle_player[i] = pygame.transform.scale2x(idle_player[i])
+
 
 class Entity:
     def __init__(self, x, y, width, height, move=(0, 0)):
@@ -19,7 +27,8 @@ class Entity:
         self.left = False
 
     def update(self):
-        self.animation_tick += 1
+        if self.animation_tick >= 59:
+            self.animation_tick = 0
         if not self.collision['bottom'] and not self.is_jump:
             self.move[1] = 10
         if self.collision['right'] and self.move[0] > 0:
@@ -35,6 +44,7 @@ class Entity:
             self.jump_count = 10
         self.x += self.move[0]
         self.y += self.move[1]
+        self.animation_tick += 1
 
     def draw(self, surface, scroll):
         pass
@@ -81,8 +91,9 @@ class Player(Entity):
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
     def draw(self, surface, scroll):
-        pygame.draw.rect(surface, (0, 255, 0), (self.x - scroll[0], self.y - scroll[1],
-                                                self.width, self.height))
+        # pygame.draw.rect(surface, (0, 255, 0), (self.x - scroll[0], self.y - scroll[1],
+        #                              self.width, self.height))
+        surface.blit(idle_player[self.animation_tick // 15], (self.x - scroll[0], self.y - scroll[1]))
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()
