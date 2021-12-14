@@ -14,12 +14,19 @@ run_player = [pygame.image.load('data\\images\\player\\run\\run_1.png'),
               pygame.image.load('data\\images\\player\\run\\run_5.png'),
               pygame.image.load('data\\images\\player\\run\\run_6.png')]
 
+jump_player = [pygame.image.load('data\\images\\player\\jump\\jump_1.png'),
+               pygame.image.load('data\\images\\player\\jump\\jump_2.png'),
+               pygame.image.load('data\\images\\player\\jump\\jump_3.png'),
+               pygame.image.load('data\\images\\player\\jump\\jump_4.png')]
+
 for i in range(len(idle_player)):
     idle_player[i] = pygame.transform.scale2x(idle_player[i])
 
-
 for i in range(len(run_player)):
     run_player[i] = pygame.transform.scale2x(run_player[i])
+
+for i in range(len(jump_player)):
+    jump_player[i] = pygame.transform.scale2x(jump_player[i])
 
 
 class Entity:
@@ -105,7 +112,6 @@ class Player(Entity):
 
 
     def draw(self, surface, scroll):
-
         # pygame.draw.rect(surface, (0, 255, 0), (self.x - scroll[0], self.y - scroll[1],
         #                              self.width, self.height))
         if self.idle and self.right:
@@ -120,6 +126,12 @@ class Player(Entity):
             image = run_player[self.animation_tick // 10]
             image = pygame.transform.flip(image, True, False)
             surface.blit(image, (self.x - scroll[0], self.y - scroll[1] + 4))
+        elif self.is_jump and self.left:
+            image = jump_player[self.animation_tick // 15]
+            image = pygame.transform.flip(image, True, False)
+            surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+        elif self.is_jump and self.right:
+            surface.blit(jump_player[self.animation_tick // 15], (self.x - scroll[0], self.y - scroll[1]))
 
 
     def shot(self, scroll):

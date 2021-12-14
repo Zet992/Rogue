@@ -253,9 +253,14 @@ while main:
             player.right = False
         if not keys[pygame.K_a] and not keys[pygame.K_d]:
             player.move[0] = 0
-            player.idle = True
+            if not player.is_jump:
+                player.idle = True
+            if player.is_jump:
+                player.idle = False
             player.run = False
         if keys[pygame.K_SPACE] and player.collision['bottom']:
+            player.run = False
+            player.idle = False
             player.is_jump = True
         if keys[pygame.K_a] and keys[pygame.K_d]:
             player.move[0] = 0
