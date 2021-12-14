@@ -241,14 +241,26 @@ while main:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_d]:
             player.move[0] = 7
+            player.run = True
+            player.idle = False
+            player.right = True
+            player.left = False
         if keys[pygame.K_a]:
             player.move[0] = -7
+            player.idle = False
+            player.run = True
+            player.left = True
+            player.right = False
         if not keys[pygame.K_a] and not keys[pygame.K_d]:
             player.move[0] = 0
+            player.idle = True
+            player.run = False
         if keys[pygame.K_SPACE] and player.collision['bottom']:
             player.is_jump = True
         if keys[pygame.K_a] and keys[pygame.K_d]:
             player.move[0] = 0
+            player.idle = True
+            player.run = False
         if player.is_jump:
             player.jump()
 

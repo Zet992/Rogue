@@ -2,13 +2,24 @@ import math
 
 import pygame
 
-idle_player = [pygame.image.load('data\\images\\player\\idle_1.png'),
-               pygame.image.load('data\\images\\player\\idle_2.png'),
-               pygame.image.load('data\\images\\player\\idle_3.png'),
-               pygame.image.load('data\\images\\player\\idle_4.png')]
+idle_player = [pygame.image.load('data\\images\\player\\idle\\idle_1.png'),
+               pygame.image.load('data\\images\\player\\idle\\idle_2.png'),
+               pygame.image.load('data\\images\\player\\idle\\idle_3.png'),
+               pygame.image.load('data\\images\\player\\idle\\idle_4.png')]
+
+run_player = [pygame.image.load('data\\images\\player\\run\\run_1.png'),
+              pygame.image.load('data\\images\\player\\run\\run_2.png'),
+              pygame.image.load('data\\images\\player\\run\\run_3.png'),
+              pygame.image.load('data\\images\\player\\run\\run_4.png'),
+              pygame.image.load('data\\images\\player\\run\\run_5.png'),
+              pygame.image.load('data\\images\\player\\run\\run_6.png')]
 
 for i in range(len(idle_player)):
     idle_player[i] = pygame.transform.scale2x(idle_player[i])
+
+
+for i in range(len(run_player)):
+    run_player[i] = pygame.transform.scale2x(run_player[i])
 
 
 class Entity:
@@ -23,8 +34,10 @@ class Entity:
         self.collision = {"up": False, "bottom": False, "right": False, "left": False}
         self.jump_count = 10
         self.is_jump = False
-        self.right = False
+        self.right = True
         self.left = False
+        self.idle = True
+        self.run = False
 
     def update(self):
         if self.animation_tick >= 59:
@@ -90,10 +103,24 @@ class Player(Entity):
         super(Player, self).__init__(x, y, width, height, move=(0, 0))
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
+
     def draw(self, surface, scroll):
+
         # pygame.draw.rect(surface, (0, 255, 0), (self.x - scroll[0], self.y - scroll[1],
         #                              self.width, self.height))
-        surface.blit(idle_player[self.animation_tick // 15], (self.x - scroll[0], self.y - scroll[1]))
+        if self.idle and self.right:
+            surface.blit(idle_player[self.animation_tick // 15], (self.x - scroll[0], self.y - scroll[1]))
+        elif self.run and self.right:
+            surface.blit(run_player[self.animation_tick // 10], (self.x - scroll[0], self.y - scroll[1] + 4))
+        elif self.idle and self.left:
+            image = idle_player[self.animation_tick // 15]
+            image = pygame.transform.flip(image, True, False)
+            surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+        elif self.run and self.left:
+            image = run_player[self.animation_tick // 10]
+            image = pygame.transform.flip(image, True, False)
+            surface.blit(image, (self.x - scroll[0], self.y - scroll[1] + 4))
+
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()
