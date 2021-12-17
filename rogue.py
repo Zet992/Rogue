@@ -2,7 +2,7 @@ import pygame
 
 from decorations import TreeSpruce, BackGroundSky, BackGroundGrass
 from interface import Button
-from entities import Player, Enemy1, Enemy2
+from entities import Player, Enemy1, Enemy2, LEFT, RIGHT
 from location import Location, WINDOW_SIZE
 
 pygame.init()
@@ -161,8 +161,15 @@ while running:
                 bullets.append(player.shot(location.scroll))
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                if player.jumps == 1 and player.jump_count < 15:
-                    player.jump_count = 18
+                if player.jumps != 2 and player.jump_tick < 15:
+                    player.jump_tick = 18
+                    player.fall_count = 1
+                    player.jumps = 2
+                if player.collision['bottom']:
+                    player.jump_tick = 20
+                    player.jumps = 1
+                elif player.jumps != 2 and player.jump_tick < 15:
+                    player.jump_tick = 18
                     player.fall_count = 1
                     player.jumps = 2
             elif event.key == pygame.K_LCTRL:
@@ -175,13 +182,20 @@ while running:
         player.move[0] = -7
     if not keys[pygame.K_a] and not keys[pygame.K_d]:
         player.move[0] = 0
-    if keys[pygame.K_SPACE] and player.collision['bottom']:
-        player.jump_count = 20
-        player.jumps = 1
     if keys[pygame.K_a] and keys[pygame.K_d]:
         player.move[0] = 0
     if player.jumps:
         player.jump()
+    if player.dash_count != 0:
+        if player.side == LEFT:
+            player.move[0] = -35
+        else:
+            player.move[0] = 35
+        player.dash_count -= 1
+    if not player.collision['bottom'] and player.jump_tick == -1 and player.dash_count == 0:
+        player.move[1] = player.fall_count ** 2 / 10
+        if player.fall_count < 15:
+            player.fall_count += 1
 
     screen.fill((0, 0, 0))
     player.check_collision_with_objects(location.walls)
