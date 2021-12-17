@@ -1,9 +1,8 @@
 import pygame
 
 from decorations import TreeSpruce
-from entities import Player, Enemy2
 from interface import Button
-from entities import Player, Enemy1, Enemy2, LEFT, RIGHT
+from entities import Player, Enemy2
 from location import Location, WINDOW_SIZE
 
 pygame.init()
@@ -202,7 +201,23 @@ while main:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game_menu = True
+                elif event.key == pygame.K_SPACE:
+                    if player.collision['bottom']:
+                        player.jump_tick = 20
+                        player.jumps = 1
+                        player.run = False
+                        player.idle = False
+                    elif player.jumps != 2 and player.jump_tick < 15:
+                        player.jump_tick = 18
+                        player.fall_count = 1
+                        player.jumps = 2
+                        player.run = False
+                        player.idle = False
+                elif event.key == pygame.K_LCTRL:
+                    player.dash()
+
         while game_menu:
+            print(1)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     game_menu = False
@@ -216,20 +231,6 @@ while main:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         continue_game()
-                    elif event.key == pygame.K_SPACE:
-                        if player.collision['bottom']:
-                            player.jump_tick = 20
-                            player.jumps = 1
-                            player.run = False
-                            player.idle = False
-                        elif player.jumps != 2 and player.jump_tick < 15:
-                            player.jump_tick = 18
-                            player.fall_count = 1
-                            player.jumps = 2
-                            player.run = False
-                            player.idle = False
-                    elif event.key == pygame.K_LCTRL:
-                        player.dash()
                 if event.type == pygame.MOUSEMOTION:
                     for button in game_menu_buttons:
                         x_cursor, y_cursor = event.pos
@@ -253,42 +254,42 @@ while main:
             pygame.display.flip()
             clock.tick(60)
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_d] and player.dash_count == 0:
-        player.move[0] = 7
-        player.run = True
-        player.idle = False
-        player.right = True
-        player.left = False
-    if keys[pygame.K_a] and player.dash_count == 0:
-        player.move[0] = -7
-        player.idle = False
-        player.run = True
-        player.left = True
-        player.right = False
-    if not keys[pygame.K_a] and not keys[pygame.K_d]:
-        player.move[0] = 0
-        if not player.is_jump:
-            player.idle = True
-        if player.is_jump:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_d] and player.dash_count == 0:
+            player.move[0] = 7
+            player.run = True
             player.idle = False
-        player.run = False
-    if keys[pygame.K_a] and keys[pygame.K_d]:
-        player.move[0] = 0
-        player.idle = True
-        player.run = False
-    if player.is_jump:
-        player.jump()
-    if player.dash_count != 0:
-        if player.side == LEFT:
-            player.move[0] = -35
-        else:
-            player.move[0] = 35
-        player.dash_count -= 1
-    if not player.collision['bottom'] and player.jump_tick == -1 and player.dash_count == 0:
-        player.move[1] = player.fall_count ** 2 / 10
-        if player.fall_count < 15:
-            player.fall_count += 1
+            player.right = True
+            player.left = False
+        if keys[pygame.K_a] and player.dash_count == 0:
+            player.move[0] = -7
+            player.idle = False
+            player.run = True
+            player.left = True
+            player.right = False
+        if not keys[pygame.K_a] and not keys[pygame.K_d]:
+            player.move[0] = 0
+            if not player.jumps:
+                player.idle = True
+            if player.jumps:
+                player.idle = False
+            player.run = False
+        if keys[pygame.K_a] and keys[pygame.K_d]:
+            player.move[0] = 0
+            player.idle = True
+            player.run = False
+        if player.jumps:
+            player.jump()
+        if player.dash_count != 0:
+            if player.left:
+                player.move[0] = -35
+            else:
+                player.move[0] = 35
+            player.dash_count -= 1
+        if not player.collision['bottom'] and player.jump_tick == -1 and player.dash_count == 0:
+            player.move[1] = player.fall_count ** 2 / 10
+            if player.fall_count < 15:
+                player.fall_count += 1
 
         screen.fill((0, 0, 0))
         draw(screen, background)
@@ -312,13 +313,13 @@ while main:
                 enemies.remove(enemy)
                 bullets.remove(bullet)
 
+        for wall in location.walls:
+            wall.draw(screen, location.scroll)
+
         for enemy in enemies:
             enemy.find_player(player)
             enemy.update()
             enemy.draw(screen, location.scroll)
-
-        for wall in location.walls:
-            wall.draw(screen, location.scroll)
 
         follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
         screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))

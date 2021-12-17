@@ -1,7 +1,7 @@
 import pygame
 
 
-CELL_SIZE = (64, 64)
+CELL_SIZE = (128, 128)
 WINDOW_SIZE = WINDOW_WIDTH, WINDOW_HEIGHT = (1024, 576)
 
 
@@ -21,8 +21,8 @@ class Location:
         for y, row in enumerate(self.map):
             for x, cell in enumerate(row):
                 if cell == "@":
-                    self.walls.append(Wall(x * 64, y * 64))
-        self.size = (x * 64, y * 64)
+                    self.walls.append(Wall(x * CELL_SIZE[0], y * CELL_SIZE[1]))
+        self.size = (x * CELL_SIZE[0], y * CELL_SIZE[1])
 
     def update_scroll(self, player):
         if player.x - self.scroll[0] != self.step[0]:

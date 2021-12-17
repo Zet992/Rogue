@@ -43,9 +43,7 @@ class Entity:
         self.jump_tick = -1
         self.jumps = 0
         self.dash_count = 0
-        self.side = RIGHT
         self.jump_count = 10
-        self.is_jump = False
         self.right = True
         self.left = False
         self.idle = True
@@ -54,8 +52,6 @@ class Entity:
     def update(self):
         if self.animation_tick >= 59:
             self.animation_tick = 0
-        if not self.collision['bottom'] and not self.is_jump:
-            self.move[1] = 10
         if self.collision['right'] and self.move[0] > 0:
             self.move[0] = 0
             self.dash_count = 0
@@ -126,8 +122,6 @@ class Player(Entity):
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
     def draw(self, surface, scroll):
-        # pygame.draw.rect(surface, (0, 255, 0), (self.x - scroll[0], self.y - scroll[1],
-        #                              self.width, self.height))
         if self.idle and self.right:
             surface.blit(idle_player[self.animation_tick // 15], (self.x - scroll[0], self.y - scroll[1]))
         elif self.run and self.right:
@@ -140,11 +134,11 @@ class Player(Entity):
             image = run_player[self.animation_tick // 10]
             image = pygame.transform.flip(image, True, False)
             surface.blit(image, (self.x - scroll[0], self.y - scroll[1] + 4))
-        elif self.is_jump and self.left:
+        elif self.jumps and self.left:
             image = jump_player[self.animation_tick // 15]
             image = pygame.transform.flip(image, True, False)
             surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-        elif self.is_jump and self.right:
+        elif self.jumps and self.right:
             surface.blit(jump_player[self.animation_tick // 15], (self.x - scroll[0], self.y - scroll[1]))
 
 
