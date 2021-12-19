@@ -31,7 +31,7 @@ running = False
 esc_menu = False
 
 clock = pygame.time.Clock()
-player = Player(200, 200, 54, 72)
+player = Player(200, 200, 40, 86)
 location = Location("arena.txt")
 bullets = []
 enemies = []
@@ -201,6 +201,13 @@ while main:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game_menu = True
+            if event.type == pygame.MOUSEMOTION:
+                if event.pos[0] >= player.x - location.scroll[0]:
+                    player.right = True
+                    player.left = False
+                elif event.pos[0] < player.x - location.scroll[0]:
+                    player.left = True
+                    player.right = False
         while game_menu:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -243,14 +250,10 @@ while main:
             player.move[0] = 7
             player.run = True
             player.idle = False
-            player.right = True
-            player.left = False
         if keys[pygame.K_a]:
             player.move[0] = -7
             player.idle = False
             player.run = True
-            player.left = True
-            player.right = False
         if not keys[pygame.K_a] and not keys[pygame.K_d]:
             player.move[0] = 0
             if not player.is_jump:

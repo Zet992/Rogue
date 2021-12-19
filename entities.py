@@ -2,28 +2,71 @@ import math
 
 import pygame
 
-idle_player = [pygame.image.load('data\\images\\player\\idle\\idle_1.png'),
-               pygame.image.load('data\\images\\player\\idle\\idle_2.png'),
-               pygame.image.load('data\\images\\player\\idle\\idle_3.png'),
-               pygame.image.load('data\\images\\player\\idle\\idle_4.png')]
+idle_player_90 = [pygame.image.load('data\\images\\player\\idle\\90\\idle.png'),
+                  pygame.image.load('data\\images\\player\\idle\\90\\idle.png')]
 
-run_player = [pygame.image.load('data\\images\\player\\run\\run_1.png'),
-              pygame.image.load('data\\images\\player\\run\\run_2.png'),
-              pygame.image.load('data\\images\\player\\run\\run_3.png'),
-              pygame.image.load('data\\images\\player\\run\\run_4.png'),
-              pygame.image.load('data\\images\\player\\run\\run_5.png'),
-              pygame.image.load('data\\images\\player\\run\\run_6.png')]
+run_player_90 = [pygame.image.load('data\\images\\player\\run\\90\\run_1.png'),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_2.png'),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_3.png'),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_4.png'),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_5.png'),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_6.png'),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_7.png'),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_8.png'),
+                 pygame.image.load('data\\images\\player\\idle\\90\\idle.png')]
 
-jump_player = [pygame.image.load('data\\images\\player\\jump\\jump_1.png'),
-               pygame.image.load('data\\images\\player\\jump\\jump_2.png'),
-               pygame.image.load('data\\images\\player\\jump\\jump_3.png'),
-               pygame.image.load('data\\images\\player\\jump\\jump_4.png')]
+run_player_120 = [pygame.image.load('data\\images\\player\\run\\120\\run_1.png'),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_2.png'),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_3.png'),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_4.png'),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_5.png'),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_6.png'),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_7.png'),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_8.png'),
+                  pygame.image.load('data\\images\\player\\idle\\120\\idle.png')]
 
-for i in range(len(idle_player)):
-    idle_player[i] = pygame.transform.scale2x(idle_player[i])
+run_player_150 = [pygame.image.load('data\\images\\player\\run\\150\\run_1.png'),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_2.png'),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_3.png'),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_4.png'),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_5.png'),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_6.png'),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_7.png'),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_8.png'),
+                  pygame.image.load('data\\images\\player\\idle\\150\\idle.png')]
 
-for i in range(len(run_player)):
-    run_player[i] = pygame.transform.scale2x(run_player[i])
+jump_player = [pygame.image.load('data\\images\\player\\jump\\jump.png'),
+               pygame.image.load('data\\images\\player\\jump\\jump.png')]
+
+idle_player_120 = [pygame.image.load('data\\images\\player\\idle\\120\\idle.png'),
+                   pygame.image.load('data\\images\\player\\idle\\120\\idle.png')]
+
+idle_player_150 = [pygame.image.load('data\\images\\player\\idle\\150\\idle.png'),
+                   pygame.image.load('data\\images\\player\\idle\\150\\idle.png')]
+
+idle_player_180 = [pygame.image.load('data\\images\\player\\idle\\180\\idle.png'),
+                   pygame.image.load('data\\images\\player\\idle\\180\\idle.png')]
+
+for i in range(len(idle_player_90)):
+    idle_player_90[i] = pygame.transform.scale2x(idle_player_90[i])
+
+for i in range(len(idle_player_120)):
+    idle_player_120[i] = pygame.transform.scale2x(idle_player_120[i])
+
+for i in range(len(idle_player_150)):
+    idle_player_150[i] = pygame.transform.scale2x(idle_player_150[i])
+
+for i in range(len(idle_player_180)):
+    idle_player_180[i] = pygame.transform.scale2x(idle_player_180[i])
+
+for i in range(len(run_player_90)):
+    run_player_90[i] = pygame.transform.scale2x(run_player_90[i])
+
+for i in range(len(run_player_120)):
+    run_player_120[i] = pygame.transform.scale2x(run_player_120[i])
+
+for i in range(len(run_player_150)):
+    run_player_150[i] = pygame.transform.scale2x(run_player_150[i])
 
 for i in range(len(jump_player)):
     jump_player[i] = pygame.transform.scale2x(jump_player[i])
@@ -45,9 +88,10 @@ class Entity:
         self.left = False
         self.idle = True
         self.run = False
+        self.ang = 90
 
     def update(self):
-        if self.animation_tick >= 59:
+        if self.animation_tick > 61:
             self.animation_tick = 0
         if not self.collision['bottom'] and not self.is_jump:
             self.move[1] = 10
@@ -106,33 +150,49 @@ class Entity:
 
 
 class Player(Entity):
-    def __init__(self, x, y, width, height, move=(0, 0)):
-        super(Player, self).__init__(x, y, width, height, move=(0, 0))
+    def __init__(self, x, y, width=84, height=85, move=(0, 0)):
+        super(Player, self).__init__(x, y, width=width, height=height, move=move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
-
     def draw(self, surface, scroll):
-        # pygame.draw.rect(surface, (0, 255, 0), (self.x - scroll[0], self.y - scroll[1],
-        #                              self.width, self.height))
-        if self.idle and self.right:
-            surface.blit(idle_player[self.animation_tick // 15], (self.x - scroll[0], self.y - scroll[1]))
-        elif self.run and self.right:
-            surface.blit(run_player[self.animation_tick // 10], (self.x - scroll[0], self.y - scroll[1] + 4))
-        elif self.idle and self.left:
-            image = idle_player[self.animation_tick // 15]
-            image = pygame.transform.flip(image, True, False)
-            surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-        elif self.run and self.left:
-            image = run_player[self.animation_tick // 10]
-            image = pygame.transform.flip(image, True, False)
-            surface.blit(image, (self.x - scroll[0], self.y - scroll[1] + 4))
-        elif self.is_jump and self.left:
-            image = jump_player[self.animation_tick // 15]
-            image = pygame.transform.flip(image, True, False)
-            surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-        elif self.is_jump and self.right:
-            surface.blit(jump_player[self.animation_tick // 15], (self.x - scroll[0], self.y - scroll[1]))
-
+        if self.ang == 90:
+            if self.idle and self.right:
+                surface.blit(idle_player_90[self.animation_tick // 60], (self.x - scroll[0], self.y - scroll[1]))
+            elif self.run and self.right:
+                surface.blit(run_player_90[self.animation_tick // 7], (self.x - scroll[0], self.y - scroll[1]))
+            elif self.idle and self.left:
+                image = idle_player_90[self.animation_tick // 60]
+                image = pygame.transform.flip(image, True, False)
+                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+            elif self.run and self.left:
+                image = run_player_90[self.animation_tick // 7]
+                image = pygame.transform.flip(image, True, False)
+                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+            elif self.is_jump and self.left:
+                image = jump_player[self.animation_tick // 60]
+                image = pygame.transform.flip(image, True, False)
+                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+            elif self.is_jump and self.right:
+                surface.blit(jump_player[self.animation_tick // 60], (self.x - scroll[0], self.y - scroll[1]))
+        elif self.ang == 120:
+            if self.idle and self.right:
+                surface.blit(idle_player_120[self.animation_tick // 60], (self.x - scroll[0], self.y - scroll[1]))
+            elif self.run and self.right:
+                surface.blit(run_player_90[self.animation_tick // 7], (self.x - scroll[0], self.y - scroll[1]))
+            elif self.idle and self.left:
+                image = idle_player_120[self.animation_tick // 60]
+                image = pygame.transform.flip(image, True, False)
+                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+            elif self.run and self.left:
+                image = run_player_90[self.animation_tick // 7]
+                image = pygame.transform.flip(image, True, False)
+                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+            elif self.is_jump and self.left:
+                image = jump_player[self.animation_tick // 60]
+                image = pygame.transform.flip(image, True, False)
+                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+            elif self.is_jump and self.right:
+                surface.blit(jump_player[self.animation_tick // 60], (self.x - scroll[0], self.y - scroll[1]))
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()
