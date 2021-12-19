@@ -82,6 +82,10 @@ class Entity:
         self.animation_tick = 0
         self.animation_images = []
         self.collision = {"up": False, "bottom": False, "right": False, "left": False}
+        self.fall_count = 1
+        self.jump_tick = -1
+        self.jumps = 0
+        self.dash_count = 0
         self.jump_count = 10
         self.is_jump = False
         self.right = True
@@ -93,19 +97,24 @@ class Entity:
     def update(self):
         if self.animation_tick > 61:
             self.animation_tick = 0
-        if not self.collision['bottom'] and not self.is_jump:
-            self.move[1] = 10
         if self.collision['right'] and self.move[0] > 0:
             self.move[0] = 0
+            self.dash_count = 0
         elif self.collision['left'] and self.move[0] < 0:
             self.move[0] = 0
-        if self.collision['bottom'] and self.move[1] > 0:
-            self.move[1] = 10
-            self.y -= 10
+            self.dash_count = 0
+
+        if self.dash_count and self.move[1] > 0:
+            self.y -= 3
+        elif self.collision['bottom'] and self.move[1] > 0:
+            self.fall_count = 0
+            self.jumps = 0
+            self.move[1] = 3
+            self.y -= 3
         elif self.collision['up'] and self.move[1] < 0:
-            self.move[1] = 10
-            self.is_jump = False
-            self.jump_count = 10
+            self.move[1] = 0
+            self.jump_tick = -1
+
         self.x += self.move[0]
         self.y += self.move[1]
         self.animation_tick += 1
@@ -139,20 +148,24 @@ class Entity:
                 self.collision['up'] = True
                 self.y = i.y + i.height + 2
 
+    def dash(self):
+        self.dash_count = 5
+        self.move[1] = 3
+        self.jump_tick = -1
+        self.fall_count = 0
+
     def jump(self):
-        if self.is_jump:
-            if self.jump_count >= 0:
-                self.move[1] = -(self.jump_count ** 2) / 1.8
-                self.jump_count -= 1
-            else:
-                self.jump_count = 10
-                self.is_jump = False
+        if self.jumps == 1 or self.jumps == 2:
+            if self.jump_tick >= 0:
+                self.move[1] = -(self.jump_tick ** 2) / 10
+                self.jump_tick -= 1
 
 
 class Player(Entity):
-    def __init__(self, x, y, width=84, height=85, move=(0, 0)):
-        super(Player, self).__init__(x, y, width=width, height=height, move=move)
+    def __init__(self, x, y, width, height, move=(0, 0)):
+        super(Player, self).__init__(x, y, width, height, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
+
 
     def draw(self, surface, scroll):
         if self.ang == 90:
