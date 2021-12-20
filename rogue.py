@@ -201,13 +201,6 @@ while main:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game_menu = True
-            if event.type == pygame.MOUSEMOTION:
-                if event.pos[0] >= player.x - location.scroll[0]:
-                    player.right = True
-                    player.left = False
-                elif event.pos[0] < player.x - location.scroll[0]:
-                    player.left = True
-                    player.right = False
                 elif event.key == pygame.K_SPACE:
                     if player.collision['bottom']:
                         player.jump_tick = 20
@@ -222,6 +215,13 @@ while main:
                         player.idle = False
                 elif event.key == pygame.K_LCTRL:
                     player.dash()
+            if event.type == pygame.MOUSEMOTION:
+                if event.pos[0] >= player.x - location.scroll[0]:
+                    player.right = True
+                    player.left = False
+                elif event.pos[0] < player.x - location.scroll[0]:
+                    player.left = True
+                    player.right = False
 
         while game_menu:
             for event in pygame.event.get():

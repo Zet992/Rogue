@@ -2,8 +2,26 @@ import math
 
 import pygame
 
-idle_player_90 = [pygame.image.load('data\\images\\player\\idle\\90\\idle.png'),
-                  pygame.image.load('data\\images\\player\\idle\\90\\idle.png')]
+
+run_player_45 = [pygame.image.load('data\\images\\player\\run\\45\\run_1.png'),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_2.png'),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_3.png'),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_4.png'),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_5.png'),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_6.png'),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_7.png'),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_8.png'),
+                 pygame.image.load('data\\images\\player\\idle\\45\\idle.png')]
+
+run_player_70 = [pygame.image.load('data\\images\\player\\run\\70\\run_1.png'),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_2.png'),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_3.png'),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_4.png'),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_5.png'),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_6.png'),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_7.png'),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_8.png'),
+                 pygame.image.load('data\\images\\player\\idle\\70\\idle.png')]
 
 run_player_90 = [pygame.image.load('data\\images\\player\\run\\90\\run_1.png'),
                  pygame.image.load('data\\images\\player\\run\\90\\run_2.png'),
@@ -38,6 +56,15 @@ run_player_150 = [pygame.image.load('data\\images\\player\\run\\150\\run_1.png')
 jump_player = [pygame.image.load('data\\images\\player\\jump\\jump.png'),
                pygame.image.load('data\\images\\player\\jump\\jump.png')]
 
+idle_player_45 = [pygame.image.load('data\\images\\player\\idle\\45\\idle.png'),
+                   pygame.image.load('data\\images\\player\\idle\\45\\idle.png')]
+
+idle_player_70 = [pygame.image.load('data\\images\\player\\idle\\70\\idle.png'),
+                   pygame.image.load('data\\images\\player\\idle\\70\\idle.png')]
+
+idle_player_90 = [pygame.image.load('data\\images\\player\\idle\\90\\idle.png'),
+                  pygame.image.load('data\\images\\player\\idle\\90\\idle.png')]
+
 idle_player_120 = [pygame.image.load('data\\images\\player\\idle\\120\\idle.png'),
                    pygame.image.load('data\\images\\player\\idle\\120\\idle.png')]
 
@@ -46,6 +73,12 @@ idle_player_150 = [pygame.image.load('data\\images\\player\\idle\\150\\idle.png'
 
 idle_player_180 = [pygame.image.load('data\\images\\player\\idle\\180\\idle.png'),
                    pygame.image.load('data\\images\\player\\idle\\180\\idle.png')]
+
+for i in range(len(idle_player_45)):
+    idle_player_45[i] = pygame.transform.scale2x(idle_player_45[i])
+
+for i in range(len(idle_player_70)):
+    idle_player_70[i] = pygame.transform.scale2x(idle_player_70[i])
 
 for i in range(len(idle_player_90)):
     idle_player_90[i] = pygame.transform.scale2x(idle_player_90[i])
@@ -58,6 +91,12 @@ for i in range(len(idle_player_150)):
 
 for i in range(len(idle_player_180)):
     idle_player_180[i] = pygame.transform.scale2x(idle_player_180[i])
+
+for i in range(len(run_player_45)):
+    run_player_45[i] = pygame.transform.scale2x(run_player_45[i])
+
+for i in range(len(run_player_70)):
+    run_player_70[i] = pygame.transform.scale2x(run_player_70[i])
 
 for i in range(len(run_player_90)):
     run_player_90[i] = pygame.transform.scale2x(run_player_90[i])
@@ -87,7 +126,6 @@ class Entity:
         self.jumps = 0
         self.dash_count = 0
         self.jump_count = 10
-        self.is_jump = False
         self.right = True
         self.left = False
         self.idle = True
@@ -97,6 +135,7 @@ class Entity:
     def update(self):
         if self.animation_tick > 61:
             self.animation_tick = 0
+
         if self.collision['right'] and self.move[0] > 0:
             self.move[0] = 0
             self.dash_count = 0
@@ -168,44 +207,60 @@ class Player(Entity):
 
 
     def draw(self, surface, scroll):
-        if self.ang == 90:
-            if self.idle and self.right:
-                surface.blit(idle_player_90[self.animation_tick // 60], (self.x - scroll[0], self.y - scroll[1]))
-            elif self.run and self.right:
-                surface.blit(run_player_90[self.animation_tick // 7], (self.x - scroll[0], self.y - scroll[1]))
-            elif self.idle and self.left:
+        image = image = idle_player_90[self.animation_tick // 60]  # default_image
+
+        mx, my = pygame.mouse.get_pos()
+        start_pos = (self.x + self.width // 2, self.y + self.height // 2)
+        ang = math.atan2(mx + scroll[0] - start_pos[0], my + scroll[1] - start_pos[1])
+        self.ang = abs(math.degrees(ang))
+
+        if self.ang < 57:
+            if self.idle:
+                image = idle_player_45[self.animation_tick // 60]
+            elif self.run:
+                image = run_player_45[self.animation_tick // 7]
+            elif self.jumps:
+                image = jump_player[self.animation_tick // 60]
+        elif 57 <= self.ang < 80:
+            if self.idle:
+                image = idle_player_70[self.animation_tick // 60]
+            elif self.run:
+                image = run_player_70[self.animation_tick // 7]
+            elif self.jumps:
+                image = jump_player[self.animation_tick // 60]
+        elif 80 <= self.ang < 105:
+            if self.idle:
                 image = idle_player_90[self.animation_tick // 60]
-                image = pygame.transform.flip(image, True, False)
-                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-            elif self.run and self.left:
+            elif self.run:
                 image = run_player_90[self.animation_tick // 7]
-                image = pygame.transform.flip(image, True, False)
-                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-            elif self.is_jump and self.left:
+            elif self.jumps:
                 image = jump_player[self.animation_tick // 60]
-                image = pygame.transform.flip(image, True, False)
-                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-            elif self.is_jump and self.right:
-                surface.blit(jump_player[self.animation_tick // 60], (self.x - scroll[0], self.y - scroll[1]))
-        elif self.ang == 120:
-            if self.idle and self.right:
-                surface.blit(idle_player_120[self.animation_tick // 60], (self.x - scroll[0], self.y - scroll[1]))
-            elif self.run and self.right:
-                surface.blit(run_player_90[self.animation_tick // 7], (self.x - scroll[0], self.y - scroll[1]))
-            elif self.idle and self.left:
+        elif 105 <= self.ang < 135:
+            if self.idle:
                 image = idle_player_120[self.animation_tick // 60]
-                image = pygame.transform.flip(image, True, False)
-                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-            elif self.run and self.left:
-                image = run_player_90[self.animation_tick // 7]
-                image = pygame.transform.flip(image, True, False)
-                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-            elif self.is_jump and self.left:
+            elif self.run:
+                image = run_player_120[self.animation_tick // 7]
+            elif self.jumps:
                 image = jump_player[self.animation_tick // 60]
-                image = pygame.transform.flip(image, True, False)
-                surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
-            elif self.is_jump and self.right:
-                surface.blit(jump_player[self.animation_tick // 60], (self.x - scroll[0], self.y - scroll[1]))
+        elif 135 <= self.ang < 165:
+            if self.idle:
+                image = idle_player_150[self.animation_tick // 60]
+            elif self.run:
+                image = run_player_150[self.animation_tick // 7]
+            elif self.jumps:
+                image = jump_player[self.animation_tick // 60]
+        elif 165 <= self.ang:
+            if self.idle:
+                image = idle_player_180[self.animation_tick // 60]
+            elif self.run:
+                image = run_player_150[self.animation_tick // 7]
+            elif self.jumps:
+                image = jump_player[self.animation_tick // 60]
+
+        if self.left:
+            image = pygame.transform.flip(image, True, False)
+
+        surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()
