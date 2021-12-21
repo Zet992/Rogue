@@ -1,6 +1,7 @@
 import math
 
 import pygame
+from location import WINDOW_HEIGHT
 
 
 run_player_45 = [pygame.image.load('data\\images\\player\\run\\45\\run_1.png'),
@@ -215,6 +216,7 @@ class Player(Entity):
         self.ang = abs(math.degrees(ang))
 
         if self.ang < 57:
+            offset = 0.0052
             if self.idle:
                 image = idle_player_45[self.animation_tick // 60]
             elif self.run:
@@ -222,6 +224,7 @@ class Player(Entity):
             elif self.jumps:
                 image = jump_player[self.animation_tick // 60]
         elif 57 <= self.ang < 80:
+            offset = 0.0087
             if self.idle:
                 image = idle_player_70[self.animation_tick // 60]
             elif self.run:
@@ -229,6 +232,7 @@ class Player(Entity):
             elif self.jumps:
                 image = jump_player[self.animation_tick // 60]
         elif 80 <= self.ang < 105:
+            offset = 0.0087
             if self.idle:
                 image = idle_player_90[self.animation_tick // 60]
             elif self.run:
@@ -236,13 +240,16 @@ class Player(Entity):
             elif self.jumps:
                 image = jump_player[self.animation_tick // 60]
         elif 105 <= self.ang < 135:
+            offset = 0.0087
             if self.idle:
                 image = idle_player_120[self.animation_tick // 60]
             elif self.run:
+                offset = 0.0174
                 image = run_player_120[self.animation_tick // 7]
             elif self.jumps:
                 image = jump_player[self.animation_tick // 60]
         elif 135 <= self.ang < 165:
+            offset = 0.026
             if self.idle:
                 image = idle_player_150[self.animation_tick // 60]
             elif self.run:
@@ -250,6 +257,7 @@ class Player(Entity):
             elif self.jumps:
                 image = jump_player[self.animation_tick // 60]
         elif 165 <= self.ang:
+            offset = 0.0434
             if self.idle:
                 image = idle_player_180[self.animation_tick // 60]
             elif self.run:
@@ -260,7 +268,7 @@ class Player(Entity):
         if self.left:
             image = pygame.transform.flip(image, True, False)
 
-        surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+        surface.blit(image, (self.x - scroll[0], self.y - scroll[1] - int(offset * WINDOW_HEIGHT)))
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()

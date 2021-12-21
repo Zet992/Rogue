@@ -297,7 +297,7 @@ while main:
         draw(screen, background)
         player.check_collision_with_objects(location.walls)
         player.update()
-        player.draw(screen, location.scroll)
+
 
         for bullet in bullets[:]:
             bullet.update()
@@ -326,6 +326,7 @@ while main:
         follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
         screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))
 
+        player.draw(screen, location.scroll)
         location.update_scroll(player)
         pygame.display.flip()
         clock.tick(60)
