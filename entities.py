@@ -220,6 +220,7 @@ class Player(Entity):
             if self.idle:
                 image = idle_player_45[self.animation_tick // 60]
             elif self.run:
+                offset = 0.01
                 image = run_player_45[self.animation_tick // 7]
             elif self.jumps:
                 image = jump_player[self.animation_tick // 60]
