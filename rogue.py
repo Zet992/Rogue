@@ -1,7 +1,7 @@
 import pygame
 
 from decorations import TreeSpruce
-from entities import Player, Enemy2
+from entities import Player, Enemy2, EnemySoldier
 from interface import Button
 from location import Location, WINDOW_SIZE
 
@@ -35,7 +35,7 @@ player = Player(200, 200, 40, 86)
 location = Location("arena.txt")
 bullets = []
 enemies = []
-enemies.append(Enemy2(800, 200, 50, 50))
+enemies.append(EnemySoldier(800, 200, 100, 100))
 
 # Button functions
 main_menu_buttons = []
