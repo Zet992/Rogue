@@ -49,7 +49,7 @@ def start_game():
 
 
 def open_help_menu():
-    print('Help menu have not created yet')
+    print('Help menu has not created yet')
 
 
 def open_choose_save_menu():
@@ -215,13 +215,15 @@ while main:
                         player.idle = False
                 elif event.key == pygame.K_LCTRL:
                     player.dash()
-            if event.type == pygame.MOUSEMOTION:
-                if event.pos[0] >= player.x - location.scroll[0]:
-                    player.right = True
-                    player.left = False
-                elif event.pos[0] < player.x - location.scroll[0]:
-                    player.left = True
-                    player.right = False
+
+
+        x, y = pygame.mouse.get_pos()
+        if x >= player.x + player.width // 2 - location.scroll[0]:
+            player.right = True
+            player.left = False
+        elif x < player.x + player.width // 2 - location.scroll[0]:
+            player.left = True
+            player.right = False
 
         while game_menu:
             for event in pygame.event.get():

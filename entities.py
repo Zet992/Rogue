@@ -1,8 +1,8 @@
 import math
 
 import pygame
-from location import WINDOW_HEIGHT
 
+from location import WINDOW_HEIGHT
 
 run_player_45 = [pygame.image.load('data\\images\\player\\run\\45\\run_1.png'),
                  pygame.image.load('data\\images\\player\\run\\45\\run_2.png'),
@@ -54,14 +54,26 @@ run_player_150 = [pygame.image.load('data\\images\\player\\run\\150\\run_1.png')
                   pygame.image.load('data\\images\\player\\run\\150\\run_8.png'),
                   pygame.image.load('data\\images\\player\\idle\\150\\idle.png')]
 
-jump_player = [pygame.image.load('data\\images\\player\\jump\\jump.png'),
-               pygame.image.load('data\\images\\player\\jump\\jump.png')]
+jump_player_45 = [pygame.image.load('data\\images\\player\\jump\\45\\jump.png'),
+                  pygame.image.load('data\\images\\player\\jump\\45\\jump.png')]
+
+jump_player_70 = [pygame.image.load('data\\images\\player\\jump\\70\\jump.png'),
+                  pygame.image.load('data\\images\\player\\jump\\70\\jump.png')]
+
+jump_player_90 = [pygame.image.load('data\\images\\player\\jump\\90\\jump.png'),
+                  pygame.image.load('data\\images\\player\\jump\\90\\jump.png')]
+
+jump_player_120 = [pygame.image.load('data\\images\\player\\jump\\120\\jump.png'),
+                   pygame.image.load('data\\images\\player\\jump\\120\\jump.png')]
+
+jump_player_150 = [pygame.image.load('data\\images\\player\\jump\\150\\jump.png'),
+                   pygame.image.load('data\\images\\player\\jump\\150\\jump.png')]
 
 idle_player_45 = [pygame.image.load('data\\images\\player\\idle\\45\\idle.png'),
-                   pygame.image.load('data\\images\\player\\idle\\45\\idle.png')]
+                  pygame.image.load('data\\images\\player\\idle\\45\\idle.png')]
 
 idle_player_70 = [pygame.image.load('data\\images\\player\\idle\\70\\idle.png'),
-                   pygame.image.load('data\\images\\player\\idle\\70\\idle.png')]
+                  pygame.image.load('data\\images\\player\\idle\\70\\idle.png')]
 
 idle_player_90 = [pygame.image.load('data\\images\\player\\idle\\90\\idle.png'),
                   pygame.image.load('data\\images\\player\\idle\\90\\idle.png')]
@@ -76,10 +88,10 @@ idle_player_180 = [pygame.image.load('data\\images\\player\\idle\\180\\idle.png'
                    pygame.image.load('data\\images\\player\\idle\\180\\idle.png')]
 
 idle_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png'),
-                   pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png')]
+                      pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png')]
 
 run_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\run\\run_1.png'),
-                   pygame.image.load('data\\images\\enemies\\soldier\\run\\run_2.png'),
+                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_2.png'),
                      pygame.image.load('data\\images\\enemies\\soldier\\run\\run_3.png'),
                      pygame.image.load('data\\images\\enemies\\soldier\\run\\run_4.png'),
                      pygame.image.load('data\\images\\enemies\\soldier\\run\\run_5.png'),
@@ -121,8 +133,20 @@ for i in range(len(run_player_120)):
 for i in range(len(run_player_150)):
     run_player_150[i] = pygame.transform.scale2x(run_player_150[i])
 
-for i in range(len(jump_player)):
-    jump_player[i] = pygame.transform.scale2x(jump_player[i])
+for i in range(len(jump_player_45)):
+    jump_player_45[i] = pygame.transform.scale2x(jump_player_45[i])
+
+for i in range(len(jump_player_70)):
+    jump_player_70[i] = pygame.transform.scale2x(jump_player_70[i])
+
+for i in range(len(jump_player_90)):
+    jump_player_90[i] = pygame.transform.scale2x(jump_player_90[i])
+
+for i in range(len(jump_player_120)):
+    jump_player_120[i] = pygame.transform.scale2x(jump_player_120[i])
+
+for i in range(len(jump_player_150)):
+    jump_player_150[i] = pygame.transform.scale2x(jump_player_150[i])
 
 for i in range(len(idle_enemy_soldier)):
     idle_enemy_soldier[i] = pygame.transform.scale2x(idle_enemy_soldier[i])
@@ -225,7 +249,6 @@ class Player(Entity):
         super(Player, self).__init__(x, y, width, height, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
-
     def draw(self, surface, scroll):
         image = image = idle_player_90[self.animation_tick // 60]  # default_image
 
@@ -242,7 +265,7 @@ class Player(Entity):
                 offset = 0.015
                 image = run_player_45[self.animation_tick // 8]
             elif self.jumps:
-                image = jump_player[self.animation_tick // 60]
+                image = jump_player_45[self.animation_tick // 60]
         elif 57 <= self.ang < 80:
             offset = 0.0087
             if self.idle:
@@ -250,7 +273,7 @@ class Player(Entity):
             elif self.run:
                 image = run_player_70[self.animation_tick // 8]
             elif self.jumps:
-                image = jump_player[self.animation_tick // 60]
+                image = jump_player_70[self.animation_tick // 60]
         elif 80 <= self.ang < 105:
             offset = 0.0087
             if self.idle:
@@ -258,7 +281,7 @@ class Player(Entity):
             elif self.run:
                 image = run_player_90[self.animation_tick // 8]
             elif self.jumps:
-                image = jump_player[self.animation_tick // 60]
+                image = jump_player_90[self.animation_tick // 60]
         elif 105 <= self.ang < 135:
             offset = 0.0087
             if self.idle:
@@ -267,7 +290,7 @@ class Player(Entity):
                 offset = 0.0174
                 image = run_player_120[self.animation_tick // 8]
             elif self.jumps:
-                image = jump_player[self.animation_tick // 60]
+                image = jump_player_120[self.animation_tick // 60]
         elif 135 <= self.ang < 165:
             offset = 0.032
             if self.idle:
@@ -275,7 +298,7 @@ class Player(Entity):
             elif self.run:
                 image = run_player_150[self.animation_tick // 8]
             elif self.jumps:
-                image = jump_player[self.animation_tick // 60]
+                image = jump_player_150[self.animation_tick // 60]
         elif 165 <= self.ang:
             offset = 0.0434
             if self.idle:
@@ -284,7 +307,7 @@ class Player(Entity):
                 offset = 0.026
                 image = run_player_150[self.animation_tick // 8]
             elif self.jumps:
-                image = jump_player[self.animation_tick // 60]
+                image = jump_player_150[self.animation_tick // 60]
 
         if self.left:
             image = pygame.transform.flip(image, True, False)
@@ -367,7 +390,7 @@ class EnemySoldier(Enemy):
         self.y += self.move[1]
 
     def draw(self, surface, scroll):
-        image = idle_enemy_soldier[0]# default_image
+        image = idle_enemy_soldier[0]  # default_image
 
         if self.idle:
             image = idle_enemy_soldier[self.animation_tick // 60]
