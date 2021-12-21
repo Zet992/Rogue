@@ -1,7 +1,6 @@
 import pygame
 
-from decorations import TreeSpruce
-from entities import Player, Enemy2, EnemySoldier
+from entities import Player, EnemySoldier
 from interface import Button
 from location import Location, WINDOW_SIZE
 
@@ -133,8 +132,8 @@ while main:
             pygame.quit()
     if main_menu:
         pass
-        #pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
-        #pygame.mixer.music.play()
+        # pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
+        # pygame.mixer.music.play()
     while main_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -187,8 +186,8 @@ while main:
 
     if running:
         pass
-        #pygame.mixer.music.load("data/sounds/DOOM.mp3")
-        #pygame.mixer.music.play()
+        # pygame.mixer.music.load("data/sounds/DOOM.mp3")
+        # pygame.mixer.music.play()
 
     while running:
         for event in pygame.event.get():
@@ -215,7 +214,6 @@ while main:
                         player.idle = False
                 elif event.key == pygame.K_LCTRL:
                     player.dash()
-
 
         x, y = pygame.mouse.get_pos()
         if x >= player.x + player.width // 2 - location.scroll[0]:
@@ -247,7 +245,6 @@ while main:
             draw(screen, background)
             location.update_scroll(player)
             player.check_collision_with_objects(location.walls)
-            player.draw(screen, location.scroll)
 
             for enemy in enemies:
                 enemy.draw(screen, location.scroll)
@@ -255,10 +252,10 @@ while main:
                 wall.draw(screen, location.scroll)
             for bullet in bullets[:]:
                 bullet.draw(screen, location.scroll)
+            player.draw(screen, location.scroll)
             screen.blit(transparent_game_menu_background, (0, 0))
             for button in game_menu_buttons:
                 button.draw()
-
             pygame.display.flip()
             clock.tick(60)
 
@@ -300,7 +297,6 @@ while main:
         player.check_collision_with_objects(location.walls)
         player.update()
 
-
         for bullet in bullets[:]:
             bullet.update()
             bullet.draw(screen, location.scroll)
@@ -313,8 +309,11 @@ while main:
             elif bullet.y + bullet.height < 0:
                 bullets.remove(bullet)
             enemy = bullet.check_collisions_with_entity(enemies)
+            wall = bullet.check_collision_with_walls(location.walls)
             if enemy:
                 enemies.remove(enemy)
+                bullets.remove(bullet)
+            if wall:
                 bullets.remove(bullet)
 
         for wall in location.walls:

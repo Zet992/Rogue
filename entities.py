@@ -380,6 +380,13 @@ class Bullet(Entity):
                     return i
         return None
 
+    def check_collision_with_walls(self, walls):
+        for i in walls:
+            if (self.x + self.width > i.x > self.x) or (i.x < self.x < i.x + i.width):
+                if self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height:
+                    return i
+        return None
+
 
 class EnemySoldier(Enemy):
     def update(self):
@@ -411,3 +418,4 @@ class EnemySoldier(Enemy):
             self.move[1] = 5
         else:
             self.move[1] = -5
+
