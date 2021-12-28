@@ -1,7 +1,8 @@
 import pygame
+import random
 
 from entities import Player, EnemySoldier
-from interface import Button
+from interface import Button, HealthBar
 from location import Location, WINDOW_SIZE
 
 pygame.init()
@@ -10,6 +11,12 @@ pygame.display.set_caption("Rogue")
 
 transparent_game_menu_background = pygame.Surface((WINDOW_SIZE[0], WINDOW_SIZE[1]), pygame.SRCALPHA)
 transparent_game_menu_background.fill((0, 0, 0, 128))
+
+font = pygame.font.Font(None, 70)
+game_over_title = font.render('ВЫ УМЕРЛИ', 1, 'red')
+game_over_title_rect = game_over_title.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
+
+health_bar = HealthBar()
 
 # Главный цикл, включающий все остальные циклы
 main = True
@@ -26,15 +33,18 @@ choose_save_menu = False
 # Игровой процесс
 running = False
 
-# Меню при нажатии на esc
-esc_menu = False
+# Меню после смерти игрока
+game_over_menu = False
+
 
 clock = pygame.time.Clock()
 player = Player(200, 200, 40, 86)
 location = Location("arena.txt")
 bullets = []
+enemy_bullets = []
 enemies = []
 enemies.append(EnemySoldier(800, 200, 100, 100))
+
 
 # Button functions
 main_menu_buttons = []
@@ -188,6 +198,23 @@ while main:
         pass
         # pygame.mixer.music.load("data/sounds/DOOM.mp3")
         # pygame.mixer.music.play()
+    while game_over_menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_menu = False
+                main = False
+                running = False
+                game_over_menu = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    game_menu = False
+                    running = False
+                    game_over_menu = False
+                    main_menu = True
+        screen.fill('black')
+        screen.blit(game_over_title, game_over_title_rect)
+        pygame.display.flip()
+        clock.tick(60)
 
     while running:
         for event in pygame.event.get():
@@ -297,6 +324,30 @@ while main:
         player.check_collision_with_objects(location.walls)
         player.update()
 
+        if player.hp <= 0:
+            main_menu = False
+            running = False
+            player.hp = 100
+            game_over_menu = True
+
+        for bullet in enemy_bullets:
+            bullet.update()
+            bullet.draw(screen, location.scroll)
+            if bullet.x > location.size[0]:
+                bullets.remove(bullet)
+            elif bullet.y > location.size[1]:
+                bullets.remove(bullet)
+            elif bullet.x + bullet.width < 0:
+                bullets.remove(bullet)
+            elif bullet.y + bullet.height < 0:
+                bullets.remove(bullet)
+            if bullet.check_collisions_with_player(player):
+                enemy_bullets.remove(bullet)
+                print(player.hp)
+            wall = bullet.check_collision_with_walls(location.walls)
+            if wall:
+                enemy_bullets.remove(bullet)
+
         for bullet in bullets[:]:
             bullet.update()
             bullet.draw(screen, location.scroll)
@@ -310,6 +361,7 @@ while main:
                 bullets.remove(bullet)
             enemy = bullet.check_collisions_with_entity(enemies)
             wall = bullet.check_collision_with_walls(location.walls)
+
             if enemy:
                 enemies.remove(enemy)
                 bullets.remove(bullet)
@@ -320,7 +372,10 @@ while main:
             wall.draw(screen, location.scroll)
 
         for enemy in enemies:
-            enemy.find_player(player)
+            enemy.ai(player)
+            if type(enemy) == EnemySoldier:
+                if enemy.engaging_tick % 25 == 0:
+                    enemy_bullets.extend(enemy.shot())
             enemy.update()
             enemy.draw(screen, location.scroll)
 
@@ -328,6 +383,7 @@ while main:
         screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))
 
         player.draw(screen, location.scroll)
+        health_bar.draw(screen, player.hp)
         location.update_scroll(player)
         pygame.display.flip()
         clock.tick(60)

@@ -1,5 +1,7 @@
 import pygame
 
+from location import WINDOW_SIZE
+
 
 class Button:
     def __init__(self, surface, x, y, width, height, text, func, font_size=36, font_color=(255, 255, 255),
@@ -44,3 +46,17 @@ class Button:
     def clicked(self):
         self.button_pressed_sound.play()
         self.func()
+
+
+class HealthBar:
+    def __init__(self):
+        self.width = int(WINDOW_SIZE[0] * 0.0977)
+        self.height = int(WINDOW_SIZE[1] * 0.026)
+
+    def draw(self, surface, hp):
+        pygame.draw.rect(surface, 'green', (
+            10, 10, 10 + int(self.width * hp // 100),
+            10 + self.height))
+        pygame.draw.rect(surface, 'black', (
+            10, 10, 10 + self.width,
+            10 + self.height), 3)
