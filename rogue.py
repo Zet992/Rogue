@@ -31,8 +31,8 @@ running = False
 esc_menu = False
 
 clock = pygame.time.Clock()
-player = Player(200, 200, 40, 86)
-location = Location("arena.txt")
+player = Player(2200, 150, 40, 86)
+location = Location("9.txt")
 bullets = []
 enemies = []
 enemies.append(EnemySoldier(800, 200, 100, 100))
@@ -317,6 +317,35 @@ while main:
 
         for wall in location.walls:
             wall.draw(screen, location.scroll)
+
+        player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+        for tp_zone in location.tp_zones:
+            if player_rect.colliderect(tp_zone[0]):
+                old_name = location.name[:-4]  # remove .txt
+                location = Location(f'{tp_zone[1][:-1]}.txt')
+                print(tp_zone[1])
+                for new_tp_zone in location.tp_zones:
+                    if new_tp_zone[1][:-1] == old_name:
+                        position = new_tp_zone[1][-1]
+                        if position == 'l':
+                            player.x = new_tp_zone[0].x - player.width - 10
+                            player.y = new_tp_zone[0].y + 10
+                            break
+                        elif position == 'r':
+                            player.x = new_tp_zone[0].right + 10
+                            player.y = new_tp_zone[0].y + 10
+                            break
+                        elif position == 'd':
+                            player.x = new_tp_zone[0].center[0]
+                            player.y = new_tp_zone[0].bottom + 1
+                            break
+                        elif position == 'u':
+                            player.y = new_tp_zone[0].y - player.height - 10
+                            if player.left:
+                                player.x = new_tp_zone[0].x - player.width - 10
+                                break
+                            else:
+                                player.x = new_tp_zone[0].right + 10
 
         for enemy in enemies:
             enemy.find_player(player)

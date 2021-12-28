@@ -145,7 +145,6 @@ class Entity:
         self.jump_tick = -1
         self.jumps = 0
         self.dash_count = 0
-        self.jump_count = 10
         self.right = True
         self.left = False
         self.idle = True
