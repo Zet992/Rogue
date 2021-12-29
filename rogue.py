@@ -334,18 +334,17 @@ while main:
             bullet.update()
             bullet.draw(screen, location.scroll)
             if bullet.x > location.size[0]:
-                bullets.remove(bullet)
+                enemy_bullets.remove(bullet)
             elif bullet.y > location.size[1]:
-                bullets.remove(bullet)
+                enemy_bullets.remove(bullet)
             elif bullet.x + bullet.width < 0:
-                bullets.remove(bullet)
+                enemy_bullets.remove(bullet)
             elif bullet.y + bullet.height < 0:
-                bullets.remove(bullet)
-            if bullet.check_collisions_with_player(player):
+                enemy_bullets.remove(bullet)
+            elif bullet.check_collisions_with_player(player):
                 enemy_bullets.remove(bullet)
                 print(player.hp)
-            wall = bullet.check_collision_with_walls(location.walls)
-            if wall:
+            elif bullet.check_collision_with_walls(location.walls):
                 enemy_bullets.remove(bullet)
 
         for bullet in bullets[:]:
@@ -376,6 +375,7 @@ while main:
             if type(enemy) == EnemySoldier:
                 if enemy.engaging_tick % 25 == 0:
                     enemy_bullets.extend(enemy.shot())
+            enemy.check_collision_with_objects(location.walls)
             enemy.update()
             enemy.draw(screen, location.scroll)
 

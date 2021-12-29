@@ -395,7 +395,7 @@ class Bullet(Entity):
 
 class EnemySoldier(Enemy):
     def __init__(self, x, y, width, height, move=(0, 0)):
-        super(EnemySoldier, self).__init__(x, y, width=50, height=50, move=move)
+        super(EnemySoldier, self).__init__(x, y, width, height, move=move)
         self.patrolling = True
         self.patrolling_tick = 0
         self.patrolling_direction = 1
@@ -407,11 +407,11 @@ class EnemySoldier(Enemy):
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
     def update(self):
-        self.animation_tick += 1
-        if self.animation_tick > 60:
-            self.animation_tick = 0
-        self.x += self.move[0]
-        self.y += self.move[1]
+        if not self.collision['bottom'] and self.jump_tick == -1:
+            self.move[1] = self.fall_count ** 2 / 10
+            if self.fall_count < 15:
+                self.fall_count += 1
+        super().update()
         self.vision_rect.center = self.x, self.y
 
     def draw(self, surface, scroll):
