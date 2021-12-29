@@ -2,8 +2,9 @@ import pygame
 import random
 
 from entities import Player, EnemySoldier
-from interface import Button, HealthBar
+from interface import Button, HealthBar, MoneyCounter
 from location import Location, WINDOW_SIZE
+from decorations import HealthBonus, MoneyBonus
 
 pygame.init()
 screen = pygame.display.set_mode(WINDOW_SIZE)
@@ -17,6 +18,7 @@ game_over_title = font.render('ВЫ УМЕРЛИ', 1, 'red')
 game_over_title_rect = game_over_title.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
 
 health_bar = HealthBar()
+money_counter = MoneyCounter()
 
 # Главный цикл, включающий все остальные циклы
 main = True
@@ -44,6 +46,8 @@ bullets = []
 enemy_bullets = []
 enemies = []
 enemies.append(EnemySoldier(800, 200, 100, 100))
+bonuses = []
+
 
 
 # Button functions
@@ -273,6 +277,10 @@ while main:
             location.update_scroll(player)
             player.check_collision_with_objects(location.walls)
 
+            for bonus in bonuses:
+                bonus.draw(screen, location.scroll)
+                if bonus.check_collision_with_player(player):
+                    bonuses.remove(bonus)
             for enemy in enemies:
                 enemy.draw(screen, location.scroll)
             for wall in location.walls:
@@ -343,7 +351,6 @@ while main:
                 bullets.remove(bullet)
             if bullet.check_collisions_with_player(player):
                 enemy_bullets.remove(bullet)
-                print(player.hp)
             wall = bullet.check_collision_with_walls(location.walls)
             if wall:
                 enemy_bullets.remove(bullet)
@@ -363,10 +370,23 @@ while main:
             wall = bullet.check_collision_with_walls(location.walls)
 
             if enemy:
-                enemies.remove(enemy)
+                enemy.hp -= random.randrange(35, 60)
+                if enemy.hp <= 0:
+                    enemies.remove(enemy)
+                    chance = random.randrange(1, 6, 1)
+                    if chance == 1:
+                        bonuses.append(HealthBonus(enemy.x, enemy.y))
+                    elif chance in (2, 3, 4):
+                        bonuses.append(MoneyBonus(enemy.x, enemy.y))
                 bullets.remove(bullet)
             if wall:
                 bullets.remove(bullet)
+
+        for bonus in bonuses:
+            bonus.draw(screen, location.scroll)
+            bonus.update()
+            if bonus.check_collision_with_player(player):
+                bonuses.remove(bonus)
 
         for wall in location.walls:
             wall.draw(screen, location.scroll)
@@ -384,6 +404,7 @@ while main:
 
         player.draw(screen, location.scroll)
         health_bar.draw(screen, player.hp)
+        money_counter.draw(screen, player.money)
         location.update_scroll(player)
         pygame.display.flip()
         clock.tick(60)

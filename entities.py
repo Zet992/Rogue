@@ -176,6 +176,9 @@ class Entity:
         self.idle = True
         self.run = False
         self.ang = 90
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.hp = 100
+        self.money = 0
 
     def update(self):
         if self.animation_tick > 61:
@@ -202,6 +205,7 @@ class Entity:
         self.x += self.move[0]
         self.y += self.move[1]
         self.animation_tick += 1
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw(self, surface, scroll):
         pass
@@ -249,7 +253,7 @@ class Player(Entity):
     def __init__(self, x, y, width, height, move=(0, 0)):
         super(Player, self).__init__(x, y, width, height, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
-        self.hp = 100
+
 
     def draw(self, surface, scroll):
         image = image = idle_player_90[self.animation_tick // 60]  # default_image
@@ -395,7 +399,7 @@ class Bullet(Entity):
 
 class EnemySoldier(Enemy):
     def __init__(self, x, y, width, height, move=(0, 0)):
-        super(EnemySoldier, self).__init__(x, y, width=50, height=50, move=move)
+        super(EnemySoldier, self).__init__(x, y, width=width, height=height, move=move)
         self.patrolling = True
         self.patrolling_tick = 0
         self.patrolling_direction = 1
@@ -466,7 +470,7 @@ class EnemySoldier(Enemy):
         if self.idle:
             self.move[0] = 0
             self.idling_tick += 1
-            if self.idling_tick == 50:
+            if self.idling_tick == 160:
                 self.idle = False
                 self.patrolling = True
                 self.idling_tick = 0
