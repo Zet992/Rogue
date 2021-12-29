@@ -249,7 +249,7 @@ class Player(Entity):
     def __init__(self, x, y, width, height, move=(0, 0)):
         super(Player, self).__init__(x, y, width, height, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
-        self.hp = 100
+        self.hp = 100000
 
     def draw(self, surface, scroll):
         image = image = idle_player_90[self.animation_tick // 60]  # default_image
@@ -515,3 +515,32 @@ class EnemyBullet(Bullet):
                 player.get_damage(random.randrange(15, 25))
                 return True
         return False
+
+
+class Particle:
+    def __init__(self, x, y, width, height, move=(0, 0), ticks=600, physics=True,
+                 color=(255, 255, 255)):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.move = list(move)
+        self.ticks = ticks
+        self.physics = physics
+        self.color = color
+
+    def update(self):
+        self.ticks -= 1
+        if self.physics:
+            if self.move[0] > 0:
+                self.move[0] -= 1
+            elif self.move[0] < 0:
+                self.move[0] += 1
+            self.move[1] += 1
+        self.x += self.move[0]
+        self.y += self.move[1]
+
+    def draw(self, screen, scroll):
+        rect = pygame.Rect(self.x - scroll[0], self.y - scroll[1],
+                           self.width, self.height)
+        pygame.draw.ellipse(screen, self.color, rect)
