@@ -143,16 +143,24 @@ def create_jump_particles(player):
     return particles
 
 
-def create_blood_particles(x, y):
+def create_blood_particles(x, y, collision):
     count = 50
     for _ in range(count):
-        particles.append(Particle(x, y, 7, 7,
-                                  move=[random.randint(-7, 7), random.randint(-3, 3)],
-                                  ticks=10, physics=False, color=(200, 0, 0)))
+        if collision == 'r':
+            move_x = random.randint(2, 5)
+        else:
+            move_x = random.uniform(-5, 2)
+        particles.append(Particle(x, y, 5, 5,
+                                  move=[move_x, random.uniform(-3, 3)],
+                                  ticks=10, physics=False, color=(255, 0, 0)))
     return particles
 
 
 def create_shot_particles(player):
+    pass
+
+
+def create_dash_particles(player):
     pass
 
 
@@ -368,8 +376,15 @@ while main:
                 enemy_bullets.remove(bullet)
             elif bullet.check_collisions_with_player(player):
                 enemy_bullets.remove(bullet)
-                particles.extend(create_blood_particles(bullet.x + bullet.width // 2,
-                                                        bullet.y + bullet.height // 2))
+                if player.move[0] - bullet.move[0] > 0:
+                    collision = 'r'
+                    pos_x = bullet.x
+                else:
+                    collision = 'l'
+                    pos_x = bullet.x + bullet.width
+                print(pos_x)
+                particles.extend(create_blood_particles(pos_x, bullet.y + bullet.height // 2,
+                                                        collision))
             elif bullet.check_collision_with_walls(location.walls):
                 enemy_bullets.remove(bullet)
 
