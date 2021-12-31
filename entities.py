@@ -249,9 +249,10 @@ class Entity:
 
 
 class Player(Entity):
-    def __init__(self, x, y, width, height, move=(0, 0)):
+    def __init__(self, x, y, width, height, move=(0, 0), hp=100):
         super(Player, self).__init__(x, y, width, height, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
+        self.hp = hp
 
 
     def draw(self, surface, scroll):

@@ -1,10 +1,11 @@
-import pygame
 import random
 
+import pygame
+
+from decorations import HealthBonus, MoneyBonus
 from entities import Player, EnemySoldier
 from interface import Button, HealthBar, MoneyCounter
 from location import Location, WINDOW_SIZE
-from decorations import HealthBonus, MoneyBonus
 
 pygame.init()
 screen = pygame.display.set_mode(WINDOW_SIZE)
@@ -38,22 +39,19 @@ running = False
 # Меню после смерти игрока
 game_over_menu = False
 
-
 clock = pygame.time.Clock()
-player = Player(2200, 150, 40, 86)
-location = Location("9.txt")
 bullets = []
 enemy_bullets = []
 enemies = []
 enemies.append(EnemySoldier(800, 200, 100, 100))
 bonuses = []
-
-
+player_location = []
 
 # Button functions
 main_menu_buttons = []
 choose_save_menu_buttons = []
 game_menu_buttons = []
+save = list()
 
 
 def start_game():
@@ -71,10 +69,22 @@ def open_choose_save_menu():
     main_menu = False
 
 
-def read_first_save():
-    global running, choose_save_menu
+def read_save(n):
+    global running, choose_save_menu, player_location, save
     running = True
     choose_save_menu = False
+    with open(file=f'data\\saves\\save_{n}.txt', mode='r', encoding='utf-8') as save_file:
+        data = save_file.read().split('\n')
+        location = data[0].split()[-1]
+        hp = int(data[1].split()[-1])
+        x = float(data[2].split()[-1])
+        y = float(data[3].split()[-1])
+        player = Player(x, y, 40, 86, (0, 0), hp)
+        location = Location(f'{location}.txt')
+        player_location = [player, location]
+        save = [n]
+
+
 
 
 def back_to_menu():
@@ -90,10 +100,14 @@ def continue_game():
 
 
 def quit_game():
-    global game_menu, main_menu, running
+    global game_menu, main_menu, running, save, player, location
     main_menu = True
     game_menu = False
     running = False
+    with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
+        loc = location.name.split('.')[0]
+        save_file.write(f'location: {loc}\nhp: {player.hp}\nx: {player.x}\ny: {player.y}')
+
 
 
 # Buttons
@@ -106,15 +120,15 @@ help_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 20
 main_menu_buttons.append(help_button)
 
 first_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3,
-                           200, 46, 'Игра #1', read_first_save)
+                           200, 46, 'Игра #1', lambda: read_save(1))
 choose_save_menu_buttons.append(first_save_button)
 
 second_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 92,
-                            200, 46, 'Игра #2', read_first_save)
+                            200, 46, 'Игра #2', lambda: read_save(2))
 choose_save_menu_buttons.append(second_save_button)
 
 third_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 184,
-                           200, 46, 'Игра #3', read_first_save)
+                           200, 46, 'Игра #3', lambda: read_save(3))
 choose_save_menu_buttons.append(third_save_button)
 
 back_save_menu_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 272, 200, 46, 'Назад',
@@ -184,6 +198,7 @@ while main:
                 for button in choose_save_menu_buttons:
                     if button.check_click(x_cursor, y_cursor):
                         button.clicked()
+                        player, location = player_location
             if event.type == pygame.MOUSEMOTION:
                 for button in choose_save_menu_buttons:
                     x_cursor, y_cursor = event.pos
