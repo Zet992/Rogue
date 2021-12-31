@@ -382,7 +382,6 @@ while main:
                 else:
                     collision = 'l'
                     pos_x = bullet.x + bullet.width
-                print(pos_x)
                 particles.extend(create_blood_particles(pos_x, bullet.y + bullet.height // 2,
                                                         collision))
             elif bullet.check_collision_with_walls(location.walls):
