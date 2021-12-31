@@ -12,9 +12,11 @@ class Location:
     def __init__(self, name):
         self.map = []
         self.walls = []
+        self.tp_zones = []
         self.size = (0, 0)
         self.step = (450, 300)
         self.max_scroll = (WINDOW_SIZE[0] - CELL_SIZE[0], WINDOW_SIZE[1] - CELL_SIZE[1])
+        self.name = name
         self.load_map(name)
         self.scroll = [0, 0]
 
@@ -25,6 +27,9 @@ class Location:
             for x, cell in enumerate(row):
                 if cell == "@":
                     self.walls.append(Wall(x * CELL_SIZE[0], y * CELL_SIZE[1]))
+                elif cell[:-1].isdigit():
+                    self.tp_zones.append((pygame.Rect(x * CELL_SIZE[0], y * CELL_SIZE[1],
+                                                     CELL_SIZE[0], CELL_SIZE[1]), cell))
         self.size = (x * CELL_SIZE[0], y * CELL_SIZE[1])
 
     def update_scroll(self, player):
