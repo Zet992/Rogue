@@ -1,4 +1,5 @@
-location: 10
+location: 9
 hp: 100
-x: 2442.0
-y: 2088
+x: 2200
+y: 150
+money: 0

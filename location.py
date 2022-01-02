@@ -1,11 +1,15 @@
 import pygame
-
+import random
 
 CELL_SIZE = (128, 128)
 WINDOW_SIZE = WINDOW_WIDTH, WINDOW_HEIGHT = (1024, 576)
 
-tile_image = pygame.image.load('data\\images\\tile\\tile.png')
-tile_image = pygame.transform.scale(tile_image, (128, 128))
+tiles = [
+         pygame.image.load('data\\images\\tile\\tile.png')]
+
+for i in range(len(tiles)):
+    tiles[i] = pygame.transform.scale(tiles[i], (128, 128))
+
 
 
 class Location:
@@ -59,6 +63,5 @@ class Wall:
         pass
 
     def draw(self, surface, scroll):
-        #pygame.draw.rect(surface, (100, 100, 100),
-        #                 (self.x - scroll[0], self.y - scroll[1], CELL_SIZE[0], CELL_SIZE[1]))
-        surface.blit(tile_image, (self.x - scroll[0], self.y - scroll[1], CELL_SIZE[0], CELL_SIZE[1]))
+        image = tiles[0]
+        surface.blit(image, (self.x - scroll[0], self.y - scroll[1], CELL_SIZE[0], CELL_SIZE[1]))

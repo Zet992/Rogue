@@ -519,3 +519,9 @@ class EnemyBullet(Bullet):
                 player.get_damage(random.randrange(15, 25))
                 return True
         return False
+
+
+class Boss(Entity):
+    def draw(self, surface, scroll):
+        pass
+

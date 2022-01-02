@@ -79,12 +79,12 @@ def read_save(n):
         hp = int(data[1].split()[-1])
         x = float(data[2].split()[-1])
         y = float(data[3].split()[-1])
+        money = int(data[4].split()[-1])
         player = Player(x, y, 40, 86, (0, 0), hp)
+        player.money = money
         location = Location(f'{location}.txt')
         player_location = [player, location]
         save = [n]
-
-
 
 
 def back_to_menu():
@@ -106,7 +106,7 @@ def quit_game():
     running = False
     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
         loc = location.name.split('.')[0]
-        save_file.write(f'location: {loc}\nhp: {player.hp}\nx: {player.x}\ny: {player.y}')
+        save_file.write(f'location: {loc}\nhp: {player.hp}\nx: {player.x}\ny: {player.y}\nmoney: {player.money}')
 
 
 
@@ -147,8 +147,9 @@ game_menu_buttons.append(quit_button)
 background = pygame.image.load('data\\images\\environment\\environment.jpg')
 
 
-def draw(screen, background):
-    screen.blit(background, (0, 0))
+def draw_background(screen, background):
+    #screen.blit(background, (0, 0))
+    screen.fill((51, 51, 51))
 
 
 FONT = pygame.font.SysFont("arial", 20)
@@ -179,7 +180,7 @@ while main:
                     button.check_hover(x_cursor, y_cursor)
 
         screen.fill((0, 0, 0))
-        draw(screen, background)
+        draw_background(screen, background)
 
         for button in main_menu_buttons:
             button.draw()
@@ -206,7 +207,7 @@ while main:
 
         screen.fill((0, 0, 0))
 
-        draw(screen, background)
+        draw_background(screen, background)
 
         for button in choose_save_menu_buttons:
             button.draw()
@@ -226,6 +227,9 @@ while main:
                 game_over_menu = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
+                    with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
+                        save_file.write(
+                            f'location: 9\nhp: 100\nx: 2200\ny: 150\nmoney: 0')
                     game_menu = False
                     running = False
                     game_over_menu = False
@@ -288,7 +292,7 @@ while main:
                         x_cursor, y_cursor = event.pos
                         button.check_hover(x_cursor, y_cursor)
             screen.fill('black')
-            draw(screen, background)
+            draw_background(screen, background)
             location.update_scroll(player)
             player.check_collision_with_objects(location.walls)
 
@@ -343,14 +347,13 @@ while main:
                 player.fall_count += 1
 
         screen.fill((0, 0, 0))
-        draw(screen, background)
+        draw_background(screen, background)
         player.check_collision_with_objects(location.walls)
         player.update()
 
         if player.hp <= 0:
             main_menu = False
             running = False
-            player.hp = 100
             game_over_menu = True
 
         for bullet in enemy_bullets:
@@ -406,9 +409,8 @@ while main:
         for wall in location.walls:
             wall.draw(screen, location.scroll)
 
-        player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
         for tp_zone in location.tp_zones:
-            if player_rect.colliderect(tp_zone[0]):
+            if player.rect.colliderect(tp_zone[0]):
                 old_name = location.name[:-4]  # remove .txt
                 location = Location(f'{tp_zone[1][:-1]}.txt')
                 print(tp_zone[1])
