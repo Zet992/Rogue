@@ -1,8 +1,9 @@
 import pygame
+import random
 
 from decorations import TreeSpruce
-from entities import Player, Enemy2, EnemySoldier
-from interface import Button
+from entities import Player, EnemySoldier, Particle
+from interface import Button, HealthBar
 from location import Location, WINDOW_SIZE, CELL_SIZE
 
 pygame.init()
@@ -11,6 +12,12 @@ pygame.display.set_caption("Rogue")
 
 transparent_game_menu_background = pygame.Surface((WINDOW_SIZE[0], WINDOW_SIZE[1]), pygame.SRCALPHA)
 transparent_game_menu_background.fill((0, 0, 0, 128))
+
+font = pygame.font.Font(None, 70)
+game_over_title = font.render('ВЫ УМЕРЛИ', 1, 'red')
+game_over_title_rect = game_over_title.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
+
+health_bar = HealthBar()
 
 # Главный цикл, включающий все остальные циклы
 main = True
@@ -27,15 +34,18 @@ choose_save_menu = False
 # Игровой процесс
 running = False
 
-# Меню при нажатии на esc
-esc_menu = False
+# Меню после смерти игрока
+game_over_menu = False
+
 
 clock = pygame.time.Clock()
 player = Player(200, 150, 40, 86)
 location = Location("1.txt")
 bullets = []
+enemy_bullets = []
 enemies = []
-enemies.append(EnemySoldier(800, 200, 100, 100))
+particles = []
+enemies.append(EnemySoldier(400, 150, 100, 100))
 
 # Button functions
 main_menu_buttons = []
@@ -49,7 +59,7 @@ def start_game():
 
 
 def open_help_menu():
-    print('Help menu have not created yet')
+    print('Help menu has not created yet')
 
 
 def open_choose_save_menu():
@@ -124,6 +134,36 @@ def draw(screen, background):
     screen.blit(background, (0, 0))
 
 
+def create_jump_particles(player):
+    count = 20
+    for _ in range(count):
+        particles.append(Particle(player.x + player.width // 2, player.y + player.height, 5, 5,
+                                  move=[random.randint(-7, 7), random.randint(0, 1)],
+                                  ticks=10))
+    return particles
+
+
+def create_blood_particles(x, y, collision):
+    count = 50
+    for _ in range(count):
+        if collision == 'r':
+            move_x = random.randint(2, 5)
+        else:
+            move_x = random.uniform(-5, 2)
+        particles.append(Particle(x, y, 5, 5,
+                                  move=[move_x, random.uniform(-3, 3)],
+                                  ticks=10, physics=False, color=(255, 0, 0)))
+    return particles
+
+
+def create_shot_particles(player):
+    pass
+
+
+def create_dash_particles(player):
+    pass
+
+
 FONT = pygame.font.SysFont("arial", 20)
 
 while main:
@@ -133,8 +173,8 @@ while main:
             pygame.quit()
     if main_menu:
         pass
-        #pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
-        #pygame.mixer.music.play()
+        # pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
+        # pygame.mixer.music.play()
     while main_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -187,8 +227,25 @@ while main:
 
     if running:
         pass
-        #pygame.mixer.music.load("data/sounds/DOOM.mp3")
-        #pygame.mixer.music.play()
+        # pygame.mixer.music.load("data/sounds/DOOM.mp3")
+        # pygame.mixer.music.play()
+    while game_over_menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_menu = False
+                main = False
+                running = False
+                game_over_menu = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    game_menu = False
+                    running = False
+                    game_over_menu = False
+                    main_menu = True
+        screen.fill('black')
+        screen.blit(game_over_title, game_over_title_rect)
+        pygame.display.flip()
+        clock.tick(60)
 
     while running:
         for event in pygame.event.get():
@@ -207,21 +264,24 @@ while main:
                         player.jumps = 1
                         player.run = False
                         player.idle = False
+                        particles.extend(create_jump_particles(player))
                     elif player.jumps != 2 and player.jump_tick < 15:
                         player.jump_tick = 18
                         player.fall_count = 1
                         player.jumps = 2
                         player.run = False
                         player.idle = False
+                        particles.extend(create_jump_particles(player))
                 elif event.key == pygame.K_LCTRL:
                     player.dash()
-            if event.type == pygame.MOUSEMOTION:
-                if event.pos[0] >= player.x - location.scroll[0]:
-                    player.right = True
-                    player.left = False
-                elif event.pos[0] < player.x - location.scroll[0]:
-                    player.left = True
-                    player.right = False
+
+        x, y = pygame.mouse.get_pos()
+        if x >= player.x + player.width // 2 - location.scroll[0]:
+            player.right = True
+            player.left = False
+        elif x < player.x + player.width // 2 - location.scroll[0]:
+            player.left = True
+            player.right = False
 
         while game_menu:
             for event in pygame.event.get():
@@ -245,7 +305,6 @@ while main:
             draw(screen, background)
             location.update_scroll(player)
             player.check_collision_with_objects(location.walls)
-            player.draw(screen, location.scroll)
 
             for enemy in enemies:
                 enemy.draw(screen, location.scroll)
@@ -253,10 +312,10 @@ while main:
                 wall.draw(screen, location.scroll)
             for bullet in bullets[:]:
                 bullet.draw(screen, location.scroll)
+            player.draw(screen, location.scroll)
             screen.blit(transparent_game_menu_background, (0, 0))
             for button in game_menu_buttons:
                 button.draw()
-
             pygame.display.flip()
             clock.tick(60)
 
@@ -298,6 +357,35 @@ while main:
         player.check_collision_with_objects(location.walls)
         player.update()
 
+        if player.hp <= 0:
+            main_menu = False
+            running = False
+            player.hp = 100
+            game_over_menu = True
+
+        for bullet in enemy_bullets:
+            bullet.update()
+            bullet.draw(screen, location.scroll)
+            if bullet.x > location.size[0]:
+                enemy_bullets.remove(bullet)
+            elif bullet.y > location.size[1]:
+                enemy_bullets.remove(bullet)
+            elif bullet.x + bullet.width < 0:
+                enemy_bullets.remove(bullet)
+            elif bullet.y + bullet.height < 0:
+                enemy_bullets.remove(bullet)
+            elif bullet.check_collisions_with_player(player):
+                enemy_bullets.remove(bullet)
+                if player.move[0] - bullet.move[0] > 0:
+                    collision = 'r'
+                    pos_x = bullet.x
+                else:
+                    collision = 'l'
+                    pos_x = bullet.x + bullet.width
+                particles.extend(create_blood_particles(pos_x, bullet.y + bullet.height // 2,
+                                                        collision))
+            elif bullet.check_collision_with_walls(location.walls):
+                enemy_bullets.remove(bullet)
 
         for bullet in bullets[:]:
             bullet.update()
@@ -311,8 +399,12 @@ while main:
             elif bullet.y + bullet.height < 0:
                 bullets.remove(bullet)
             enemy = bullet.check_collisions_with_entity(enemies)
+            wall = bullet.check_collision_with_walls(location.walls)
+
             if enemy:
                 enemies.remove(enemy)
+                bullets.remove(bullet)
+            if wall:
                 bullets.remove(bullet)
 
         for wall in location.walls:
@@ -358,14 +450,25 @@ while main:
                 break
 
         for enemy in enemies:
-            enemy.find_player(player)
+            enemy.ai(player)
+            if type(enemy) == EnemySoldier:
+                if enemy.engaging_tick % 25 == 0:
+                    enemy_bullets.extend(enemy.shot())
+            enemy.check_collision_with_objects(location.walls)
             enemy.update()
             enemy.draw(screen, location.scroll)
+
+        for particle in particles:
+            particle.update()
+            particle.draw(screen, location.scroll)
+            if particle.ticks < 0:
+                particles.remove(particle)
 
         follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
         screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))
 
         player.draw(screen, location.scroll)
+        health_bar.draw(screen, player.hp)
         location.update_scroll(player)
         pygame.display.flip()
         clock.tick(60)
