@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from entities import Player, EnemySoldier
+from entities import Player, EnemySoldier, Particle
 from interface import Button, HealthBar
 from location import Location, WINDOW_SIZE
 
@@ -43,6 +43,7 @@ location = Location("arena.txt")
 bullets = []
 enemy_bullets = []
 enemies = []
+particles = []
 enemies.append(EnemySoldier(800, 200, 100, 100))
 
 
@@ -131,6 +132,36 @@ background = pygame.image.load('data\\images\\environment\\environment.jpg')
 
 def draw(screen, background):
     screen.blit(background, (0, 0))
+
+
+def create_jump_particles(player):
+    count = 20
+    for _ in range(count):
+        particles.append(Particle(player.x + player.width // 2, player.y + player.height, 5, 5,
+                                  move=[random.randint(-7, 7), random.randint(0, 1)],
+                                  ticks=10))
+    return particles
+
+
+def create_blood_particles(x, y, collision):
+    count = 50
+    for _ in range(count):
+        if collision == 'r':
+            move_x = random.randint(2, 5)
+        else:
+            move_x = random.uniform(-5, 2)
+        particles.append(Particle(x, y, 5, 5,
+                                  move=[move_x, random.uniform(-3, 3)],
+                                  ticks=10, physics=False, color=(255, 0, 0)))
+    return particles
+
+
+def create_shot_particles(player):
+    pass
+
+
+def create_dash_particles(player):
+    pass
 
 
 FONT = pygame.font.SysFont("arial", 20)
@@ -233,12 +264,14 @@ while main:
                         player.jumps = 1
                         player.run = False
                         player.idle = False
+                        particles.extend(create_jump_particles(player))
                     elif player.jumps != 2 and player.jump_tick < 15:
                         player.jump_tick = 18
                         player.fall_count = 1
                         player.jumps = 2
                         player.run = False
                         player.idle = False
+                        particles.extend(create_jump_particles(player))
                 elif event.key == pygame.K_LCTRL:
                     player.dash()
 
@@ -343,7 +376,14 @@ while main:
                 enemy_bullets.remove(bullet)
             elif bullet.check_collisions_with_player(player):
                 enemy_bullets.remove(bullet)
-                print(player.hp)
+                if player.move[0] - bullet.move[0] > 0:
+                    collision = 'r'
+                    pos_x = bullet.x
+                else:
+                    collision = 'l'
+                    pos_x = bullet.x + bullet.width
+                particles.extend(create_blood_particles(pos_x, bullet.y + bullet.height // 2,
+                                                        collision))
             elif bullet.check_collision_with_walls(location.walls):
                 enemy_bullets.remove(bullet)
 
@@ -378,6 +418,12 @@ while main:
             enemy.check_collision_with_objects(location.walls)
             enemy.update()
             enemy.draw(screen, location.scroll)
+
+        for particle in particles:
+            particle.update()
+            particle.draw(screen, location.scroll)
+            if particle.ticks < 0:
+                particles.remove(particle)
 
         follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
         screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))
