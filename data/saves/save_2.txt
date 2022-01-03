@@ -1,5 +1,7 @@
-location: 10
-hp: 100
-x: 3987.0
-y: 1704
+location: 9
+hp: 21
+x: 2312.0
+y: 168
 money: 0
+None
+MoneyBonus(2400, 150, 9); MoneyBonus(2600, 150, 9); MoneyBonus(2697, 150, 9)

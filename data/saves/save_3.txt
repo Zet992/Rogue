@@ -3,3 +3,5 @@ hp: 100
 x: 2200
 y: 150
 money: 0
+EnemySoldier(2400, 150, 100, 100, 9, 100); EnemySoldier(2600, 150, 100, 100, 9, 100); EnemySoldier(2700, 150, 100, 100, 9, 100)
+None

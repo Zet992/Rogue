@@ -38,14 +38,42 @@ running = False
 
 # Меню после смерти игрока
 game_over_menu = False
-
 clock = pygame.time.Clock()
 bullets = []
 enemy_bullets = []
 enemies = []
-enemies.append(EnemySoldier(800, 200, 100, 100))
 bonuses = []
 player_location = []
+
+
+def draw_enemies(enemies, surface):
+    global location
+    for enemy in enemies:
+        if f'{enemy.location}.txt' == location.name:
+            enemy.draw(surface, location.scroll)
+
+
+def update_enemies(enemies):
+    global location
+    for enemy in enemies:
+        if f'{enemy.location}.txt' == location.name:
+            enemy.update()
+
+
+def draw_bonuses(bonuses, surface):
+    global location
+    for bonus in bonuses:
+        bonus.draw(surface, location.scroll)
+
+
+def update_bonuses(bonuses):
+    global location
+    for bonus in bonuses:
+        bonus.draw(screen, location.scroll)
+        if f'{bonus.location}.txt' == location.name:
+            if bonus.check_collision_with_player(player):
+                bonuses.remove(bonus)
+
 
 # Button functions
 main_menu_buttons = []
@@ -70,7 +98,7 @@ def open_choose_save_menu():
 
 
 def read_save(n):
-    global running, choose_save_menu, player_location, save
+    global running, choose_save_menu, player_location, save, enemies, bonuses
     running = True
     choose_save_menu = False
     with open(file=f'data\\saves\\save_{n}.txt', mode='r', encoding='utf-8') as save_file:
@@ -80,8 +108,25 @@ def read_save(n):
         x = float(data[2].split()[-1])
         y = float(data[3].split()[-1])
         money = int(data[4].split()[-1])
-        player = Player(x, y, 40, 86, (0, 0), hp)
+        player = Player(x, y, 40, 86, int(location), (0, 0), hp)
         player.money = money
+
+        enemies_temp = data[5].split('; ')
+
+        if enemies_temp != ['None']:
+            for enemy in enemies_temp:
+                enemies.append(eval(enemy))
+        else:
+            enemies = []
+
+        bonuses_temp = data[6].split('; ')
+
+        if bonuses_temp != ['None']:
+            for bonus in bonuses_temp:
+                bonuses.append(eval(bonus))
+        else:
+            bonuses = []
+
         location = Location(f'{location}.txt')
         player_location = [player, location]
         save = [n]
@@ -106,8 +151,24 @@ def quit_game():
     running = False
     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
         loc = location.name.split('.')[0]
-        save_file.write(f'location: {loc}\nhp: {player.hp}\nx: {player.x}\ny: {player.y}\nmoney: {player.money}')
-
+        enemies_line = 'None'
+        if enemies:
+            enemies_line = ''
+            for enemy in enemies:
+                if enemies[-1] is not enemy:
+                    enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move}); '
+                else:
+                    enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move})'
+        bonuses_line = 'None'
+        if bonuses:
+            bonuses_line = ''
+            for bonus in bonuses:
+                if bonuses[-1] is not bonus:
+                    bonuses_line += f'{bonus}({bonus.x}, {bonus.y}, {bonus.location}); '
+                else:
+                    bonuses_line += f'{bonus}({bonus.x}, {bonus.y}, {bonus.location})'
+        save_file.write(
+            f'location: {loc}\nhp: {player.hp}\nx: {player.x}\ny: {player.y}\nmoney: {player.money}\n{enemies_line}\n{bonuses_line}')
 
 
 # Buttons
@@ -148,7 +209,7 @@ background = pygame.image.load('data\\images\\environment\\environment.jpg')
 
 
 def draw_background(screen, background):
-    #screen.blit(background, (0, 0))
+    # screen.blit(background, (0, 0))
     screen.fill((51, 51, 51))
 
 
@@ -229,7 +290,7 @@ while main:
                 if event.key == pygame.K_SPACE:
                     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
                         save_file.write(
-                            f'location: 9\nhp: 100\nx: 2200\ny: 150\nmoney: 0')
+                            f'location: 9\nhp: 100\nx: 2200\ny: 150\nmoney: 0\n')
                     game_menu = False
                     running = False
                     game_over_menu = False
@@ -296,12 +357,16 @@ while main:
             location.update_scroll(player)
             player.check_collision_with_objects(location.walls)
 
-            for bonus in bonuses:
-                bonus.draw(screen, location.scroll)
-                if bonus.check_collision_with_player(player):
-                    bonuses.remove(bonus)
-            for enemy in enemies:
-                enemy.draw(screen, location.scroll)
+            draw_bonuses(bonuses, screen)
+
+            draw_enemies(enemies, screen)
+
+            for bullet in enemy_bullets:
+                if f'{bullet.location}.txt' == location.name:
+                    bullet.draw(screen, location.scroll)
+                else:
+                    enemy_bullets.remove(bullet)
+
             for wall in location.walls:
                 wall.draw(screen, location.scroll)
             for bullet in bullets[:]:
@@ -350,6 +415,7 @@ while main:
         draw_background(screen, background)
         player.check_collision_with_objects(location.walls)
         player.update()
+        player.location = int(location.name.split('.')[0])
 
         if player.hp <= 0:
             main_menu = False
@@ -357,54 +423,61 @@ while main:
             game_over_menu = True
 
         for bullet in enemy_bullets:
-            bullet.update()
-            bullet.draw(screen, location.scroll)
-            if bullet.x > location.size[0]:
-                bullets.remove(bullet)
-            elif bullet.y > location.size[1]:
-                bullets.remove(bullet)
-            elif bullet.x + bullet.width < 0:
-                bullets.remove(bullet)
-            elif bullet.y + bullet.height < 0:
-                bullets.remove(bullet)
-            if bullet.check_collisions_with_player(player):
-                enemy_bullets.remove(bullet)
-            wall = bullet.check_collision_with_walls(location.walls)
-            if wall:
+            bullet_removed = False
+            if f'{bullet.location}.txt' == location.name:
+                bullet.draw(screen, location.scroll)
+                bullet.update()
+                if bullet.x > location.size[0]:
+                    bullets.remove(bullet)
+                    bullet_removed = True
+                elif bullet.y > location.size[1]:
+                    bullets.remove(bullet)
+                    bullet_removed = True
+                if not bullet_removed:
+                    if bullet.check_collisions_with_player(player):
+                        enemy_bullets.remove(bullet)
+                    wall = bullet.check_collision_with_walls(location.walls)
+                    if wall:
+                        enemy_bullets.remove(bullet)
+            else:
                 enemy_bullets.remove(bullet)
 
         for bullet in bullets[:]:
-            bullet.update()
-            bullet.draw(screen, location.scroll)
-            if bullet.x > location.size[0]:
-                bullets.remove(bullet)
-            elif bullet.y > location.size[1]:
-                bullets.remove(bullet)
-            elif bullet.x + bullet.width < 0:
-                bullets.remove(bullet)
-            elif bullet.y + bullet.height < 0:
-                bullets.remove(bullet)
-            enemy = bullet.check_collisions_with_entity(enemies)
-            wall = bullet.check_collision_with_walls(location.walls)
 
-            if enemy:
-                enemy.hp -= random.randrange(35, 60)
-                if enemy.hp <= 0:
-                    enemies.remove(enemy)
-                    chance = random.randrange(1, 6, 1)
-                    if chance == 1:
-                        bonuses.append(HealthBonus(enemy.x, enemy.y))
-                    elif chance in (2, 3, 4):
-                        bonuses.append(MoneyBonus(enemy.x, enemy.y))
-                bullets.remove(bullet)
-            if wall:
-                bullets.remove(bullet)
+            if f'{bullet.location}.txt' == location.name:
+                bullet.draw(screen, location.scroll)
+                bullet.update()
+                bullet_removed = False
+                if bullet.x > location.size[0]:
+                    bullets.remove(bullet)
+                    bullet_removed = True
+                elif bullet.y > location.size[1]:
+                    bullets.remove(bullet)
+                    bullet_removed = True
+                elif bullet.x + bullet.width < 0:
+                    bullets.remove(bullet)
+                    bullet_removed = True
+                elif bullet.y + bullet.height < 0:
+                    bullets.remove(bullet)
+                    bullet_removed = True
+                if not bullet_removed:
+                    enemy = bullet.check_collisions_with_entity(enemies)
+                    if enemy:
+                        enemy.hp -= random.randrange(35, 60)
+                        if enemy.hp <= 0:
+                            enemies.remove(enemy)
+                            chance = random.randrange(1, 6, 1)
+                            if chance == 1:
+                                bonuses.append(HealthBonus(enemy.x, enemy.y, enemy.location))
+                            elif chance in (2, 3, 4):
+                                bonuses.append(MoneyBonus(enemy.x, enemy.y, enemy.location))
+                        bullets.remove(bullet)
+                    wall = bullet.check_collision_with_walls(location.walls)
+                    if wall:
+                        bullets.remove(bullet)
 
-        for bonus in bonuses:
-            bonus.draw(screen, location.scroll)
-            bonus.update()
-            if bonus.check_collision_with_player(player):
-                bonuses.remove(bonus)
+        draw_bonuses(bonuses, screen)
+        update_bonuses(bonuses)
 
         for wall in location.walls:
             wall.draw(screen, location.scroll)
@@ -436,14 +509,14 @@ while main:
                                 break
                             else:
                                 player.x = new_tp_zone[0].right + 10
-
-        for enemy in enemies:
-            enemy.ai(player)
-            if type(enemy) == EnemySoldier:
-                if enemy.engaging_tick % 25 == 0:
-                    enemy_bullets.extend(enemy.shot())
-            enemy.update()
-            enemy.draw(screen, location.scroll)
+        if enemies:
+            for enemy in enemies:
+                enemy.ai(player)
+                if type(enemy) == EnemySoldier:
+                    if enemy.engaging_tick % 25 == 0:
+                        enemy_bullets.extend(enemy.shot())
+            update_enemies(enemies)
+            draw_enemies(enemies, screen)
 
         follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
         screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))

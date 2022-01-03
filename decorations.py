@@ -28,11 +28,12 @@ class TreeSpruce(Decoration):
 
 
 class Bonus:
-    def __init__(self, x, y):
+    def __init__(self, x, y, location):
         self.x = x
         self.y = y
         self.rect = pygame.Rect(self.x, self.y, 64, 32)
         self.animation_tick = 0
+        self.location = location
 
     def update(self):
         self.animation_tick += 1
@@ -40,9 +41,14 @@ class Bonus:
             self.animation_tick = 0
 
 
+
+
 class HealthBonus(Bonus):
     def draw(self, surface, scroll):
         surface.blit(health, (self.x - scroll[0], self.y - scroll[1]))
+
+    def __str__(self):
+        return 'HealthBonus'
 
     def check_collision_with_player(self, player):
         if self.rect.colliderect(player.rect):
@@ -56,6 +62,9 @@ class MoneyBonus(Bonus):
     def draw(self, surface, scroll):
         image = money[self.animation_tick // 10]
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+
+    def __str__(self):
+        return 'MoneyBonus'
 
     def check_collision_with_player(self, player):
         if self.rect.colliderect(player.rect):

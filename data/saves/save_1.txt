@@ -1,5 +1,7 @@
 location: 9
-hp: 100
-x: 2200
-y: 150
-money: 0
+hp: 65
+x: 2366
+y: 168
+money: 51
+None
+HealthBonus(2700, 150, 9)

@@ -101,6 +101,22 @@ run_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\run\\run
                      pygame.image.load('data\\images\\enemies\\soldier\\run\\run_8.png'),
                      pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png')]
 
+boss_idle = pygame.image.load('data\\images\\enemies\\boss\\idle\\idle.png')
+
+boss_run = [pygame.image.load('data\\images\\enemies\\boss\\run\\run_1.png'),
+            pygame.image.load('data\\images\\enemies\\boss\\run\\run_2.png')]
+
+boss_shot = [pygame.image.load('data\\images\\enemies\\boss\\shot\\shot_1.png'),
+            pygame.image.load('data\\images\\enemies\\boss\\shot\\shot_2.png')]
+
+boss_idle = pygame.transform.scale2x(boss_idle)
+
+for i in range(len(boss_run)):
+    boss_run[i] = [pygame.transform.scale2x(boss_run[i])]
+
+for i in range(len(boss_shot)):
+    boss_shot[i] = [pygame.transform.scale2x(boss_shot[i])]
+
 for i in range(len(idle_player_45)):
     idle_player_45[i] = pygame.transform.scale2x(idle_player_45[i])
 
@@ -157,7 +173,7 @@ for i in range(len(run_enemy_soldier)):
 
 
 class Entity:
-    def __init__(self, x, y, width, height, move=(0, 0)):
+    def __init__(self, x, y, width, height, location, move=(0, 0)):
         self.x = x
         self.y = y
         self.width = width
@@ -178,6 +194,7 @@ class Entity:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.hp = 100
         self.money = 0
+        self.location = location
 
     def update(self):
         if self.animation_tick > 61:
@@ -249,10 +266,11 @@ class Entity:
 
 
 class Player(Entity):
-    def __init__(self, x, y, width, height, move=(0, 0), hp=100):
-        super(Player, self).__init__(x, y, width, height, move)
+    def __init__(self, x, y, width, height, location, move=(0, 0), hp=100):
+        super(Player, self).__init__(x, y, width, height, location, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
         self.hp = hp
+        self.location = location
 
 
     def draw(self, surface, scroll):
@@ -325,7 +343,7 @@ class Player(Entity):
         start_pos = (self.x + self.width // 2, self.y + self.height // 2)
         rot = math.atan2(my + scroll[1] - start_pos[1], mx + scroll[0] - start_pos[0])
         move = math.cos(rot) * 10, math.sin(rot) * 10
-        bullet = Bullet(start_pos[0], start_pos[1], 1, 1, move=move)
+        bullet = Bullet(start_pos[0], start_pos[1], 1, 1, self.location, move=move)
         self.play_shot_sound()
         return bullet
 
@@ -398,8 +416,8 @@ class Bullet(Entity):
 
 
 class EnemySoldier(Enemy):
-    def __init__(self, x, y, width, height, move=(0, 0)):
-        super(EnemySoldier, self).__init__(x, y, width=width, height=height, move=move)
+    def __init__(self, x, y, width, height, location, hp, move=(0, 0)):
+        super(EnemySoldier, self).__init__(x, y, width, height, location,  move=move)
         self.patrolling = True
         self.patrolling_tick = 0
         self.patrolling_direction = 1
@@ -409,6 +427,10 @@ class EnemySoldier(Enemy):
         self.engaging = False
         self.engaging_tick = 1
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
+        self.hp = hp
+
+    def __str__(self):
+        return 'EnemySoldier'
 
     def update(self):
         self.animation_tick += 1
@@ -498,13 +520,13 @@ class EnemySoldier(Enemy):
 
     def shot(self):
         if self.left:
-            bullets = [EnemyBullet(self.x, self.y + self.height // 2, 1, 1, move=(-6, 0)),
-                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, move=(-6, -3)),
-                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, move=(-6, 3))]
+            bullets = [EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location, move=(-6, 0)),
+                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location, move=(-6, -3)),
+                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location ,move=(-6, 3))]
         elif self.right:
-            bullets = [EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, move=(6, 0)),
-                       EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, move=(6, -3)),
-                       EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, move=(6, 3))]
+            bullets = [EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, self.location, move=(6, 0)),
+                       EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, self.location, move=(6, -3)),
+                       EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, self.location, move=(6, 3))]
         self.play_shot_sound()
         return bullets
 
@@ -522,6 +544,23 @@ class EnemyBullet(Bullet):
 
 
 class Boss(Entity):
+    def __init__(self, x, y, hp, width=80, height=80, move=(0, 0)):
+        super(Boss, self).__init__(x, y, width, height, move)
+        self.shot = False
+        self.hp = hp
+
     def draw(self, surface, scroll):
-        pass
+        image = boss_idle
+
+        if self.idle:
+            image = boss_idle
+        elif self.run and not self.shot:
+            image = boss_run[self.animation_tick // 30]
+        elif self.shot:
+            image = boss_shot[self.animation_tick // 30]
+
+        if self.left:
+            image = pygame.transform.flip(image, True, False)
+
+        surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
 
