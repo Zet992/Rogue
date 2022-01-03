@@ -1,7 +1,7 @@
-location: 9
-hp: 21
-x: 2767.0
-y: 1176.5
-money: 191
-None
+location: 1
+hp: 100
+x: 300
+y: 300
+money: 0
+Boss(1750, 1500, 200, 200, 10, 4698, [0, 0])
 None

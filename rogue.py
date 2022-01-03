@@ -44,6 +44,7 @@ enemy_bullets = []
 enemies = []
 bonuses = []
 player_location = []
+starter_enemies = 'Boss(1750, 1500, 200, 200, 10, 4698, [0, 0])'
 
 
 def draw_enemies(enemies, surface):
@@ -158,7 +159,7 @@ def quit_game():
                 if type(enemy) == EnemySoldier:
                     enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move})'
                 if type(enemy) == Boss:
-                    enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move})'
+                    enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, [0, 0])'
 
                 if enemy is not enemies[-1]:
                     enemies_line += '; '
@@ -294,11 +295,15 @@ while main:
                 if event.key == pygame.K_SPACE:
                     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
                         save_file.write(
-                            f'location: 9\nhp: 100\nx: 2200\ny: 150\nmoney: 0\n')
+                            f'location: 1\nhp: 100\nx: 300\ny: 300\nmoney: 0\n{starter_enemies}\nNone')
                     game_menu = False
                     running = False
                     game_over_menu = False
                     main_menu = True
+                    enemies.clear()
+                    enemy_bullets.clear()
+                    bonuses.clear()
+                    bullets.clear()
         screen.fill('black')
         screen.blit(game_over_title, game_over_title_rect)
         pygame.display.flip()
@@ -432,10 +437,16 @@ while main:
                 bullet.draw(screen, location.scroll)
                 bullet.update()
                 if bullet.x > location.size[0]:
-                    bullets.remove(bullet)
+                    enemy_bullets.remove(bullet)
                     bullet_removed = True
                 elif bullet.y > location.size[1]:
-                    bullets.remove(bullet)
+                    enemy_bullets.remove(bullet)
+                    bullet_removed = True
+                elif bullet.x + bullet.width < 0:
+                    enemy_bullets.remove(bullet)
+                    bullet_removed = True
+                elif bullet.y + bullet.height < 0:
+                    enemy_bullets.remove(bullet)
                     bullet_removed = True
                 if not bullet_removed:
                     if bullet.check_collisions_with_player(player):
@@ -447,7 +458,6 @@ while main:
                 enemy_bullets.remove(bullet)
 
         for bullet in bullets[:]:
-
             if f'{bullet.location}.txt' == location.name:
                 bullet.draw(screen, location.scroll)
                 bullet.update()
@@ -520,14 +530,15 @@ while main:
                     if enemy.engaging_tick % 25 == 0:
                         enemy_bullets.extend(enemy.shot())
                 if type(enemy) == Boss:
-                    enemy.ai(player)
+                    enemy.ai()
+                    if enemy.engaging_tick % 7 == 0:
+                        enemy_bullets.extend(enemy.shot())
 
             update_enemies(enemies)
             draw_enemies(enemies, screen)
 
         follow = FONT.render(str(round(clock.get_fps())), True, (255, 255, 0))
         screen.blit(follow, (WINDOW_SIZE[0] - 30, 10))
-
         player.draw(screen, location.scroll)
         health_bar.draw(screen, player.hp)
         money_counter.draw(screen, player.money)

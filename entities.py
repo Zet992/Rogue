@@ -101,24 +101,6 @@ run_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\run\\run
                      pygame.image.load('data\\images\\enemies\\soldier\\run\\run_8.png'),
                      pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png')]
 
-boss_idle = pygame.image.load('data\\images\\enemies\\boss\\idle\\idle.png')
-
-boss_run = [pygame.image.load('data\\images\\enemies\\boss\\run\\run_1.png'),
-            pygame.image.load('data\\images\\enemies\\boss\\run\\run_2.png'),
-            pygame.image.load('data\\images\\enemies\\boss\\run\\run_1.png')]
-
-boss_shot = [pygame.image.load('data\\images\\enemies\\boss\\shot\\shot_1.png'),
-            pygame.image.load('data\\images\\enemies\\boss\\shot\\shot_2.png'),
-             pygame.image.load('data\\images\\enemies\\boss\\shot\\shot_1.png')]
-
-boss_idle = pygame.transform.scale(boss_idle, (160, 160))
-
-for i in range(len(boss_run)):
-    boss_run[i] = [pygame.transform.scale(boss_run[i], (160, 160))]
-
-for i in range(len(boss_shot)):
-    boss_shot[i] = [pygame.transform.scale(boss_shot[i], (160, 160))]
-
 for i in range(len(idle_player_45)):
     idle_player_45[i] = pygame.transform.scale2x(idle_player_45[i])
 
@@ -548,52 +530,36 @@ class EnemyBullet(Bullet):
 class Boss(Entity):
     def __init__(self, x, y, width, height, location, hp=1000, move=(0, 0)):
         super(Boss, self).__init__(x, y, width, height, location, move)
-        self.shot = False
         self.hp = hp
         self.vision_rect = pygame.Rect(0, 0, 700, 80)
         self.vision_rect.center = (self.x, self.y)
         self.patrolling_tick = 0
         self.patrolling = True
         self.patrolling_direction = -1
+        self.start_patrolling_x = self.x
+        self.engaging_tick = 0
 
 
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
     def draw(self, surface, scroll):
-        if self.idle:
-            image = boss_idle
-        elif self.run and not self.shot:
-            image = boss_run[self.animation_tick // 30]
-        elif self.shot:
-            image = boss_shot[self.animation_tick // 30]
-
-        if self.right:
-            image = pygame.transform.flip(image, True, False)
-
-        surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
+        pygame.draw.circle(surface, 'white', (self.x - scroll[0], self.y - scroll[1]), 300)
 
     def __str__(self):
         return 'Boss'
 
-    def ai(self, player):
-        if self.patrolling:
-            if self.patrolling_direction == 1:
-                self.move[0] = 3
-                self.right = True
-                self.left = False
-                self.run = True
-                self.patrolling_tick += 1
-                if self.patrolling_tick == 420:
-                    self.patrolling_direction *= -1
-            else:
-                self.move[0] = -3
-                self.right = False
-                self.left = True
-                self.run = True
-                self.patrolling_tick -= 1
-                if self.patrolling_tick == -420:
-                    self.patrolling_direction *= -1
+    def ai(self):
+        self.engaging_tick += 1
 
+    def shot(self):
+        bullets = [EnemyBullet(self.x, self.y, 1, 1, self.location, move=(-6, 0)),
+                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(-6, -9)),
+                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(-6, 9)),
+                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(6, 0)),
+                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(6, -9)),
+                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(6, 9))
+                   ]
+        return bullets
 
 
 
