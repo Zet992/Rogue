@@ -1,7 +1,7 @@
 location: 9
 hp: 21
-x: 2312.0
-y: 168
-money: 0
+x: 2767.0
+y: 1176.5
+money: 191
 None
-MoneyBonus(2400, 150, 9); MoneyBonus(2600, 150, 9); MoneyBonus(2697, 150, 9)
+None

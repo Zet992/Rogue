@@ -3,7 +3,7 @@ import random
 import pygame
 
 from decorations import HealthBonus, MoneyBonus
-from entities import Player, EnemySoldier
+from entities import Player, EnemySoldier, Boss
 from interface import Button, HealthBar, MoneyCounter
 from location import Location, WINDOW_SIZE
 
@@ -155,10 +155,14 @@ def quit_game():
         if enemies:
             enemies_line = ''
             for enemy in enemies:
-                if enemies[-1] is not enemy:
-                    enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move}); '
-                else:
+                if type(enemy) == EnemySoldier:
                     enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move})'
+                if type(enemy) == Boss:
+                    enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move})'
+
+                if enemy is not enemies[-1]:
+                    enemies_line += '; '
+
         bonuses_line = 'None'
         if bonuses:
             bonuses_line = ''
@@ -511,10 +515,13 @@ while main:
                                 player.x = new_tp_zone[0].right + 10
         if enemies:
             for enemy in enemies:
-                enemy.ai(player)
                 if type(enemy) == EnemySoldier:
+                    enemy.ai(player)
                     if enemy.engaging_tick % 25 == 0:
                         enemy_bullets.extend(enemy.shot())
+                if type(enemy) == Boss:
+                    enemy.ai(player)
+
             update_enemies(enemies)
             draw_enemies(enemies, screen)
 
