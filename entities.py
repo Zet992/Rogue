@@ -549,8 +549,10 @@ class Boss(Entity):
     def ai(self, player):
         if player.x > self.x:
             self.move = [2, 0]
-        else:
+        if player.x < self.x:
             self.move = [-2, 0]
+        if self.x - 10 < player.x < self.x + 10:
+            self.move = [0, 0]
         self.engaging_tick += 1
 
     def shot(self):
