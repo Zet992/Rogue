@@ -3,7 +3,7 @@ import pygame
 from decorations import TreeSpruce
 from entities import Player, Enemy2, EnemySoldier
 from interface import Button
-from location import Location, WINDOW_SIZE
+from location import Location, WINDOW_SIZE, CELL_SIZE
 
 pygame.init()
 screen = pygame.display.set_mode(WINDOW_SIZE)
@@ -31,8 +31,8 @@ running = False
 esc_menu = False
 
 clock = pygame.time.Clock()
-player = Player(2200, 150, 40, 86)
-location = Location("9.txt")
+player = Player(200, 150, 40, 86)
+location = Location("1.txt")
 bullets = []
 enemies = []
 enemies.append(EnemySoldier(800, 200, 100, 100))
@@ -320,32 +320,42 @@ while main:
 
         player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
         for tp_zone in location.tp_zones:
-            if player_rect.colliderect(tp_zone[0]):
+            if player_rect.colliderect(location.tp_zones[tp_zone]):
                 old_name = location.name[:-4]  # remove .txt
-                location = Location(f'{tp_zone[1][:-1]}.txt')
-                print(tp_zone[1])
+                d_x = player.x - location.tp_zones[tp_zone].x
+                d_y = player.y - location.tp_zones[tp_zone].y
+                location = Location(f'{tp_zone[:-1]}.txt')
+                print(tp_zone)
                 for new_tp_zone in location.tp_zones:
-                    if new_tp_zone[1][:-1] == old_name:
-                        position = new_tp_zone[1][-1]
+                    if new_tp_zone[:-1] == old_name:
+                        position = new_tp_zone[-1]
+                        tp_rect = location.tp_zones[new_tp_zone]
                         if position == 'l':
-                            player.x = new_tp_zone[0].x - player.width - 10
-                            player.y = new_tp_zone[0].y + 10
-                            break
+                            player.x = tp_rect.x - player.width - 10
+                            if d_y < 0 or d_y > tp_rect.height:
+                                player.y = tp_rect.bottom - player.height - 3
+                            else:
+                                player.y = tp_rect.y + d_y
                         elif position == 'r':
-                            player.x = new_tp_zone[0].right + 10
-                            player.y = new_tp_zone[0].y + 10
-                            break
+                            player.x = tp_rect.right + 10
+                            if d_y < 0 or d_y > tp_rect.height:
+                                player.y = tp_rect.bottom - player.height - 3
+                            else:
+                                player.y = tp_rect.y + d_y
                         elif position == 'd':
-                            player.x = new_tp_zone[0].center[0]
-                            player.y = new_tp_zone[0].bottom + 1
-                            break
+                            player.x = tp_rect.x + d_x
+                            player.y = tp_rect.bottom + 1
                         elif position == 'u':
-                            player.y = new_tp_zone[0].y - player.height - 10
-                            if player.left:
-                                player.x = new_tp_zone[0].x - player.width - 10
+                            player.y = tp_rect.y - player.height - 10
+                            player.jump_tick = 10
+                            player.jumps = 2
+                            if player.move[0] < 0:
+                                player.x = tp_rect.x - player.width - 10
                                 break
                             else:
-                                player.x = new_tp_zone[0].right + 10
+                                player.x = tp_rect.right + 10
+                        break
+                break
 
         for enemy in enemies:
             enemy.find_player(player)

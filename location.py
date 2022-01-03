@@ -9,7 +9,7 @@ class Location:
     def __init__(self, name):
         self.map = []
         self.walls = []
-        self.tp_zones = []
+        self.tp_zones = {}
         self.size = (0, 0)
         self.step = (450, 300)
         self.max_scroll = (WINDOW_SIZE[0] - CELL_SIZE[0], WINDOW_SIZE[1] - CELL_SIZE[1])
@@ -20,13 +20,24 @@ class Location:
     def load_map(self, name):
         file = open("data/rooms/" + name, 'r')
         self.map = [i.split() for i in file.read().split('\n')]
+        self.tp_zones = {}
         for y, row in enumerate(self.map):
             for x, cell in enumerate(row):
                 if cell == "@":
                     self.walls.append(Wall(x * CELL_SIZE[0], y * CELL_SIZE[1]))
                 elif cell[:-1].isdigit():
-                    self.tp_zones.append((pygame.Rect(x * CELL_SIZE[0], y * CELL_SIZE[1],
-                                                     CELL_SIZE[0], CELL_SIZE[1]), cell))
+                    if cell in self.tp_zones:
+                        if y * CELL_SIZE[1] == self.tp_zones[cell][1]:
+                            self.tp_zones[cell][2] += CELL_SIZE[0]
+                        else:
+                            self.tp_zones[cell][3] += CELL_SIZE[1]
+                    else:
+                        self.tp_zones[cell] = [x * CELL_SIZE[0], y * CELL_SIZE[1],
+                                               CELL_SIZE[0], CELL_SIZE[1]]
+
+        for i in self.tp_zones.keys():
+            self.tp_zones[i] = pygame.Rect(*self.tp_zones[i])
+
         self.size = (x * CELL_SIZE[0], y * CELL_SIZE[1])
 
     def update_scroll(self, player):
