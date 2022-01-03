@@ -59,6 +59,7 @@ def update_enemies(enemies):
     for enemy in enemies:
         if f'{enemy.location}.txt' == location.name:
             enemy.update()
+            enemy.ai(player)
 
 
 def draw_bonuses(bonuses, surface):
@@ -163,6 +164,11 @@ def quit_game():
 
                 if enemy is not enemies[-1]:
                     enemies_line += '; '
+            enemies.clear()
+            bonuses.clear()
+            bullets.clear()
+            enemy_bullets.clear()
+
 
         bonuses_line = 'None'
         if bonuses:
@@ -526,13 +532,12 @@ while main:
         if enemies:
             for enemy in enemies:
                 if type(enemy) == EnemySoldier:
-                    enemy.ai(player)
                     if enemy.engaging_tick % 25 == 0:
                         enemy_bullets.extend(enemy.shot())
                 if type(enemy) == Boss:
-                    enemy.ai()
-                    if enemy.engaging_tick % 7 == 0:
-                        enemy_bullets.extend(enemy.shot())
+                    if location.name == f'{enemy.location}.txt':
+                        if enemy.engaging_tick % 25 == 0:
+                            enemy_bullets.extend(enemy.shot())
 
             update_enemies(enemies)
             draw_enemies(enemies, screen)

@@ -256,7 +256,6 @@ class Player(Entity):
         self.hp = hp
         self.location = location
 
-
     def draw(self, surface, scroll):
         image = image = idle_player_90[self.animation_tick // 60]  # default_image
 
@@ -386,9 +385,10 @@ class Bullet(Entity):
 
     def check_collisions_with_entity(self, entities):
         for i in entities:
-            if (self.x + self.width > i.x > self.x) or (i.x < self.x < i.x + i.width):
-                if self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height:
-                    return i
+            if i.location == self.location:
+                if (self.x + self.width > i.x > self.x) or (i.x < self.x < i.x + i.width):
+                    if self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height:
+                        return i
         return None
 
     def check_collision_with_walls(self, walls):
@@ -401,7 +401,7 @@ class Bullet(Entity):
 
 class EnemySoldier(Enemy):
     def __init__(self, x, y, width, height, location, hp, move=(0, 0)):
-        super(EnemySoldier, self).__init__(x, y, width, height, location,  move=move)
+        super(EnemySoldier, self).__init__(x, y, width, height, location, move=move)
         self.patrolling = True
         self.patrolling_tick = 0
         self.patrolling_direction = 1
@@ -506,7 +506,7 @@ class EnemySoldier(Enemy):
         if self.left:
             bullets = [EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location, move=(-6, 0)),
                        EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location, move=(-6, -3)),
-                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location ,move=(-6, 3))]
+                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location, move=(-6, 3))]
         elif self.right:
             bullets = [EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, self.location, move=(6, 0)),
                        EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, self.location, move=(6, -3)),
@@ -520,10 +520,11 @@ class EnemyBullet(Bullet):
         pygame.draw.circle(surface, 'red', (self.x - scroll[0], self.y - scroll[1] + self.height // 2), radius=7)
 
     def check_collisions_with_player(self, player):
-        if (self.x + self.width > player.x > self.x) or (player.x < self.x < player.x + player.width):
-            if self.y + self.height > player.y > self.y or player.y < self.y < player.y + player.height:
-                player.get_damage(random.randrange(15, 25))
-                return True
+        if player.location == self.location:
+            if (self.x + self.width > player.x > self.x) or (player.x < self.x < player.x + player.width):
+                if self.y + self.height > player.y > self.y or player.y < self.y < player.y + player.height:
+                    player.get_damage(random.randrange(15, 25))
+                    return True
         return False
 
 
@@ -533,33 +534,26 @@ class Boss(Entity):
         self.hp = hp
         self.vision_rect = pygame.Rect(0, 0, 700, 80)
         self.vision_rect.center = (self.x, self.y)
-        self.patrolling_tick = 0
-        self.patrolling = True
-        self.patrolling_direction = -1
-        self.start_patrolling_x = self.x
         self.engaging_tick = 0
-
+        self.r = 300
+        self.die = False
 
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
     def draw(self, surface, scroll):
-        pygame.draw.circle(surface, 'white', (self.x - scroll[0], self.y - scroll[1]), 300)
+        pygame.draw.circle(surface, 'white', (self.x - scroll[0], self.y - scroll[1]), self.r)
 
     def __str__(self):
         return 'Boss'
 
-    def ai(self):
+    def ai(self, player):
+        if player.x > self.x:
+            self.move = [2, 0]
+        else:
+            self.move = [-2, 0]
         self.engaging_tick += 1
 
     def shot(self):
-        bullets = [EnemyBullet(self.x, self.y, 1, 1, self.location, move=(-6, 0)),
-                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(-6, -9)),
-                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(-6, 9)),
-                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(6, 0)),
-                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(6, -9)),
-                   EnemyBullet(self.x, self.y, 1, 1, self.location, move=(6, 9))
-                   ]
+        bullets = [EnemyBullet(self.x, self.y, 1, 1, self.location, move=(random.randint(-3, 3), random.randint(-3, 3)))
+                   for _ in range(7)]
         return bullets
-
-
-
