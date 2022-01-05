@@ -249,6 +249,7 @@ class Player(Entity):
         super(Player, self).__init__(x, y, width, height, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
         self.hp = 100000
+        self.bullet_start_pos = (0, 0)
 
     def draw(self, surface, scroll):
         image = image = idle_player_90[self.animation_tick // 60]  # default_image
@@ -260,68 +261,84 @@ class Player(Entity):
 
         if self.ang < 57:
             offset = 0.0052
+            self.bullet_start_pos = (49, 50)
             if self.idle:
                 image = idle_player_45[self.animation_tick // 60]
             elif self.run:
                 offset = 0.015
                 image = run_player_45[self.animation_tick // 8]
             elif self.jumps:
+                self.bullet_start_pos = (35, 33)
                 image = jump_player_45[self.animation_tick // 60]
         elif 57 <= self.ang < 80:
             offset = 0.0087
+            self.bullet_start_pos = (54, 44)
             if self.idle:
                 image = idle_player_70[self.animation_tick // 60]
             elif self.run:
                 image = run_player_70[self.animation_tick // 8]
             elif self.jumps:
+                self.bullet_start_pos = (44, 28)
                 image = jump_player_70[self.animation_tick // 60]
         elif 80 <= self.ang < 105:
             offset = 0.0087
+            self.bullet_start_pos = (58, 26)
             if self.idle:
                 image = idle_player_90[self.animation_tick // 60]
             elif self.run:
                 image = run_player_90[self.animation_tick // 8]
             elif self.jumps:
+                self.bullet_start_pos = (33, 15)
                 image = jump_player_90[self.animation_tick // 60]
         elif 105 <= self.ang < 135:
             offset = 0.0087
+            self.bullet_start_pos = (53, 4)
             if self.idle:
                 image = idle_player_120[self.animation_tick // 60]
             elif self.run:
                 offset = 0.0174
                 image = run_player_120[self.animation_tick // 8]
             elif self.jumps:
+                self.bullet_start_pos = (39, 4)
                 image = jump_player_120[self.animation_tick // 60]
         elif 135 <= self.ang < 165:
             offset = 0.032
+            self.bullet_start_pos = (49, 0)
             if self.idle:
                 image = idle_player_150[self.animation_tick // 60]
             elif self.run:
                 image = run_player_150[self.animation_tick // 8]
             elif self.jumps:
+                self.bullet_start_pos = (36, 3)
                 image = jump_player_150[self.animation_tick // 60]
         elif 165 <= self.ang:
             offset = 0.0434
+            self.bullet_start_pos = (20, -7)
             if self.idle:
                 image = idle_player_180[self.animation_tick // 60]
             elif self.run:
                 offset = 0.026
+                self.bullet_start_pos = (29, 1)
                 image = run_player_150[self.animation_tick // 8]
             elif self.jumps:
+                self.bullet_start_pos = (36, 3)
                 image = jump_player_150[self.animation_tick // 60]
 
         if self.left:
+            self.bullet_start_pos = (self.width - self.bullet_start_pos[0],
+                                     self.bullet_start_pos[1])
             image = pygame.transform.flip(image, True, False)
 
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1] - int(offset * WINDOW_HEIGHT)))
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()
-        start_pos = (self.x + self.width // 2, self.y + self.height // 2)
+        start_pos = (self.x + self.bullet_start_pos[0], self.y + self.bullet_start_pos[1])
         rot = math.atan2(my + scroll[1] - start_pos[1], mx + scroll[0] - start_pos[0])
         move = math.cos(rot) * 10, math.sin(rot) * 10
         bullet = Bullet(start_pos[0], start_pos[1], 1, 1, move=move)
         self.play_shot_sound()
+        print(self.bullet_start_pos)
         return bullet
 
     def play_shot_sound(self):
@@ -374,8 +391,12 @@ class Bullet(Entity):
         self.y += self.move[1]
 
     def draw(self, surface, scroll):
-        pygame.draw.line(surface, (255, 255, 0), (self.x - scroll[0], self.y - scroll[1]),
-                         (self.x - scroll[0] + self.width, self.y - scroll[1] + self.height))
+        pygame.draw.line(surface, (255, 255, 50), (self.x - scroll[0], self.y - scroll[1]),
+                         (self.x - scroll[0] + self.move[0], self.y - scroll[1] + self.move[1]))
+        pygame.draw.line(surface, (255, 255, 50), (self.x - scroll[0] - 1, self.y - scroll[1]),
+                         (self.x - scroll[0] + self.move[0] - 1, self.y - scroll[1] + self.move[1]))
+        pygame.draw.line(surface, (255, 255, 50), (self.x - scroll[0], self.y - scroll[1] - 1),
+                         (self.x - scroll[0] + self.move[0], self.y - scroll[1] + self.move[1] - 1))
 
     def check_collisions_with_entity(self, entities):
         for i in entities:
@@ -543,3 +564,13 @@ class Particle:
         rect = pygame.Rect(self.x - scroll[0], self.y - scroll[1],
                            self.width, self.height)
         pygame.draw.ellipse(screen, self.color, rect)
+
+
+class ShotParticle(Particle):
+    def __init__(self, x, y, width, height, move=(0, 0), ticks=600, physics=True,
+                 color=(255, 255, 255)):
+        super().__init__(x, y, width, height, move, ticks, physics, color)
+
+    def draw(self, screen, scroll):
+        pygame.draw.line(screen, self.color, (self.x - scroll[0], self.y - scroll[1]),
+                         (self.x - scroll[0] + self.width, self.y - scroll[1] + self.height))

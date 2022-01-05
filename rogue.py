@@ -2,7 +2,7 @@ import pygame
 import random
 
 from decorations import TreeSpruce
-from entities import Player, EnemySoldier, Particle
+from entities import Player, EnemySoldier, Particle, ShotParticle
 from interface import Button, HealthBar
 from location import Location, WINDOW_SIZE, CELL_SIZE
 
@@ -39,7 +39,7 @@ game_over_menu = False
 
 
 clock = pygame.time.Clock()
-player = Player(200, 150, 40, 86)
+player = Player(200, 150, 70, 86)
 location = Location("1.txt")
 bullets = []
 enemy_bullets = []
@@ -136,6 +136,7 @@ def draw(screen, background):
 
 def create_jump_particles(player):
     count = 20
+    particles = []
     for _ in range(count):
         particles.append(Particle(player.x + player.width // 2, player.y + player.height, 5, 5,
                                   move=[random.randint(-7, 7), random.randint(0, 1)],
@@ -145,6 +146,7 @@ def create_jump_particles(player):
 
 def create_blood_particles(x, y, collision):
     count = 50
+    particles = []
     for _ in range(count):
         if collision == 'r':
             move_x = random.randint(2, 5)
@@ -156,8 +158,27 @@ def create_blood_particles(x, y, collision):
     return particles
 
 
-def create_shot_particles(player):
-    pass
+def create_shot_particles(bullet):
+    particles = []
+    for _ in range(10):
+        move_x = bullet.move[0] + random.uniform(-1, 1)
+        move_y = bullet.move[1] + random.uniform(-1, 1)
+        particles.append(ShotParticle(bullet.x, bullet.y, move_x, move_y,
+                                  move=(move_x, move_y), ticks=5,
+                                  physics=False, color=(255, 155, 100)))
+    for _ in range(10):
+        if random.choice((1, 2)) == 1:
+            move_x = bullet.move[0] + random.uniform(-3, -2)
+        else:
+            move_x = bullet.move[0] + random.uniform(2, 3)
+        if random.choice((1, 2)) == 1:
+            move_y = bullet.move[1] + random.uniform(-3, -2)
+        else:
+            move_y = bullet.move[1] + random.uniform(2, 3)
+        particles.append(ShotParticle(bullet.x, bullet.y, move_x, move_y,
+                                      move=(move_x, move_y), ticks=2,
+                                      physics=False, color=(255, 255, 50)))
+    return particles
 
 
 def create_dash_particles(player):
@@ -254,7 +275,9 @@ while main:
                 main = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    bullets.append(player.shot(location.scroll))
+                    bullet = player.shot(location.scroll)
+                    particles.extend(create_shot_particles(bullet))
+                    bullets.append(bullet)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game_menu = True
@@ -390,6 +413,8 @@ while main:
         for bullet in bullets[:]:
             bullet.update()
             bullet.draw(screen, location.scroll)
+            enemy = bullet.check_collisions_with_entity(enemies)
+            wall = bullet.check_collision_with_walls(location.walls)
             if bullet.x > location.size[0]:
                 bullets.remove(bullet)
             elif bullet.y > location.size[1]:
@@ -398,13 +423,10 @@ while main:
                 bullets.remove(bullet)
             elif bullet.y + bullet.height < 0:
                 bullets.remove(bullet)
-            enemy = bullet.check_collisions_with_entity(enemies)
-            wall = bullet.check_collision_with_walls(location.walls)
-
-            if enemy:
+            elif enemy:
                 enemies.remove(enemy)
                 bullets.remove(bullet)
-            if wall:
+            elif wall:
                 bullets.remove(bullet)
 
         for wall in location.walls:
