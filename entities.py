@@ -101,6 +101,8 @@ run_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\run\\run
                      pygame.image.load('data\\images\\enemies\\soldier\\run\\run_8.png'),
                      pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png')]
 
+boss = pygame.image.load('data\\images\\enemies\\boss\\boss.png')
+
 for i in range(len(idle_player_45)):
     idle_player_45[i] = pygame.transform.scale2x(idle_player_45[i])
 
@@ -157,7 +159,7 @@ for i in range(len(run_enemy_soldier)):
 
 
 class Entity:
-    def __init__(self, x, y, width, height, move=(0, 0)):
+    def __init__(self, x, y, width, height, location, move=(0, 0)):
         self.x = x
         self.y = y
         self.width = width
@@ -175,6 +177,11 @@ class Entity:
         self.idle = True
         self.run = False
         self.ang = 90
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.hp = 100
+        self.money = 0
+        self.location = location
+        self.living_tick = 0
 
     def update(self):
         if self.animation_tick > 61:
@@ -201,6 +208,7 @@ class Entity:
         self.x += self.move[0]
         self.y += self.move[1]
         self.animation_tick += 1
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw(self, surface, scroll):
         pass
@@ -245,10 +253,13 @@ class Entity:
 
 
 class Player(Entity):
-    def __init__(self, x, y, width, height, move=(0, 0)):
-        super(Player, self).__init__(x, y, width, height, move)
+    def __init__(self, x, y, width, height, location, move=(0, 0), hp=100):
+        super(Player, self).__init__(x, y, width, height, location, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
-        self.hp = 100000
+        self.hp = hp
+        self.location = location
+        self.shooting_tick = 3
+        self.shooting = False
 
     def draw(self, surface, scroll):
         image = image = idle_player_90[self.animation_tick // 60]  # default_image
@@ -320,7 +331,7 @@ class Player(Entity):
         start_pos = (self.x + self.width // 2, self.y + self.height // 2)
         rot = math.atan2(my + scroll[1] - start_pos[1], mx + scroll[0] - start_pos[0])
         move = math.cos(rot) * 10, math.sin(rot) * 10
-        bullet = Bullet(start_pos[0], start_pos[1], 1, 1, move=move)
+        bullet = Bullet(start_pos[0], start_pos[1], 1, 1, self.location, move=move)
         self.play_shot_sound()
         return bullet
 
@@ -372,6 +383,7 @@ class Bullet(Entity):
     def update(self):
         self.x += self.move[0]
         self.y += self.move[1]
+        self.living_tick += 1
 
     def draw(self, surface, scroll):
         pygame.draw.line(surface, (255, 255, 0), (self.x - scroll[0], self.y - scroll[1]),
@@ -379,9 +391,10 @@ class Bullet(Entity):
 
     def check_collisions_with_entity(self, entities):
         for i in entities:
-            if (self.x + self.width > i.x > self.x) or (i.x < self.x < i.x + i.width):
-                if self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height:
-                    return i
+            if i.location == self.location:
+                if (self.x + self.width > i.x > self.x) or (i.x < self.x < i.x + i.width):
+                    if self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height:
+                        return i
         return None
 
     def check_collision_with_walls(self, walls):
@@ -393,17 +406,21 @@ class Bullet(Entity):
 
 
 class EnemySoldier(Enemy):
-    def __init__(self, x, y, width, height, move=(0, 0)):
-        super(EnemySoldier, self).__init__(x, y, width, height, move=move)
+    def __init__(self, x, y, width, height, location, hp, move=(0, 0)):
+        super(EnemySoldier, self).__init__(x, y, width, height, location, move=move)
         self.patrolling = True
         self.patrolling_tick = 0
         self.patrolling_direction = 1
         self.idling_tick = 0
-        self.vision_rect = pygame.Rect(0, 0, 700, 80)
+        self.vision_rect = pygame.Rect(0, 0, 1400, 80)
         self.vision_rect.center = (self.x, self.y)
         self.engaging = False
         self.engaging_tick = 1
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
+        self.hp = hp
+
+    def __str__(self):
+        return 'EnemySoldier'
 
     def update(self):
         if not self.collision['bottom'] and self.jump_tick == -1:
@@ -440,39 +457,15 @@ class EnemySoldier(Enemy):
         self.shot_sound.play()
 
     def ai(self, player):
-        if self.patrolling:
-            if self.patrolling_direction == 1:
-                self.move[0] = 3
-                self.right = True
-                self.left = False
-                self.run = True
-                self.patrolling_tick += 1
-                if self.patrolling_tick == 42:
-                    self.patrolling_direction *= -1
-            else:
-                self.move[0] = -3
-                self.right = False
-                self.left = True
-                self.run = True
-                self.patrolling_tick -= 1
-                if self.patrolling_tick == -42:
-                    self.patrolling_direction *= -1
-
-            if random.randint(1, 200) == 1:
-                self.patrolling = False
-                self.idle = True
-
         if self.idle:
             self.move[0] = 0
             self.idling_tick += 1
-            if self.idling_tick == 50:
+            if self.idling_tick == 160:
                 self.idle = False
                 self.patrolling = True
                 self.idling_tick = 0
 
-        player_rect = pygame.Rect(0, 0, 50, 50)
-        player_rect.center = (player.x, player.y)
-        if self.vision_rect.colliderect(player_rect):
+        if self.vision_rect.colliderect(player.rect):
             self.engaging = True
 
         if self.engaging:
@@ -493,13 +486,13 @@ class EnemySoldier(Enemy):
 
     def shot(self):
         if self.left:
-            bullets = [EnemyBullet(self.x, self.y + self.height // 2, 1, 1, move=(-6, 0)),
-                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, move=(-6, -3)),
-                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, move=(-6, 3))]
+            bullets = [EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location, move=(-6, 0)),
+                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location, move=(-6, -3)),
+                       EnemyBullet(self.x, self.y + self.height // 2, 1, 1, self.location, move=(-6, 3))]
         elif self.right:
-            bullets = [EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, move=(6, 0)),
-                       EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, move=(6, -3)),
-                       EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, move=(6, 3))]
+            bullets = [EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, self.location, move=(6, 0)),
+                       EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, self.location, move=(6, -3)),
+                       EnemyBullet(self.x + self.width, self.y + self.height // 2, 1, 1, self.location, move=(6, 3))]
         self.play_shot_sound()
         return bullets
 
@@ -509,10 +502,11 @@ class EnemyBullet(Bullet):
         pygame.draw.circle(surface, 'red', (self.x - scroll[0], self.y - scroll[1] + self.height // 2), radius=7)
 
     def check_collisions_with_player(self, player):
-        if (self.x + self.width > player.x > self.x) or (player.x < self.x < player.x + player.width):
-            if self.y + self.height > player.y > self.y or player.y < self.y < player.y + player.height:
-                player.get_damage(random.randrange(15, 25))
-                return True
+        if player.location == self.location:
+            if (self.x + self.width > player.x > self.x) or (player.x < self.x < player.x + player.width):
+                if self.y + self.height > player.y > self.y or player.y < self.y < player.y + player.height:
+                    player.get_damage(random.randrange(15, 25))
+                    return True
         return False
 
 
@@ -543,3 +537,38 @@ class Particle:
         rect = pygame.Rect(self.x - scroll[0], self.y - scroll[1],
                            self.width, self.height)
         pygame.draw.ellipse(screen, self.color, rect)
+
+
+class Boss(Entity):
+    def __init__(self, x, y, width, height, location, hp=1000, move=(0, 0)):
+        super(Boss, self).__init__(x, y, width, height, location, move)
+        self.hp = hp
+        self.vision_rect = pygame.Rect(0, 0, 700, 80)
+        self.vision_rect.center = (self.x, self.y)
+        self.engaging_tick = 0
+        self.r = 300
+        self.die = False
+
+        self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
+
+    def draw(self, surface, scroll):
+        # pygame.draw.circle(surface, 'white', (self.x - scroll[0], self.y - scroll[1]))
+        rect = boss.get_rect(center=(self.x - scroll[0], self.y - scroll[1]))
+        surface.blit(boss, rect)
+
+    def __str__(self):
+        return 'Boss'
+
+    def ai(self, player):
+        if player.x > self.x:
+            self.move = [2, 0]
+        else:
+            self.move = [-2, 0]
+        if self.x - 10 < player.x < self.x + 10:
+            self.move = [0, 0]
+        self.engaging_tick += 1
+
+    def shot(self):
+        bullets = [EnemyBullet(self.x, self.y, 1, 1, self.location, move=(random.randint(-3, 3), random.randint(-3, 3)))
+                   for _ in range(7)]
+        return bullets

@@ -60,3 +60,16 @@ class HealthBar:
         pygame.draw.rect(surface, 'black', (
             10, 10, 10 + self.width,
             10 + self.height), 3)
+
+
+class MoneyCounter:
+    def __init__(self):
+        self.image = pygame.image.load('data\\images\\bonuses\\money\\money_1.png')
+        self.image = pygame.transform.scale2x(self.image)
+        self.font = pygame.font.Font(None, 32)
+
+    def draw(self, surface, money):
+        title = self.font.render(str(money), 1, (255, 72, 72))
+        text_rect = title.get_rect(center=(62, 61))
+        surface.blit(self.image, (10, 45))
+        surface.blit(title, text_rect)
