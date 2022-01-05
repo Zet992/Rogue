@@ -18,6 +18,9 @@ font = pygame.font.Font(None, 70)
 game_over_title = font.render('ВЫ УМЕРЛИ', 1, 'red')
 game_over_title_rect = game_over_title.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
 
+win_title = font.render('ВЫ ПОБЕДИЛИ', 1, 'green')
+win_title_rect = win_title.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
+
 health_bar = HealthBar()
 money_counter = MoneyCounter()
 
@@ -36,6 +39,9 @@ choose_save_menu = False
 # Игровой процесс
 running = False
 
+# Меню, при победе Босса
+win_menu = False
+
 # Меню после смерти игрока
 game_over_menu = False
 clock = pygame.time.Clock()
@@ -44,35 +50,38 @@ enemy_bullets = []
 enemies = []
 bonuses = []
 player_location = []
-starter_enemies = 'Boss(1750, 1500, 200, 200, 10, 4698, [0, 0])'
+
+with open(file='data\\saves\\starter_enemies.txt') as starter_enemies_file:
+    starter_enemies = starter_enemies_file.read().replace('\n', '')
 
 
 def draw_enemies(enemies, surface):
     global location
     for enemy in enemies:
-        if f'{enemy.location}.txt' == location.name:
+        if enemy.location == player.location:
             enemy.draw(surface, location.scroll)
 
 
 def update_enemies(enemies):
     global location
     for enemy in enemies:
-        if f'{enemy.location}.txt' == location.name:
+        if enemy.location == player.location:
             enemy.update()
             enemy.ai(player)
 
 
 def draw_bonuses(bonuses, surface):
-    global location
+    global location, player
     for bonus in bonuses:
-        bonus.draw(surface, location.scroll)
+        if bonus.location == player.location:
+            bonus.draw(surface, location.scroll)
 
 
 def update_bonuses(bonuses):
     global location
     for bonus in bonuses:
         bonus.draw(screen, location.scroll)
-        if f'{bonus.location}.txt' == location.name:
+        if bonus.location == player.location:
             if bonus.check_collision_with_player(player):
                 bonuses.remove(bonus)
 
@@ -151,6 +160,7 @@ def quit_game():
     main_menu = True
     game_menu = False
     running = False
+    print(f'EnemySoldier({player.x}, {player.y - 14}, 100, 100, {player.location}, 100, [0, 0])')
     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
         loc = location.name.split('.')[0]
         enemies_line = 'None'
@@ -165,10 +175,8 @@ def quit_game():
                 if enemy is not enemies[-1]:
                     enemies_line += '; '
             enemies.clear()
-            bonuses.clear()
             bullets.clear()
             enemy_bullets.clear()
-
 
         bonuses_line = 'None'
         if bonuses:
@@ -180,6 +188,7 @@ def quit_game():
                     bonuses_line += f'{bonus}({bonus.x}, {bonus.y}, {bonus.location})'
         save_file.write(
             f'location: {loc}\nhp: {player.hp}\nx: {player.x}\ny: {player.y}\nmoney: {player.money}\n{enemies_line}\n{bonuses_line}')
+        bonuses.clear()
 
 
 # Buttons
@@ -212,7 +221,7 @@ continue_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 
                          continue_game)
 game_menu_buttons.append(continue_button)
 
-quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46, 400, 46, 'Выйти в меню', quit_game)
+quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46, 400, 46, 'Сохранить и выйти', quit_game)
 game_menu_buttons.append(quit_button)
 # Decorations
 
@@ -291,6 +300,31 @@ while main:
         # pygame.mixer.music.load("data/sounds/DOOM.mp3")
         # pygame.mixer.music.play()
     while game_over_menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_menu = False
+                main = False
+                running = False
+                game_over_menu = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
+                        save_file.write(
+                            f'location: 1\nhp: 100\nx: 300\ny: 300\nmoney: 0\n{starter_enemies}\nNone')
+                    game_menu = False
+                    running = False
+                    game_over_menu = False
+                    main_menu = True
+                    enemies.clear()
+                    enemy_bullets.clear()
+                    bonuses.clear()
+                    bullets.clear()
+        screen.fill('black')
+        screen.blit(game_over_title, game_over_title_rect)
+        pygame.display.flip()
+        clock.tick(60)
+
+    while win_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_menu = False

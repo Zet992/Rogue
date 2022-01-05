@@ -451,28 +451,6 @@ class EnemySoldier(Enemy):
         self.shot_sound.play()
 
     def ai(self, player):
-        if self.patrolling:
-            if self.patrolling_direction == 1:
-                self.move[0] = 3
-                self.right = True
-                self.left = False
-                self.run = True
-                self.patrolling_tick += 1
-                if self.patrolling_tick == 42:
-                    self.patrolling_direction *= -1
-            else:
-                self.move[0] = -3
-                self.right = False
-                self.left = True
-                self.run = True
-                self.patrolling_tick -= 1
-                if self.patrolling_tick == -42:
-                    self.patrolling_direction *= -1
-
-            if random.randint(1, 200) == 1:
-                self.patrolling = False
-                self.idle = True
-
         if self.idle:
             self.move[0] = 0
             self.idling_tick += 1
@@ -481,9 +459,7 @@ class EnemySoldier(Enemy):
                 self.patrolling = True
                 self.idling_tick = 0
 
-        player_rect = pygame.Rect(0, 0, 50, 50)
-        player_rect.center = (player.x, player.y)
-        if self.vision_rect.colliderect(player_rect):
+        if self.vision_rect.colliderect(player.rect):
             self.engaging = True
 
         if self.engaging:
@@ -551,6 +527,8 @@ class Boss(Entity):
             self.move = [2, 0]
         else:
             self.move = [-2, 0]
+        if self.x - 10 < player.x < self.x + 10:
+            self.move = [0, 0]
         self.engaging_tick += 1
 
     def shot(self):
