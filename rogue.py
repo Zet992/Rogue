@@ -225,7 +225,8 @@ continue_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 
                          continue_game)
 game_menu_buttons.append(continue_button)
 
-quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46, 400, 46, 'Сохранить и выйти', quit_game)
+quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46, 400, 46, 'Сохранить и выйти',
+                     quit_game)
 game_menu_buttons.append(quit_button)
 # Decorations
 
@@ -311,7 +312,7 @@ while main:
                 running = False
                 game_over_menu = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
                     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
                         save_file.write(
                             f'location: 1\nhp: 100\nx: 300\ny: 300\nmoney: 0\n{starter_enemies}\nNone')
@@ -337,7 +338,7 @@ while main:
                 main = False
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE or event.key == pygame.K_ESCAPE:
                     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
                         save_file.write(
                             f'location: 1\nhp: 100\nx: 300\ny: 300\nmoney: 0\n{starter_enemies}\nNone')

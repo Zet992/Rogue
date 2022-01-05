@@ -101,6 +101,8 @@ run_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\run\\run
                      pygame.image.load('data\\images\\enemies\\soldier\\run\\run_8.png'),
                      pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png')]
 
+boss = pygame.image.load('data\\images\\enemies\\boss\\boss.png')
+
 for i in range(len(idle_player_45)):
     idle_player_45[i] = pygame.transform.scale2x(idle_player_45[i])
 
@@ -519,7 +521,9 @@ class Boss(Entity):
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
 
     def draw(self, surface, scroll):
-        pygame.draw.circle(surface, 'white', (self.x - scroll[0], self.y - scroll[1]), self.r)
+        # pygame.draw.circle(surface, 'white', (self.x - scroll[0], self.y - scroll[1]))
+        rect = boss.get_rect(center=(self.x - scroll[0], self.y - scroll[1]))
+        surface.blit(boss, rect)
 
     def __str__(self):
         return 'Boss'

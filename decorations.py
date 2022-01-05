@@ -1,5 +1,6 @@
-import pygame
 import random
+
+import pygame
 
 health = pygame.image.load('data\\images\\bonuses\\health\\health.png')
 health = pygame.transform.scale2x(health)
@@ -13,6 +14,7 @@ money = [pygame.image.load('data\\images\\bonuses\\money\\money_1.png'),
 
 for i in range(len(money)):
     money[i] = pygame.transform.scale2x(money[i])
+
 
 class Decoration:
     def __init__(self, surface, x, y):
@@ -39,8 +41,6 @@ class Bonus:
         self.animation_tick += 1
         if self.animation_tick == 60:
             self.animation_tick = 0
-
-
 
 
 class HealthBonus(Bonus):
@@ -71,4 +71,3 @@ class MoneyBonus(Bonus):
             player.money += random.randrange(40, 70, 1)
             return True
         return False
-
