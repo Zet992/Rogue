@@ -179,6 +179,7 @@ class Entity:
         self.hp = 100
         self.money = 0
         self.location = location
+        self.living_tick = 0
 
     def update(self):
         if self.animation_tick > 61:
@@ -378,6 +379,7 @@ class Bullet(Entity):
     def update(self):
         self.x += self.move[0]
         self.y += self.move[1]
+        self.living_tick += 1
 
     def draw(self, surface, scroll):
         pygame.draw.line(surface, (255, 255, 0), (self.x - scroll[0], self.y - scroll[1]),

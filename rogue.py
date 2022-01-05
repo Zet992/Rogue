@@ -344,6 +344,7 @@ while main:
                     enemy_bullets.clear()
                     bonuses.clear()
                     bullets.clear()
+                    win_menu = False
         screen.fill('black')
         screen.blit(game_over_title, game_over_title_rect)
         pygame.display.flip()
@@ -411,7 +412,7 @@ while main:
             draw_enemies(enemies, screen)
 
             for bullet in enemy_bullets:
-                if f'{bullet.location}.txt' == location.name:
+                if bullet.location == player.location:
                     bullet.draw(screen, location.scroll)
                 else:
                     enemy_bullets.remove(bullet)
@@ -473,7 +474,7 @@ while main:
 
         for bullet in enemy_bullets:
             bullet_removed = False
-            if f'{bullet.location}.txt' == location.name:
+            if bullet.location == player.location:
                 bullet.draw(screen, location.scroll)
                 bullet.update()
                 if bullet.x > location.size[0]:
@@ -498,10 +499,13 @@ while main:
                 enemy_bullets.remove(bullet)
 
         for bullet in bullets[:]:
-            if f'{bullet.location}.txt' == location.name:
+            if bullet.location == player.location:
                 bullet.draw(screen, location.scroll)
                 bullet.update()
                 bullet_removed = False
+                if bullet.living_tick >= 85:
+                    bullets.remove(bullet)
+                    bullet_removed = True
                 if bullet.x > location.size[0]:
                     bullets.remove(bullet)
                     bullet_removed = True
