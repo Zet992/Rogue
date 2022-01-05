@@ -25,6 +25,9 @@ font = pygame.font.Font(None, 31)
 advice_title = font.render('Нажмите ПРОБЕЛ, чтобы продолжить', 1, 'yellow')
 advice_title_rect = advice_title.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 80))
 
+win_sound = pygame.mixer.Sound('data\\sounds\\win\\win.wav')
+defeat_sound = pygame.mixer.Sound('data\\sounds\\defeat\\defeat.wav')
+
 health_bar = HealthBar()
 money_counter = MoneyCounter()
 
@@ -164,7 +167,6 @@ def quit_game():
     main_menu = True
     game_menu = False
     running = False
-    print(f'EnemySoldier({player.x}, {player.y - 14}, 100, 100, {player.location}, 100, [0, 0])')
     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
         loc = location.name.split('.')[0]
         enemies_line = 'None'
@@ -364,7 +366,11 @@ while main:
                 main = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    bullets.append(player.shot(location.scroll))
+                    player.shooting = True
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    player.shooting = False
+                    player.shooting = 0
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game_menu = True
@@ -382,6 +388,12 @@ while main:
                         player.idle = False
                 elif event.key == pygame.K_LCTRL:
                     player.dash()
+
+        if player.shooting:
+            player.shooting_tick += 1
+            if player.shooting_tick % 15 == 0:
+                bullets.append(player.shot(location.scroll))
+
 
         x, y = pygame.mouse.get_pos()
         if x >= player.x + player.width // 2 - location.scroll[0]:
@@ -475,6 +487,7 @@ while main:
         player.location = int(location.name.split('.')[0])
 
         if player.hp <= 0:
+            defeat_sound.play()
             main_menu = False
             running = False
             game_over_menu = True
@@ -535,6 +548,7 @@ while main:
                             running = False
                             main_menu = False
                             choose_save_menu = False
+                            win_sound.play()
                         if enemy.hp <= 0 and type(enemy) != Boss:
                             enemies.remove(enemy)
                             chance = random.randrange(1, 6, 1)

@@ -258,6 +258,8 @@ class Player(Entity):
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
         self.hp = hp
         self.location = location
+        self.shooting_tick = 3
+        self.shooting = False
 
     def draw(self, surface, scroll):
         image = image = idle_player_90[self.animation_tick // 60]  # default_image
@@ -338,6 +340,8 @@ class Player(Entity):
 
     def get_damage(self, damage):
         self.hp -= damage
+
+
 
 
 class Enemy(Entity):
