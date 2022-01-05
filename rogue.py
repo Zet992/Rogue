@@ -328,9 +328,9 @@ while main:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_menu = False
+                win_menu = False
                 main = False
                 running = False
-                game_over_menu = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
@@ -346,7 +346,7 @@ while main:
                     bullets.clear()
                     win_menu = False
         screen.fill('black')
-        screen.blit(game_over_title, game_over_title_rect)
+        screen.blit(win_title, win_title_rect)
         pygame.display.flip()
         clock.tick(60)
 
@@ -522,7 +522,13 @@ while main:
                     enemy = bullet.check_collisions_with_entity(enemies)
                     if enemy:
                         enemy.hp -= random.randrange(35, 60)
-                        if enemy.hp <= 0:
+                        if type(enemy) == Boss:
+                            enemies.remove(enemy)
+                            win_menu = True
+                            running = False
+                            main_menu = False
+                            choose_save_menu = False
+                        if enemy.hp <= 0 and type(enemy) != Boss:
                             enemies.remove(enemy)
                             chance = random.randrange(1, 6, 1)
                             if chance == 1:
