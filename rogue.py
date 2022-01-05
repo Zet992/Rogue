@@ -21,6 +21,10 @@ game_over_title_rect = game_over_title.get_rect(center=(WINDOW_SIZE[0] // 2, WIN
 win_title = font.render('ВЫ ПОБЕДИЛИ', 1, 'green')
 win_title_rect = win_title.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2))
 
+font = pygame.font.Font(None, 31)
+advice_title = font.render('Нажмите ПРОБЕЛ, чтобы продолжить', 1, 'yellow')
+advice_title_rect = advice_title.get_rect(center=(WINDOW_SIZE[0] // 2, WINDOW_SIZE[1] // 2 + 80))
+
 health_bar = HealthBar()
 money_counter = MoneyCounter()
 
@@ -321,6 +325,7 @@ while main:
                     bullets.clear()
         screen.fill('black')
         screen.blit(game_over_title, game_over_title_rect)
+        screen.blit(advice_title, advice_title_rect)
         pygame.display.flip()
         clock.tick(60)
 
@@ -347,6 +352,7 @@ while main:
                     win_menu = False
         screen.fill('black')
         screen.blit(win_title, win_title_rect)
+        screen.blit(advice_title, advice_title_rect)
         pygame.display.flip()
         clock.tick(60)
 
