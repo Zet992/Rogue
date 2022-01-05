@@ -87,8 +87,8 @@ def draw_bonuses(bonuses, surface):
 def update_bonuses(bonuses):
     global location
     for bonus in bonuses:
-        bonus.draw(screen, location.scroll)
         if bonus.location == player.location:
+            bonus.draw(screen, location.scroll)
             if bonus.check_collision_with_player(player):
                 bonuses.remove(bonus)
 
