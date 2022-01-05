@@ -2,7 +2,7 @@ import random
 
 import pygame
 
-from decorations import TreeSpruce
+from decorations import TreeSpruce, MoneyBonus, HealthBonus
 from entities import Player, EnemySoldier, Particle, Boss
 from interface import Button, HealthBar, MoneyCounter
 from location import Location, WINDOW_SIZE, CELL_SIZE
@@ -54,7 +54,6 @@ game_over_menu = False
 
 
 clock = pygame.time.Clock()
-player = Player(200, 150, 40, 86)
 location = Location("1.txt")
 bullets = []
 enemy_bullets = []
@@ -78,6 +77,7 @@ def update_enemies(enemies):
     global location
     for enemy in enemies:
         if enemy.location == player.location:
+            enemy.check_collision_with_objects(location.walls)
             enemy.update()
             enemy.ai(player)
 
@@ -645,7 +645,7 @@ while main:
                                 player.x = tp_rect.x - player.width - 10
                                 break
                             else:
-                                player.x = new_tp_zone[0].right + 10
+                                player.x = tp_rect.right + 10
                         break
                 break
 
@@ -655,9 +655,10 @@ while main:
                     if enemy.engaging_tick % 25 == 0:
                         enemy_bullets.extend(enemy.shot())
                 if type(enemy) == Boss:
-                    if location.name == f'{enemy.location}.txt':
-                        if enemy.engaging_tick % 25 == 0:
-                            enemy_bullets.extend(enemy.shot())
+                    if enemy.hp <= 0:
+                        if location.name == f'{enemy.location}.txt':
+                            if enemy.engaging_tick % 25 == 0:
+                                enemy_bullets.extend(enemy.shot())
 
             update_enemies(enemies)
             draw_enemies(enemies, screen)
