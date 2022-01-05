@@ -410,7 +410,7 @@ class EnemySoldier(Enemy):
         self.patrolling_tick = 0
         self.patrolling_direction = 1
         self.idling_tick = 0
-        self.vision_rect = pygame.Rect(0, 0, 700, 80)
+        self.vision_rect = pygame.Rect(0, 0, 1400, 80)
         self.vision_rect.center = (self.x, self.y)
         self.engaging = False
         self.engaging_tick = 1
