@@ -266,6 +266,7 @@ class Player(Entity):
                 image = idle_player_45[self.animation_tick // 60]
             elif self.run:
                 offset = 0.015
+                self.bullet_start_pos = (65, 55)
                 image = run_player_45[self.animation_tick // 8]
             elif self.jumps:
                 self.bullet_start_pos = (35, 33)
@@ -276,6 +277,7 @@ class Player(Entity):
             if self.idle:
                 image = idle_player_70[self.animation_tick // 60]
             elif self.run:
+                self.bullet_start_pos = (65, 50)
                 image = run_player_70[self.animation_tick // 8]
             elif self.jumps:
                 self.bullet_start_pos = (44, 28)
@@ -297,6 +299,7 @@ class Player(Entity):
                 image = idle_player_120[self.animation_tick // 60]
             elif self.run:
                 offset = 0.0174
+                self.bullet_start_pos = (66, 5)
                 image = run_player_120[self.animation_tick // 8]
             elif self.jumps:
                 self.bullet_start_pos = (39, 4)
@@ -307,6 +310,7 @@ class Player(Entity):
             if self.idle:
                 image = idle_player_150[self.animation_tick // 60]
             elif self.run:
+                self.bullet_start_pos = (59, -3)
                 image = run_player_150[self.animation_tick // 8]
             elif self.jumps:
                 self.bullet_start_pos = (36, 3)
@@ -318,7 +322,7 @@ class Player(Entity):
                 image = idle_player_180[self.animation_tick // 60]
             elif self.run:
                 offset = 0.026
-                self.bullet_start_pos = (29, 1)
+                self.bullet_start_pos = (65, -3)
                 image = run_player_150[self.animation_tick // 8]
             elif self.jumps:
                 self.bullet_start_pos = (36, 3)
@@ -338,7 +342,6 @@ class Player(Entity):
         move = math.cos(rot) * 10, math.sin(rot) * 10
         bullet = Bullet(start_pos[0], start_pos[1], 1, 1, move=move)
         self.play_shot_sound()
-        print(self.bullet_start_pos)
         return bullet
 
     def play_shot_sound(self):

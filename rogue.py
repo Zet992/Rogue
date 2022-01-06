@@ -45,7 +45,6 @@ bullets = []
 enemy_bullets = []
 enemies = []
 particles = []
-enemies.append(EnemySoldier(400, 150, 100, 100))
 
 # Button functions
 main_menu_buttons = []
