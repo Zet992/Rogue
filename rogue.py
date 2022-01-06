@@ -2,10 +2,10 @@ import random
 
 import pygame
 
-from decorations import TreeSpruce, MoneyBonus, HealthBonus
+from decorations import MoneyBonus, HealthBonus
 from entities import Player, EnemySoldier, Particle, Boss
 from interface import Button, HealthBar, MoneyCounter
-from location import Location, WINDOW_SIZE, CELL_SIZE
+from location import Location, WINDOW_SIZE
 
 pygame.init()
 screen = pygame.display.set_mode(WINDOW_SIZE)
@@ -51,7 +51,6 @@ win_menu = False
 
 # Меню после смерти игрока
 game_over_menu = False
-
 
 clock = pygame.time.Clock()
 location = Location("1.txt")
@@ -337,8 +336,10 @@ while main:
         clock.tick(60)
 
     if running:
-        pygame.mixer.music.load("data/sounds/DOOM.mp3")
-        pygame.mixer.music.play()
+        pass
+        # pygame.mixer.music.load("data/sounds/DOOM.mp3")
+        # pygame.mixer.music.play()
+
     while game_over_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -428,7 +429,6 @@ while main:
             player.shooting_tick += 1
             if player.shooting_tick % 15 == 0:
                 bullets.append(player.shot(location.scroll))
-
 
         x, y = pygame.mouse.get_pos()
         if x >= player.x + player.width // 2 - location.scroll[0]:
@@ -532,6 +532,9 @@ while main:
             if bullet.location == player.location:
                 bullet.draw(screen, location.scroll)
                 bullet.update()
+                if bullet.living_tick == 400:
+                    enemy_bullets.remove(bullet)
+                    bullet_removed = True
                 if bullet.x > location.size[0]:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
@@ -655,10 +658,9 @@ while main:
                     if enemy.engaging_tick % 25 == 0:
                         enemy_bullets.extend(enemy.shot())
                 if type(enemy) == Boss:
-                    if enemy.hp <= 0:
-                        if location.name == f'{enemy.location}.txt':
-                            if enemy.engaging_tick % 25 == 0:
-                                enemy_bullets.extend(enemy.shot())
+                    if enemy.location == player.location:
+                        if enemy.engaging_tick % 20 == 0:
+                            enemy_bullets.extend(enemy.shot())
 
             update_enemies(enemies)
             draw_enemies(enemies, screen)

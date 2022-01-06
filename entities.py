@@ -403,6 +403,10 @@ class Bullet(Entity):
                     return i
         return None
 
+    def update(self):
+        super(Bullet, self).update()
+        self.living_tick += 1
+
 
 class EnemySoldier(Enemy):
     def __init__(self, x, y, width, height, location, hp, move=(0, 0)):
@@ -548,10 +552,7 @@ class Boss(Entity):
         self.r = 300
         self.die = False
 
-        self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
-
     def draw(self, surface, scroll):
-        # pygame.draw.circle(surface, 'white', (self.x - scroll[0], self.y - scroll[1]))
         rect = boss.get_rect(center=(self.x - scroll[0], self.y - scroll[1]))
         surface.blit(boss, rect)
 
@@ -560,12 +561,11 @@ class Boss(Entity):
 
     def ai(self, player):
         if player.x > self.x:
-            self.move = [2, 0]
-        else:
-            self.move = [-2, 0]
-        if self.x - 10 < player.x < self.x + 10:
-            self.move = [0, 0]
+            self.x += 5
+        if player.x < self.x:
+            self.x -= 5
         self.engaging_tick += 1
+
 
     def shot(self):
         bullets = [EnemyBullet(self.x, self.y, 1, 1, self.location, move=(random.randint(-3, 3), random.randint(-3, 3)))
