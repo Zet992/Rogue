@@ -570,16 +570,16 @@ while main:
                 if bullet.living_tick >= 85:
                     bullets.remove(bullet)
                     bullet_removed = True
-                if bullet.x > location.size[0]:
+                if bullet.x > location.size[0] and not bullet_removed:
                     bullets.remove(bullet)
                     bullet_removed = True
-                elif bullet.y > location.size[1]:
+                elif bullet.y > location.size[1] and not bullet_removed:
                     bullets.remove(bullet)
                     bullet_removed = True
-                elif bullet.x + bullet.width < 0:
+                elif bullet.x + bullet.width < 0 and not bullet_removed:
                     bullets.remove(bullet)
                     bullet_removed = True
-                elif bullet.y + bullet.height < 0:
+                elif bullet.y + bullet.height < 0 and not bullet_removed:
                     bullets.remove(bullet)
                     bullet_removed = True
                 if not bullet_removed:
@@ -587,12 +587,13 @@ while main:
                     if enemy:
                         enemy.hp -= random.randrange(35, 60)
                         if type(enemy) == Boss:
-                            enemies.remove(enemy)
-                            win_menu = True
-                            running = False
-                            main_menu = False
-                            choose_save_menu = False
-                            win_sound.play()
+                            if enemy.hp <= 0:
+                                enemies.remove(enemy)
+                                win_menu = True
+                                running = False
+                                main_menu = False
+                                choose_save_menu = False
+                                win_sound.play()
                         if enemy.hp <= 0 and type(enemy) != Boss:
                             enemies.remove(enemy)
                             chance = random.randrange(1, 6, 1)
