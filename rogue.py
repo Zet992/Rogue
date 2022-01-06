@@ -337,9 +337,8 @@ while main:
         clock.tick(60)
 
     if running:
-        pass
-        # pygame.mixer.music.load("data/sounds/DOOM.mp3")
-        # pygame.mixer.music.play()
+        pygame.mixer.music.load("data/sounds/DOOM.mp3")
+        pygame.mixer.music.play()
     while game_over_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

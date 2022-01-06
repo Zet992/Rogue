@@ -386,8 +386,7 @@ class Bullet(Entity):
         self.living_tick += 1
 
     def draw(self, surface, scroll):
-        pygame.draw.line(surface, (255, 255, 0), (self.x - scroll[0], self.y - scroll[1]),
-                         (self.x - scroll[0] + self.width, self.y - scroll[1] + self.height))
+        pygame.draw.circle(surface, (0, 132, 255), (self.x - scroll[0], self.y - scroll[1]), 5)
 
     def check_collisions_with_entity(self, entities):
         for i in entities:
