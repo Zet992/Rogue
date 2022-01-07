@@ -269,7 +269,7 @@ class Player(Entity):
                 self.bullet_start_pos = (65, 55)
                 image = run_player_45[self.animation_tick // 8]
             elif self.jumps:
-                self.bullet_start_pos = (35, 33)
+                self.bullet_start_pos = (70, 66)
                 image = jump_player_45[self.animation_tick // 60]
         elif 57 <= self.ang < 80:
             offset = 0.0087
@@ -280,7 +280,7 @@ class Player(Entity):
                 self.bullet_start_pos = (65, 50)
                 image = run_player_70[self.animation_tick // 8]
             elif self.jumps:
-                self.bullet_start_pos = (44, 28)
+                self.bullet_start_pos = (76, 50)
                 image = jump_player_70[self.animation_tick // 60]
         elif 80 <= self.ang < 105:
             offset = 0.0087
@@ -290,7 +290,7 @@ class Player(Entity):
             elif self.run:
                 image = run_player_90[self.animation_tick // 8]
             elif self.jumps:
-                self.bullet_start_pos = (33, 15)
+                self.bullet_start_pos = (58, 26)
                 image = jump_player_90[self.animation_tick // 60]
         elif 105 <= self.ang < 135:
             offset = 0.0087
@@ -302,7 +302,7 @@ class Player(Entity):
                 self.bullet_start_pos = (66, 5)
                 image = run_player_120[self.animation_tick // 8]
             elif self.jumps:
-                self.bullet_start_pos = (39, 4)
+                self.bullet_start_pos = (60, 8)
                 image = jump_player_120[self.animation_tick // 60]
         elif 135 <= self.ang < 165:
             offset = 0.032
@@ -313,7 +313,7 @@ class Player(Entity):
                 self.bullet_start_pos = (59, -3)
                 image = run_player_150[self.animation_tick // 8]
             elif self.jumps:
-                self.bullet_start_pos = (36, 3)
+                self.bullet_start_pos = (55, -3)
                 image = jump_player_150[self.animation_tick // 60]
         elif 165 <= self.ang:
             offset = 0.0434
@@ -329,7 +329,7 @@ class Player(Entity):
                 image = jump_player_150[self.animation_tick // 60]
 
         if self.left:
-            self.bullet_start_pos = (self.width - self.bullet_start_pos[0],
+            self.bullet_start_pos = (image.get_width() - self.bullet_start_pos[0],
                                      self.bullet_start_pos[1])
             image = pygame.transform.flip(image, True, False)
 
