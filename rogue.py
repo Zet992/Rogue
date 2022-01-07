@@ -577,7 +577,7 @@ while main:
                 if bullet.living_tick == 400 and not bullet_removed:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
-                if bullet.x > location.size[0]:
+                if bullet.x > location.size[0] and not bullet_removed:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
                 elif bullet.y > location.size[1] and not bullet_removed:
