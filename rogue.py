@@ -69,32 +69,43 @@ def draw_enemies(enemies, surface):
     global location
     for enemy in enemies:
         if enemy.location == player.location:
-            enemy.draw(surface, location.scroll)
+            if not abs(enemy.x - player.x) > 1100 and not abs(enemy.y - player.y) > 600:
+                enemy.draw(surface, location.scroll)
 
 
 def update_enemies(enemies):
     global location
     for enemy in enemies:
         if enemy.location == player.location:
-            enemy.check_collision_with_objects(location.walls)
-            enemy.update()
-            enemy.ai(player)
+                if type(enemy) != Boss:
+                    enemy.check_collision_with_objects(location.walls)
+                if type(enemy) != Boss:
+                    if not abs(enemy.x - player.x) > 1100 and not abs(enemy.y - player.y) > 600:
+                        enemy.update()
+                        enemy.ai(player)
+                elif type(enemy) == Boss:
+                    enemy.update()
+                    enemy.ai(player)
+
+
 
 
 def draw_bonuses(bonuses, surface):
     global location, player
     for bonus in bonuses:
         if bonus.location == player.location:
-            bonus.draw(surface, location.scroll)
+            if not abs(bonus.x - player.x) > 1100 and not abs(bonus.y - player.y) > 600:
+                bonus.draw(surface, location.scroll)
 
 
 def update_bonuses(bonuses):
-    global location
+    global location, player
     for bonus in bonuses:
         if bonus.location == player.location:
-            bonus.draw(screen, location.scroll)
-            if bonus.check_collision_with_player(player):
-                bonuses.remove(bonus)
+            if not abs(bonus.x - player.x) > 1100 and not abs(player.y - bonus.y) > 600:
+                bonus.update()
+                if bonus.check_collision_with_player(player):
+                    bonuses.remove(bonus)
 
 
 # Button functions
@@ -467,14 +478,18 @@ while main:
 
             for bullet in enemy_bullets:
                 if bullet.location == player.location:
-                    bullet.draw(screen, location.scroll)
+                    if not abs(player.x - bullet.x) > 1000 and not abs(player.y - bullet.y) > 600:
+                        bullet.draw(screen, location.scroll)
                 else:
                     enemy_bullets.remove(bullet)
 
             for wall in location.walls:
-                wall.draw(screen, location.scroll)
+                if not abs(player.x - wall.x) > 1000 and not abs(player.y - wall.y) > 600:
+                    wall.draw(screen, location.scroll)
+
             for bullet in bullets[:]:
-                bullet.draw(screen, location.scroll)
+                if not abs(player.x - bullet.x) > 1000 and not abs(player.y - bullet.y) > 600:
+                    bullet.draw(screen, location.scroll)
             player.draw(screen, location.scroll)
             screen.blit(transparent_game_menu_background, (0, 0))
             for button in game_menu_buttons:
@@ -530,21 +545,25 @@ while main:
         for bullet in enemy_bullets:
             bullet_removed = False
             if bullet.location == player.location:
-                bullet.draw(screen, location.scroll)
-                bullet.update()
-                if bullet.living_tick == 400:
+                if not abs(bullet.x - player.x) > 1000 and not abs(bullet.y - player.y) > 600:
+                    bullet.draw(screen, location.scroll)
+                    bullet.update()
+                else:
+                    enemy_bullets.remove(bullet)
+                    bullet_removed = True
+                if bullet.living_tick == 400 and not bullet_removed:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
                 if bullet.x > location.size[0]:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
-                elif bullet.y > location.size[1]:
+                elif bullet.y > location.size[1] and not bullet_removed:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
-                elif bullet.x + bullet.width < 0:
+                elif bullet.x + bullet.width < 0 and not bullet_removed:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
-                elif bullet.y + bullet.height < 0:
+                elif bullet.y + bullet.height < 0 and not bullet_removed:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
                 if not bullet_removed:
@@ -565,11 +584,12 @@ while main:
                 enemy_bullets.remove(bullet)
 
         for bullet in bullets[:]:
+            bullet_removed = False
             if bullet.location == player.location:
-                bullet.draw(screen, location.scroll)
+                if not abs(bullet.x - player.x) > 1000 and not abs(bullet.y - player.y) > 600:
+                    bullet.draw(screen, location.scroll)
                 bullet.update()
-                bullet_removed = False
-                if bullet.living_tick >= 85:
+                if bullet.living_tick >= 85 and not bullet_removed:
                     bullets.remove(bullet)
                     bullet_removed = True
                 if bullet.x > location.size[0] and not bullet_removed:
@@ -612,7 +632,8 @@ while main:
         update_bonuses(bonuses)
 
         for wall in location.walls:
-            wall.draw(screen, location.scroll)
+            if not abs(wall.x - player.x) > 1000 and not abs(wall.y - player.y) > 600:
+                wall.draw(screen, location.scroll)
 
         for tp_zone in location.tp_zones:
             if player.rect.colliderect(location.tp_zones[tp_zone]):
