@@ -256,6 +256,7 @@ def draw(screen, background):
 
 def create_jump_particles(player):
     count = 20
+    particles = []
     for _ in range(count):
         particles.append(Particle(player.x + player.width // 2, player.y + player.height, 5, 5,
                                   move=[random.randint(-7, 7), random.randint(0, 1)],
@@ -265,6 +266,7 @@ def create_jump_particles(player):
 
 def create_blood_particles(x, y, collision):
     count = 50
+    particles = []
     for _ in range(count):
         if collision == 'r':
             move_x = random.randint(2, 5)
@@ -276,8 +278,27 @@ def create_blood_particles(x, y, collision):
     return particles
 
 
-def create_shot_particles(player):
-    pass
+def create_shot_particles(bullet):
+    particles = []
+    for _ in range(10):
+        move_x = bullet.move[0] + random.uniform(-1, 1)
+        move_y = bullet.move[1] + random.uniform(-1, 1)
+        particles.append(ShotParticle(bullet.x, bullet.y, move_x, move_y,
+                                  move=(move_x, move_y), ticks=5,
+                                  physics=False, color=(255, 155, 100)))
+    for _ in range(10):
+        if random.choice((1, 2)) == 1:
+            move_x = bullet.move[0] + random.uniform(-3, -2)
+        else:
+            move_x = bullet.move[0] + random.uniform(2, 3)
+        if random.choice((1, 2)) == 1:
+            move_y = bullet.move[1] + random.uniform(-3, -2)
+        else:
+            move_y = bullet.move[1] + random.uniform(2, 3)
+        particles.append(ShotParticle(bullet.x, bullet.y, move_x, move_y,
+                                      move=(move_x, move_y), ticks=2,
+                                      physics=False, color=(255, 255, 50)))
+    return particles
 
 
 def create_dash_particles(player):
@@ -439,7 +460,9 @@ while main:
         if player.shooting:
             player.shooting_tick += 1
             if player.shooting_tick % 15 == 0:
-                bullets.append(player.shot(location.scroll))
+                bullet = player.shot(location.scroll)
+                particles.extend(create_shot_particles(bullet))
+                bullets.append(bullet)
 
         x, y = pygame.mouse.get_pos()
         if x >= player.x + player.width // 2 - location.scroll[0]:
