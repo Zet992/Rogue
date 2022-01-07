@@ -566,7 +566,6 @@ class Boss(Entity):
             self.x -= 5
         self.engaging_tick += 1
 
-
     def shot(self):
         bullets = [EnemyBullet(self.x, self.y, 1, 1, self.location, move=(random.randint(-3, 3), random.randint(-3, 3)))
                    for _ in range(7)]

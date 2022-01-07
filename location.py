@@ -12,7 +12,6 @@ for i in range(len(tiles)):
     tiles[i] = pygame.transform.scale(tiles[i], (128, 128))
 
 
-
 class Location:
     def __init__(self, name):
         self.map = []
