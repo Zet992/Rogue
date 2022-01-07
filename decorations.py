@@ -2,15 +2,15 @@ import random
 
 import pygame
 
-health = pygame.image.load('data\\images\\bonuses\\health\\health.png')
+health = pygame.image.load('data\\images\\bonuses\\health\\health.png').convert_alpha()
 health = pygame.transform.scale2x(health)
 
-money = [pygame.image.load('data\\images\\bonuses\\money\\money_1.png'),
-         pygame.image.load('data\\images\\bonuses\\money\\money_2.png'),
-         pygame.image.load('data\\images\\bonuses\\money\\money_3.png'),
-         pygame.image.load('data\\images\\bonuses\\money\\money_4.png'),
-         pygame.image.load('data\\images\\bonuses\\money\\money_5.png'),
-         pygame.image.load('data\\images\\bonuses\\money\\money_1.png')]
+money = [pygame.image.load('data\\images\\bonuses\\money\\money_1.png').convert_alpha(),
+         pygame.image.load('data\\images\\bonuses\\money\\money_2.png').convert_alpha(),
+         pygame.image.load('data\\images\\bonuses\\money\\money_3.png').convert_alpha(),
+         pygame.image.load('data\\images\\bonuses\\money\\money_4.png').convert_alpha(),
+         pygame.image.load('data\\images\\bonuses\\money\\money_5.png').convert_alpha(),
+         pygame.image.load('data\\images\\bonuses\\money\\money_1.png').convert_alpha()]
 
 for i in range(len(money)):
     money[i] = pygame.transform.scale2x(money[i])

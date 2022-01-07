@@ -1,11 +1,12 @@
 import pygame
 import random
 
+from settings import WINDOW_SIZE
+
 CELL_SIZE = (128, 128)
-WINDOW_SIZE = WINDOW_WIDTH, WINDOW_HEIGHT = (1024, 576)
 
 tiles = [
-         pygame.image.load('data\\images\\tile\\tile.png')]
+         pygame.image.load('data\\images\\tile\\tile.png').convert()]
 
 for i in range(len(tiles)):
     tiles[i] = pygame.transform.scale(tiles[i], (128, 128))
@@ -48,10 +49,8 @@ class Location:
         self.size = (x * CELL_SIZE[0], y * CELL_SIZE[1])
 
     def update_scroll(self, player):
-        if player.x - self.scroll[0] != self.step[0]:
-            self.scroll[0] = player.x - self.step[0]
-        if player.y - self.scroll[1] != self.step[1]:
-            self.scroll[1] = player.y - self.step[1]
+        self.scroll[0] = player.x - self.step[0]
+        self.scroll[1] = player.y - self.step[1]
 
         if self.scroll[0] < 0:
             self.scroll[0] = 0

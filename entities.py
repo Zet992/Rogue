@@ -3,105 +3,105 @@ import random
 
 import pygame
 
-from location import WINDOW_HEIGHT
+from settings import WINDOW_HEIGHT
 
-run_player_45 = [pygame.image.load('data\\images\\player\\run\\45\\run_1.png'),
-                 pygame.image.load('data\\images\\player\\run\\45\\run_2.png'),
-                 pygame.image.load('data\\images\\player\\run\\45\\run_3.png'),
-                 pygame.image.load('data\\images\\player\\run\\45\\run_4.png'),
-                 pygame.image.load('data\\images\\player\\run\\45\\run_5.png'),
-                 pygame.image.load('data\\images\\player\\run\\45\\run_6.png'),
-                 pygame.image.load('data\\images\\player\\run\\45\\run_7.png'),
-                 pygame.image.load('data\\images\\player\\run\\45\\run_8.png'),
-                 pygame.image.load('data\\images\\player\\idle\\45\\idle.png')]
+run_player_45 = [pygame.image.load('data\\images\\player\\run\\45\\run_1.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_2.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_3.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_4.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_5.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_6.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_7.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\45\\run_8.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\idle\\45\\idle.png').convert_alpha()]
 
-run_player_70 = [pygame.image.load('data\\images\\player\\run\\70\\run_1.png'),
-                 pygame.image.load('data\\images\\player\\run\\70\\run_2.png'),
-                 pygame.image.load('data\\images\\player\\run\\70\\run_3.png'),
-                 pygame.image.load('data\\images\\player\\run\\70\\run_4.png'),
-                 pygame.image.load('data\\images\\player\\run\\70\\run_5.png'),
-                 pygame.image.load('data\\images\\player\\run\\70\\run_6.png'),
-                 pygame.image.load('data\\images\\player\\run\\70\\run_7.png'),
-                 pygame.image.load('data\\images\\player\\run\\70\\run_8.png'),
-                 pygame.image.load('data\\images\\player\\idle\\70\\idle.png')]
+run_player_70 = [pygame.image.load('data\\images\\player\\run\\70\\run_1.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_2.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_3.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_4.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_5.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_6.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_7.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\70\\run_8.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\idle\\70\\idle.png').convert_alpha()]
 
-run_player_90 = [pygame.image.load('data\\images\\player\\run\\90\\run_1.png'),
-                 pygame.image.load('data\\images\\player\\run\\90\\run_2.png'),
-                 pygame.image.load('data\\images\\player\\run\\90\\run_3.png'),
-                 pygame.image.load('data\\images\\player\\run\\90\\run_4.png'),
-                 pygame.image.load('data\\images\\player\\run\\90\\run_5.png'),
-                 pygame.image.load('data\\images\\player\\run\\90\\run_6.png'),
-                 pygame.image.load('data\\images\\player\\run\\90\\run_7.png'),
-                 pygame.image.load('data\\images\\player\\run\\90\\run_8.png'),
-                 pygame.image.load('data\\images\\player\\idle\\90\\idle.png')]
+run_player_90 = [pygame.image.load('data\\images\\player\\run\\90\\run_1.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_2.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_3.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_4.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_5.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_6.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_7.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\run\\90\\run_8.png').convert_alpha(),
+                 pygame.image.load('data\\images\\player\\idle\\90\\idle.png').convert_alpha()]
 
-run_player_120 = [pygame.image.load('data\\images\\player\\run\\120\\run_1.png'),
-                  pygame.image.load('data\\images\\player\\run\\120\\run_2.png'),
-                  pygame.image.load('data\\images\\player\\run\\120\\run_3.png'),
-                  pygame.image.load('data\\images\\player\\run\\120\\run_4.png'),
-                  pygame.image.load('data\\images\\player\\run\\120\\run_5.png'),
-                  pygame.image.load('data\\images\\player\\run\\120\\run_6.png'),
-                  pygame.image.load('data\\images\\player\\run\\120\\run_7.png'),
-                  pygame.image.load('data\\images\\player\\run\\120\\run_8.png'),
-                  pygame.image.load('data\\images\\player\\idle\\120\\idle.png')]
+run_player_120 = [pygame.image.load('data\\images\\player\\run\\120\\run_1.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_2.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_3.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_4.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_5.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_6.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_7.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\120\\run_8.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\idle\\120\\idle.png').convert_alpha()]
 
-run_player_150 = [pygame.image.load('data\\images\\player\\run\\150\\run_1.png'),
-                  pygame.image.load('data\\images\\player\\run\\150\\run_2.png'),
-                  pygame.image.load('data\\images\\player\\run\\150\\run_3.png'),
-                  pygame.image.load('data\\images\\player\\run\\150\\run_4.png'),
-                  pygame.image.load('data\\images\\player\\run\\150\\run_5.png'),
-                  pygame.image.load('data\\images\\player\\run\\150\\run_6.png'),
-                  pygame.image.load('data\\images\\player\\run\\150\\run_7.png'),
-                  pygame.image.load('data\\images\\player\\run\\150\\run_8.png'),
-                  pygame.image.load('data\\images\\player\\idle\\150\\idle.png')]
+run_player_150 = [pygame.image.load('data\\images\\player\\run\\150\\run_1.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_2.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_3.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_4.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_5.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_6.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_7.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\run\\150\\run_8.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\idle\\150\\idle.png').convert_alpha()]
 
-jump_player_45 = [pygame.image.load('data\\images\\player\\jump\\45\\jump.png'),
-                  pygame.image.load('data\\images\\player\\jump\\45\\jump.png')]
+jump_player_45 = [pygame.image.load('data\\images\\player\\jump\\45\\jump.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\jump\\45\\jump.png').convert_alpha()]
 
-jump_player_70 = [pygame.image.load('data\\images\\player\\jump\\70\\jump.png'),
-                  pygame.image.load('data\\images\\player\\jump\\70\\jump.png')]
+jump_player_70 = [pygame.image.load('data\\images\\player\\jump\\70\\jump.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\jump\\70\\jump.png').convert_alpha()]
 
-jump_player_90 = [pygame.image.load('data\\images\\player\\jump\\90\\jump.png'),
-                  pygame.image.load('data\\images\\player\\jump\\90\\jump.png')]
+jump_player_90 = [pygame.image.load('data\\images\\player\\jump\\90\\jump.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\jump\\90\\jump.png').convert_alpha()]
 
-jump_player_120 = [pygame.image.load('data\\images\\player\\jump\\120\\jump.png'),
-                   pygame.image.load('data\\images\\player\\jump\\120\\jump.png')]
+jump_player_120 = [pygame.image.load('data\\images\\player\\jump\\120\\jump.png').convert_alpha(),
+                   pygame.image.load('data\\images\\player\\jump\\120\\jump.png').convert_alpha()]
 
-jump_player_150 = [pygame.image.load('data\\images\\player\\jump\\150\\jump.png'),
-                   pygame.image.load('data\\images\\player\\jump\\150\\jump.png')]
+jump_player_150 = [pygame.image.load('data\\images\\player\\jump\\150\\jump.png').convert_alpha(),
+                   pygame.image.load('data\\images\\player\\jump\\150\\jump.png').convert_alpha()]
 
-idle_player_45 = [pygame.image.load('data\\images\\player\\idle\\45\\idle.png'),
-                  pygame.image.load('data\\images\\player\\idle\\45\\idle.png')]
+idle_player_45 = [pygame.image.load('data\\images\\player\\idle\\45\\idle.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\idle\\45\\idle.png').convert_alpha()]
 
-idle_player_70 = [pygame.image.load('data\\images\\player\\idle\\70\\idle.png'),
-                  pygame.image.load('data\\images\\player\\idle\\70\\idle.png')]
+idle_player_70 = [pygame.image.load('data\\images\\player\\idle\\70\\idle.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\idle\\70\\idle.png').convert_alpha()]
 
-idle_player_90 = [pygame.image.load('data\\images\\player\\idle\\90\\idle.png'),
-                  pygame.image.load('data\\images\\player\\idle\\90\\idle.png')]
+idle_player_90 = [pygame.image.load('data\\images\\player\\idle\\90\\idle.png').convert_alpha(),
+                  pygame.image.load('data\\images\\player\\idle\\90\\idle.png').convert_alpha()]
 
-idle_player_120 = [pygame.image.load('data\\images\\player\\idle\\120\\idle.png'),
-                   pygame.image.load('data\\images\\player\\idle\\120\\idle.png')]
+idle_player_120 = [pygame.image.load('data\\images\\player\\idle\\120\\idle.png').convert_alpha(),
+                   pygame.image.load('data\\images\\player\\idle\\120\\idle.png').convert_alpha()]
 
-idle_player_150 = [pygame.image.load('data\\images\\player\\idle\\150\\idle.png'),
-                   pygame.image.load('data\\images\\player\\idle\\150\\idle.png')]
+idle_player_150 = [pygame.image.load('data\\images\\player\\idle\\150\\idle.png').convert_alpha(),
+                   pygame.image.load('data\\images\\player\\idle\\150\\idle.png').convert_alpha()]
 
-idle_player_180 = [pygame.image.load('data\\images\\player\\idle\\180\\idle.png'),
-                   pygame.image.load('data\\images\\player\\idle\\180\\idle.png')]
+idle_player_180 = [pygame.image.load('data\\images\\player\\idle\\180\\idle.png').convert_alpha(),
+                   pygame.image.load('data\\images\\player\\idle\\180\\idle.png').convert_alpha()]
 
-idle_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png'),
-                      pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png')]
+idle_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png').convert_alpha(),
+                      pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png').convert_alpha()]
 
-run_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\run\\run_1.png'),
-                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_2.png'),
-                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_3.png'),
-                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_4.png'),
-                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_5.png'),
-                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_6.png'),
-                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_7.png'),
-                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_8.png'),
-                     pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png')]
+run_enemy_soldier = [pygame.image.load('data\\images\\enemies\\soldier\\run\\run_1.png').convert_alpha(),
+                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_2.png').convert_alpha(),
+                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_3.png').convert_alpha(),
+                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_4.png').convert_alpha(),
+                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_5.png').convert_alpha(),
+                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_6.png').convert_alpha(),
+                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_7.png').convert_alpha(),
+                     pygame.image.load('data\\images\\enemies\\soldier\\run\\run_8.png').convert_alpha(),
+                     pygame.image.load('data\\images\\enemies\\soldier\\idle\\idle.png').convert_alpha()]
 
-boss = pygame.image.load('data\\images\\enemies\\boss\\boss.png')
+boss = pygame.image.load('data\\images\\enemies\\boss\\boss.png').convert_alpha()
 
 for i in range(len(idle_player_45)):
     idle_player_45[i] = pygame.transform.scale2x(idle_player_45[i])

@@ -1,6 +1,6 @@
 import pygame
 
-from location import WINDOW_SIZE
+from settings import WINDOW_SIZE
 
 
 class Button:

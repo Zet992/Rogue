@@ -2,14 +2,20 @@ import random
 
 import pygame
 
-from decorations import MoneyBonus, HealthBonus
-from entities import Player, EnemySoldier, Particle, Boss
-from interface import Button, HealthBar, MoneyCounter
-from location import Location, WINDOW_SIZE
-
+from settings import WINDOW_SIZE
 pygame.init()
 screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Rogue")
+
+from decorations import MoneyBonus, HealthBonus
+from entities import Player, EnemySoldier, Particle, Boss
+from entities import run_player_45, run_player_70, run_player_90, run_player_120, run_player_150
+from entities import jump_player_45, jump_player_70, jump_player_90, jump_player_120, jump_player_150
+from entities import idle_player_45, idle_player_70, idle_player_90, idle_player_120, idle_player_150
+from entities import idle_player_180, idle_enemy_soldier, run_enemy_soldier, boss
+from interface import Button, HealthBar, MoneyCounter
+from location import Location, tiles
+
 
 transparent_game_menu_background = pygame.Surface((WINDOW_SIZE[0], WINDOW_SIZE[1]), pygame.SRCALPHA)
 transparent_game_menu_background.fill((0, 0, 0, 128))
