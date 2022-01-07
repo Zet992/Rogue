@@ -8,7 +8,7 @@ screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Rogue")
 
 from decorations import MoneyBonus, HealthBonus
-from entities import Player, EnemySoldier, Particle, Boss
+from entities import Player, EnemySoldier, Particle, Boss, ShotParticle
 from interface import Button, HealthBar, MoneyCounter
 from location import Location
 
