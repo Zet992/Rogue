@@ -521,7 +521,7 @@ while main:
             clock.tick(60)
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d] and player.dash_count == 0:
+        if keys[pygame.K_d] and player.dash_tick == 0:
             player.move[0] = 7
             player.run = True
             player.idle = False
@@ -542,13 +542,13 @@ while main:
             player.run = False
         if player.jumps:
             player.jump()
-        if player.dash_count != 0:
-            if player.left:
+        if player.dash_tick != 0:
+            if player.dash_side == 'l':
                 player.move[0] = -35
             else:
                 player.move[0] = 35
-            player.dash_count -= 1
-        if not player.collision['bottom'] and player.jump_tick == -1 and player.dash_count == 0:
+            player.dash_tick -= 1
+        if not player.collision['bottom'] and player.jump_tick == -1 and player.dash_tick == 0:
             player.move[1] = player.fall_count ** 2 / 10
             if player.fall_count < 15:
                 player.fall_count += 1
