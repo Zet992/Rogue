@@ -554,7 +554,9 @@ while main:
                 player.fall_count += 1
 
         screen.fill((0, 0, 0))
-        draw(screen, background)
+        for background_tile in location.background_tiles:
+            background_tile.draw(screen, location.scroll)
+
         player.check_collision_with_objects(location.walls)
         player.update()
         player.location = int(location.name.split('.')[0])

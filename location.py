@@ -5,8 +5,8 @@ from settings import WINDOW_SIZE
 
 CELL_SIZE = (128, 128)
 
-tiles = [
-         pygame.image.load('data\\images\\tile\\tile.png').convert()]
+tiles = [pygame.image.load('data\\images\\tile\\tile.png').convert(),]
+background_tiles = [pygame.image.load('data\\images\\tile\\background.jpg').convert(),]
 
 for i in range(len(tiles)):
     tiles[i] = pygame.transform.scale(tiles[i], (128, 128))
@@ -16,6 +16,7 @@ class Location:
     def __init__(self, name):
         self.map = []
         self.walls = []
+        self.background_tiles = []
         self.tp_zones = {}
         self.size = (0, 0)
         self.step = (450, 300)
@@ -32,6 +33,8 @@ class Location:
             for x, cell in enumerate(row):
                 if cell == "@":
                     self.walls.append(Wall(x * CELL_SIZE[0], y * CELL_SIZE[1]))
+                elif cell == '-':
+                    self.background_tiles.append(BackgroundTile(x * CELL_SIZE[0], y * CELL_SIZE[1]))
                 elif cell[:-1].isdigit():
                     if cell in self.tp_zones:
                         if y * CELL_SIZE[1] == self.tp_zones[cell][1]:
@@ -41,6 +44,7 @@ class Location:
                     else:
                         self.tp_zones[cell] = [x * CELL_SIZE[0], y * CELL_SIZE[1],
                                                CELL_SIZE[0], CELL_SIZE[1]]
+                    self.background_tiles.append(BackgroundTile(x * CELL_SIZE[0], y * CELL_SIZE[1]))
 
         for i in self.tp_zones.keys():
             self.tp_zones[i] = pygame.Rect(*self.tp_zones[i])
@@ -73,4 +77,19 @@ class Wall:
 
     def draw(self, surface, scroll):
         image = tiles[0]
+        surface.blit(image, (self.x - scroll[0], self.y - scroll[1], CELL_SIZE[0], CELL_SIZE[1]))
+
+
+class BackgroundTile:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.width = CELL_SIZE[0]
+        self.height = CELL_SIZE[1]
+
+    def update(self):
+        pass
+
+    def draw(self, surface, scroll):
+        image = background_tiles[0]
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1], CELL_SIZE[0], CELL_SIZE[1]))
