@@ -574,21 +574,20 @@ class Boss(Entity):
         self.die = False
 
     def draw(self, surface, scroll):
-        rect = boss.get_rect(center=(self.x - scroll[0], self.y - scroll[1]))
-        surface.blit(boss, rect)
+        surface.blit(boss, (self.x - scroll[0], self.y - scroll[1]))
 
     def __str__(self):
         return 'Boss'
 
     def ai(self, player):
-        if player.x > self.x:
+        if player.x > self.x + self.width // 2:
             self.x += 5
-        if player.x < self.x:
+        if player.x < self.x + self.width // 2:
             self.x -= 5
         self.engaging_tick += 1
 
     def shot(self):
-        bullets = [EnemyBullet(self.x, self.y, 1, 1, self.location, move=(random.randint(-3, 3), random.randint(-3, 3)))
+        bullets = [EnemyBullet(self.x + self.width // 2, self.y + self.height // 2, 1, 1, self.location, move=(random.randint(-3, 3), random.randint(-3, 3)))
                    for _ in range(7)]
         return bullets
 

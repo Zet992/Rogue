@@ -492,6 +492,8 @@ while main:
                         button.check_hover(x_cursor, y_cursor)
             screen.fill('black')
             draw(screen, background)
+            for background_tile in location.background_tiles:
+                background_tile.draw(screen, location.scroll)
             location.update_scroll(player)
             player.check_collision_with_objects(location.walls)
 
