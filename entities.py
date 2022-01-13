@@ -274,6 +274,7 @@ class Player(Entity):
     def __init__(self, x, y, width, height, location, move=(0, 0), hp=100):
         super(Player, self).__init__(x, y, width, height, location, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
+        self.dash_sound = pygame.mixer.Sound('data\\sounds\\player\\dash.wav')
         self.hp = hp
         self.location = location
         self.shooting_tick = 3
@@ -363,13 +364,24 @@ class Player(Entity):
             image = pygame.transform.flip(image, True, False)
 
         if 0 < self.dash_tick <= 4:
-            new_image = image.copy()
+            if self.dash_tick % 3 == 0:
+                color = (205, 0, 0)
+            elif self.dash_tick % 3 == 2:
+                color = (0, 205, 0)
+            else:
+                color = (0, 0, 205)
             for i in range(-6, 0):
+                new_image = image.copy()
+                new_image.set_alpha(100)
+                scr = pygame.Surface((new_image.get_width(), new_image.get_height()))
+                pygame.draw.rect(scr, color, (0, 0, scr.get_width(), scr.get_height()))
+                scr.set_alpha(125)
+                new_image.blit(scr, (0, 0))
+                new_image.set_colorkey(new_image.get_at((0, 0)))
                 if self.dash_side == 'r':
                     x = self.x - scroll[0] + i * 5
                 else:
                     x = self.x - scroll[0] - i * 5
-                new_image.set_alpha((7 + i) * 20)
                 surface.blit(new_image, (x, self.y - scroll[1] - int(offset * WINDOW_HEIGHT)))
 
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1] - int(offset * WINDOW_HEIGHT)))
@@ -382,6 +394,13 @@ class Player(Entity):
         bullet = Bullet(start_pos[0], start_pos[1], 1, 1, self.location, move=move)
         self.play_shot_sound()
         return bullet
+
+    def dash(self):
+        super().dash()
+        self.play_dash_sound()
+
+    def play_dash_sound(self):
+        self.dash_sound.play()
 
     def play_shot_sound(self):
         self.shot_sound.play()
