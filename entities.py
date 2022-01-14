@@ -167,6 +167,7 @@ class Entity:
         self.move = list(move)
         self.animation_tick = 0
         self.animation_images = []
+        self.dash_sound = pygame.mixer.Sound('data\\sounds\\player\\dash.wav')
         self.collision = {"up": False, "bottom": False, "right": False, "left": False}
         self.fall_count = 1
         self.jump_tick = -1
@@ -262,6 +263,7 @@ class Entity:
         self.move[1] = 3
         self.jump_tick = -1
         self.fall_count = 0
+        self.dash_sound.play()
 
     def jump(self):
         if self.jumps == 1 or self.jumps == 2:
@@ -274,7 +276,6 @@ class Player(Entity):
     def __init__(self, x, y, width, height, location, move=(0, 0), hp=100):
         super(Player, self).__init__(x, y, width, height, location, move)
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
-        self.dash_sound = pygame.mixer.Sound('data\\sounds\\player\\dash.wav')
         self.hp = hp
         self.location = location
         self.shooting_tick = 3
@@ -394,10 +395,6 @@ class Player(Entity):
         bullet = Bullet(start_pos[0], start_pos[1], 1, 1, self.location, move=move)
         self.play_shot_sound()
         return bullet
-
-    def dash(self):
-        super().dash()
-        self.play_dash_sound()
 
     def play_dash_sound(self):
         self.dash_sound.play()
