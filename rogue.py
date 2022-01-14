@@ -447,6 +447,7 @@ while main:
                         player.run = False
                         player.idle = False
                         particles.extend(create_jump_particles(player))
+                        player.jump_sound.play()
                     elif player.jumps != 2 and player.jump_tick < 15:
                         player.jump_tick = 18
                         player.fall_count = 1
@@ -454,6 +455,7 @@ while main:
                         player.run = False
                         player.idle = False
                         particles.extend(create_jump_particles(player))
+                        player.jump_sound.play()
                 elif event.key == pygame.K_LCTRL:
                     player.dash()
 

@@ -168,6 +168,7 @@ class Entity:
         self.animation_tick = 0
         self.animation_images = []
         self.dash_sound = pygame.mixer.Sound('data\\sounds\\player\\dash.wav')
+        self.jump_sound = pygame.mixer.Sound('data\\sounds\\player\\jump.wav')
         self.collision = {"up": False, "bottom": False, "right": False, "left": False}
         self.fall_count = 1
         self.jump_tick = -1
