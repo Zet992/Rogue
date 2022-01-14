@@ -167,11 +167,15 @@ class Entity:
         self.move = list(move)
         self.animation_tick = 0
         self.animation_images = []
+        self.dash_sound = pygame.mixer.Sound('data\\sounds\\player\\dash.wav')
         self.collision = {"up": False, "bottom": False, "right": False, "left": False}
         self.fall_count = 1
         self.jump_tick = -1
         self.jumps = 0
         self.dash_count = 0
+        self.dash_tick = 0
+        self.dash_delay = 0
+        self.dash_side = 'r'
         self.right = True
         self.left = False
         self.idle = True
@@ -186,19 +190,22 @@ class Entity:
     def update(self):
         if self.animation_tick > 61:
             self.animation_tick = 0
+        if self.dash_delay:
+            self.dash_delay -= 1
 
         if self.collision['right'] and self.move[0] > 0:
             self.move[0] = 0
-            self.dash_count = 0
+            self.dash_tick = 0
         elif self.collision['left'] and self.move[0] < 0:
             self.move[0] = 0
-            self.dash_count = 0
+            self.dash_tick = 0
 
-        if self.dash_count and self.move[1] > 0:
+        if self.dash_tick and self.move[1] > 0:
             self.y -= 3
         elif self.collision['bottom'] and self.move[1] > 0:
             self.fall_count = 0
             self.jumps = 0
+            self.dash_count = 0
             self.move[1] = 3
             self.y -= 3
         elif self.collision['up'] and self.move[1] < 0:
@@ -240,10 +247,23 @@ class Entity:
                 self.y = i.y + i.height + 2
 
     def dash(self):
-        self.dash_count = 5
+        if self.dash_tick or self.dash_count == 1 or self.dash_delay:
+            return None
+        if self.move[0] < 0:
+            self.dash_side = 'l'
+        elif self.move[0] > 0:
+            self.dash_side = 'r'
+        elif self.left:
+            self.dash_side = 'l'
+        else:
+            self.dash_side = 'r'
+        self.dash_tick = 5
+        self.dash_count += 1
+        self.dash_delay = 15
         self.move[1] = 3
         self.jump_tick = -1
         self.fall_count = 0
+        self.dash_sound.play()
 
     def jump(self):
         if self.jumps == 1 or self.jumps == 2:
@@ -344,6 +364,27 @@ class Player(Entity):
                                      self.bullet_start_pos[1])
             image = pygame.transform.flip(image, True, False)
 
+        if 0 < self.dash_tick <= 4:
+            if self.dash_tick % 3 == 0:
+                color = (205, 0, 0)
+            elif self.dash_tick % 3 == 2:
+                color = (0, 205, 0)
+            else:
+                color = (0, 0, 205)
+            for i in range(-6, 0):
+                new_image = image.copy()
+                new_image.set_alpha(100)
+                scr = pygame.Surface((new_image.get_width(), new_image.get_height()))
+                pygame.draw.rect(scr, color, (0, 0, scr.get_width(), scr.get_height()))
+                scr.set_alpha(125)
+                new_image.blit(scr, (0, 0))
+                new_image.set_colorkey(new_image.get_at((0, 0)))
+                if self.dash_side == 'r':
+                    x = self.x - scroll[0] + i * 5
+                else:
+                    x = self.x - scroll[0] - i * 5
+                surface.blit(new_image, (x, self.y - scroll[1] - int(offset * WINDOW_HEIGHT)))
+
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1] - int(offset * WINDOW_HEIGHT)))
 
     def shot(self, scroll):
@@ -354,6 +395,9 @@ class Player(Entity):
         bullet = Bullet(start_pos[0], start_pos[1], 1, 1, self.location, move=move)
         self.play_shot_sound()
         return bullet
+
+    def play_dash_sound(self):
+        self.dash_sound.play()
 
     def play_shot_sound(self):
         self.shot_sound.play()
