@@ -42,6 +42,9 @@ main_menu = True
 # In-game menu
 game_menu = False
 
+# Help menu
+help_menu = False
+
 # Menu of choosing save_files
 choose_save_menu = False
 
@@ -121,7 +124,9 @@ def start_game():
 
 
 def open_help_menu():
-    print('Help menu has not created yet')
+    global main_menu, help_menu
+    help_menu = True
+    main_menu = False
 
 
 def open_choose_save_menu():
@@ -166,8 +171,9 @@ def read_save(n):
 
 
 def back_to_menu():
-    global choose_save_menu, main_menu
+    global choose_save_menu, help_menu, main_menu
     choose_save_menu = False
+    help_menu = False
     main_menu = True
 
 
@@ -236,6 +242,9 @@ choose_save_menu_buttons.append(third_save_button)
 back_save_menu_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 272, 200, 46, 'Назад',
                                back_to_menu)
 
+back_help_menu_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 272, 200, 46, 'Назад',
+                               back_to_menu)
+
 choose_save_menu_buttons.append(back_save_menu_button)
 
 continue_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 - 46, 400, 46, 'Продолжить',
@@ -247,7 +256,8 @@ quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46
 game_menu_buttons.append(quit_button)
 # Decorations
 
-background = pygame.image.load('data\\images\\environment\\environment.jpg')
+background = pygame.image.load('data\\images\\environment\\environment.jpg').convert()
+help_screen = pygame.image.load('data\\images\\interface\\help.png').convert_alpha()
 
 
 def draw(screen, background):
@@ -338,6 +348,26 @@ while main:
         for button in main_menu_buttons:
             button.draw()
 
+        pygame.display.flip()
+        clock.tick(60)
+
+    while help_menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                help_menu = False
+                main_menu = True
+                main = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                x_cursor, y_cursor = event.pos
+                if back_help_menu_button.check_click(x_cursor, y_cursor):
+                    back_help_menu_button.clicked()
+            elif event.type == pygame.MOUSEMOTION:
+                x_cursor, y_cursor = event.pos
+                back_help_menu_button.check_hover(x_cursor, y_cursor)
+
+        draw(screen, background)
+        screen.blit(help_screen, (0, 0))
+        back_help_menu_button.draw()
         pygame.display.flip()
         clock.tick(60)
 
@@ -671,7 +701,6 @@ while main:
                 d_x = player.x - location.tp_zones[tp_zone].x
                 d_y = player.y - location.tp_zones[tp_zone].y
                 location = Location(f'{tp_zone[:-1]}.txt')
-                print(tp_zone)
                 for new_tp_zone in location.tp_zones:
                     if new_tp_zone[:-1] == old_name:
                         position = new_tp_zone[-1]
