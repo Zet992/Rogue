@@ -58,6 +58,7 @@ win_menu = False
 game_over_menu = False
 
 clock = pygame.time.Clock()
+pygame.mixer.pre_init(44100, 16, 2, 4096)
 location = Location("1.txt")
 bullets = []
 enemy_bullets = []
@@ -84,13 +85,14 @@ def update_enemies(enemies):
         if enemy.location == player.location:
             if type(enemy) != Boss:
                 enemy.check_collision_with_objects(location.walls)
-            if type(enemy) != Boss:
                 if not abs(enemy.x - player.x) > 1100 and not abs(enemy.y - player.y) > 600:
                     enemy.update()
                     enemy.ai(player)
             elif type(enemy) == Boss:
                 enemy.update()
                 enemy.ai(player)
+        else:
+            enemy.engaging_tick = 1
 
 
 def draw_bonuses(bonuses, surface):
@@ -218,7 +220,23 @@ def quit_game():
         bonuses.clear()
 
 
+def switch_music():
+    if pygame.mixer.music.get_busy():
+        pygame.mixer.music.pause()
+    else:
+        pygame.mixer.music.unpause()
+
+
+def switch_sound():
+    if pygame.mixer.get_num_channels() == 0:
+        pygame.mixer.set_num_channels(8)
+    else:
+        pygame.mixer.set_num_channels(0)
+
+
 # Buttons
+
+# Main menu
 play_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 92,
                      200, 46, 'Играть', open_choose_save_menu)
 main_menu_buttons.append(play_button)
@@ -227,6 +245,8 @@ help_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 2 - 20
                      200, 46, 'Помощь', open_help_menu)
 main_menu_buttons.append(help_button)
 
+
+# Menu of choosing save_files
 first_save_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3,
                            200, 46, 'Игра #1', lambda: read_save(1))
 choose_save_menu_buttons.append(first_save_button)
@@ -241,12 +261,15 @@ choose_save_menu_buttons.append(third_save_button)
 
 back_save_menu_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 272, 200, 46, 'Назад',
                                back_to_menu)
+choose_save_menu_buttons.append(back_save_menu_button)
 
+
+# Help menu
 back_help_menu_button = Button(screen, WINDOW_SIZE[0] // 2 - 100, WINDOW_SIZE[1] // 3 + 272, 200, 46, 'Назад',
                                back_to_menu)
 
-choose_save_menu_buttons.append(back_save_menu_button)
 
+# In-game menu
 continue_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 - 46, 400, 46, 'Продолжить',
                          continue_game)
 game_menu_buttons.append(continue_button)
@@ -254,8 +277,17 @@ game_menu_buttons.append(continue_button)
 quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46, 400, 46, 'Сохранить и выйти',
                      quit_game)
 game_menu_buttons.append(quit_button)
-# Decorations
 
+music_switch = Button(screen, 50, WINDOW_SIZE[1] - 100, 50, 50, '', switch_music,
+                      image=pygame.image.load('data\\images\\interface\\music.png').convert_alpha())
+game_menu_buttons.append(music_switch)
+
+sound_switch = Button(screen, 125, WINDOW_SIZE[1] - 100, 50, 50, '', switch_sound,
+                      image=pygame.image.load('data\\images\\interface\\sound.png'))
+game_menu_buttons.append(sound_switch)
+
+
+# Decorations
 background = pygame.image.load('data\\images\\environment\\environment.jpg').convert()
 help_screen = pygame.image.load('data\\images\\interface\\help.png').convert_alpha()
 
@@ -294,8 +326,8 @@ def create_shot_particles(bullet):
         move_x = bullet.move[0] + random.uniform(-1, 1)
         move_y = bullet.move[1] + random.uniform(-1, 1)
         particles.append(ShotParticle(bullet.x, bullet.y, move_x, move_y,
-                                  move=(move_x, move_y), ticks=5,
-                                  physics=False, color=(255, 155, 100)))
+                                      move=(move_x, move_y), ticks=5,
+                                      physics=False, color=(255, 155, 100)))
     for _ in range(10):
         if random.choice((1, 2)) == 1:
             move_x = bullet.move[0] + random.uniform(-3, -2)
@@ -323,9 +355,8 @@ while main:
             main = False
             pygame.quit()
     if main_menu:
-        pass
-        # pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
-        # pygame.mixer.music.play()
+        pygame.mixer.music.load("data/sounds/M.O.O.N. - Hydrogen.mp3")
+        pygame.mixer.music.play()
     while main_menu:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -399,9 +430,8 @@ while main:
         clock.tick(60)
 
     if running:
-        pass
-        # pygame.mixer.music.load("data/sounds/DOOM.mp3")
-        # pygame.mixer.music.play()
+        pygame.mixer.music.load("data/sounds/DOOM.mp3")
+        pygame.mixer.music.play()
 
     while game_over_menu:
         for event in pygame.event.get():

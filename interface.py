@@ -4,7 +4,7 @@ from settings import WINDOW_SIZE
 
 
 class Button:
-    def __init__(self, surface, x, y, width, height, text, func, font_size=36, font_color=(255, 255, 255),
+    def __init__(self, surface, x, y, width, height, text, func, image=None, font_size=36, font_color=(255, 255, 255),
                  hover_font_color=(66, 245, 96), border_radius=8):
         self.surface = surface
         self.x = x
@@ -16,6 +16,7 @@ class Button:
         self.font_color = font_color
         self.font = pygame.font.Font(None, self.font_size)
         self.text = text
+        self.image = image
         self.hover_font_color = hover_font_color
         self.hovered = False
         self.button_pressed_sound = pygame.mixer.Sound('data\\sounds\\interface\\button_pressed.wav')
@@ -31,6 +32,11 @@ class Button:
             self.title = self.font.render(str(self.text), 1, self.hover_font_color)
             text_rect = self.title.get_rect(center=(self.x + self.width // 2, self.y + self.height // 2))
         self.surface.blit(self.title, text_rect)
+
+        if self.image:
+            x = (self.width - self.image.get_width()) // 2 + self.x
+            y = (self.height - self.image.get_height()) // 2 + self.y
+            self.surface.blit(self.image, (x, y))
 
     def check_click(self, x_cursor, y_cursor):
         if self.x < x_cursor < self.x + self.width and self.y < y_cursor < self.y + self.height:

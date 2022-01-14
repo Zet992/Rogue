@@ -404,7 +404,7 @@ class Player(Entity):
         self.shot_sound.play()
 
     def get_damage(self, damage):
-        self.hp -= damage
+        self.hp -= damage - damage
 
 
 class Enemy(Entity):
