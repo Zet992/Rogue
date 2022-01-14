@@ -33,25 +33,25 @@ defeat_sound = pygame.mixer.Sound('data\\sounds\\defeat\\defeat.wav')
 health_bar = HealthBar()
 money_counter = MoneyCounter()
 
-# Главный цикл, включающий все остальные циклы
+# Main cycle, include all other cycles
 main = True
 
-# Главное меню
+# Main menu
 main_menu = True
 
-# Внутриигровое меню
+# In-game menu
 game_menu = False
 
-# Меню выбора сохранений
+# Menu of choosing save_files
 choose_save_menu = False
 
-# Игровой процесс
+# Game process
 running = False
 
-# Меню, при победе Босса
+# Menu, when you win boss
 win_menu = False
 
-# Меню после смерти игрока
+# Menu after player died
 game_over_menu = False
 
 clock = pygame.time.Clock()
@@ -352,7 +352,8 @@ while main:
                 for button in choose_save_menu_buttons:
                     if button.check_click(x_cursor, y_cursor):
                         button.clicked()
-                        player, location = player_location
+                        if player_location:  # check, that it isn't exit button
+                            player, location = player_location
             if event.type == pygame.MOUSEMOTION:
                 for button in choose_save_menu_buttons:
                     x_cursor, y_cursor = event.pos
