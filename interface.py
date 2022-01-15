@@ -54,6 +54,32 @@ class Button:
         self.func()
 
 
+class RadioButton(Button):
+    def __init__(self, surface, x, y, width, height, text, func, on_image=None, off_image=None,
+                 font_size=36, font_color=(255, 255, 255),
+                 hover_font_color=(66, 245, 96), border_radius=8, is_active=False):
+        super().__init__(surface, x, y, width, height, text, func, on_image,
+                         font_size, font_color, hover_font_color,
+                         border_radius)
+
+        self.on_image = on_image
+        self.off_image = off_image
+        self.is_active = is_active
+
+    def set_is_active(self, is_active):
+        self.is_active = is_active
+        if self.is_active:
+            self.image = self.on_image
+        else:
+            self.image = self.off_image
+
+
+    def clicked(self):
+        self.set_is_active(not self.is_active)
+        self.button_pressed_sound.play()
+        self.func()
+
+
 class HealthBar:
     def __init__(self):
         self.width = int(WINDOW_SIZE[0] * 0.0977)

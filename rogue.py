@@ -9,7 +9,7 @@ pygame.display.set_caption("Rogue")
 
 from decorations import MoneyBonus, HealthBonus
 from entities import Player, EnemySoldier, Particle, Boss, ShotParticle
-from interface import Button, HealthBar, MoneyCounter
+from interface import Button, RadioButton, HealthBar, MoneyCounter
 from location import Location
 
 
@@ -59,6 +59,7 @@ game_over_menu = False
 
 clock = pygame.time.Clock()
 pygame.mixer.pre_init(44100, 16, 2, 4096)
+pygame.mixer.music.set_volume(0.4)
 location = Location("1.txt")
 bullets = []
 enemy_bullets = []
@@ -278,12 +279,16 @@ quit_button = Button(screen, WINDOW_SIZE[0] // 2 - 200, WINDOW_SIZE[1] // 2 + 46
                      quit_game)
 game_menu_buttons.append(quit_button)
 
-music_switch = Button(screen, 50, WINDOW_SIZE[1] - 100, 50, 50, '', switch_music,
-                      image=pygame.image.load('data\\images\\interface\\music.png').convert_alpha())
+music_switch = RadioButton(screen, 50, WINDOW_SIZE[1] - 100, 50, 50, '', switch_music,
+                           on_image=pygame.image.load('data\\images\\interface\\music_on.png',).convert_alpha(),
+                           off_image=pygame.image.load('data\\images\\interface\\music_off.png').convert_alpha(),
+                           is_active=True)
 game_menu_buttons.append(music_switch)
 
-sound_switch = Button(screen, 125, WINDOW_SIZE[1] - 100, 50, 50, '', switch_sound,
-                      image=pygame.image.load('data\\images\\interface\\sound.png'))
+sound_switch = RadioButton(screen, 125, WINDOW_SIZE[1] - 100, 50, 50, '', switch_sound,
+                           on_image=pygame.image.load('data\\images\\interface\\sound_on.png').convert_alpha(),
+                           off_image=pygame.image.load('data\\images\\interface\\sound_off.png').convert_alpha(),
+                           is_active=True)
 game_menu_buttons.append(sound_switch)
 
 
@@ -501,6 +506,7 @@ while main:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game_menu = True
+                    music_switch.set_is_active(pygame.mixer.music.get_busy())
                 elif event.key == pygame.K_SPACE:
                     if player.collision['bottom']:
                         player.jump_tick = 20
