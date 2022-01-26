@@ -33,7 +33,7 @@ defeat_sound = pygame.mixer.Sound('data\\sounds\\defeat\\defeat.wav')
 health_bar = HealthBar()
 money_counter = MoneyCounter()
 
-# Main cycle, include all other cycles
+# Main cycle, include all the others cycles
 main = True
 
 # Main menu

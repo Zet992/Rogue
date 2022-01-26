@@ -384,9 +384,9 @@ class Player(Entity):
                     x = self.x - scroll[0] + i * 5
                 else:
                     x = self.x - scroll[0] - i * 5
-                surface.blit(new_image, (x, self.y - scroll[1] - int(offset * WINDOW_HEIGHT)))
+                surface.blit(new_image, (x, self.y - scroll[1] - int(offset * 576)))
 
-        surface.blit(image, (self.x - scroll[0], self.y - scroll[1] - int(offset * WINDOW_HEIGHT)))
+        surface.blit(image, (self.x - scroll[0], self.y - scroll[1] - int(offset * 576)))
 
     def shot(self, scroll):
         mx, my = pygame.mouse.get_pos()
@@ -400,8 +400,6 @@ class Player(Entity):
     def play_dash_sound(self):
         self.dash_sound.play()
 
-    def play_shot_sound(self):
-        self.shot_sound.play()
 
     def get_damage(self, damage):
         self.hp -= damage
@@ -445,6 +443,10 @@ class Enemy2(Enemy):
 
 
 class Bullet(Entity):
+    def __init__(self, x, y, width, height, location, move=(0, 0), damage=25):
+        super(Bullet, self).__init__(x, y, width, height, location, move)
+        self.damage = damage
+
     def update(self):
         self.x += self.move[0]
         self.y += self.move[1]
@@ -472,6 +474,15 @@ class Bullet(Entity):
                 if self.y + self.height > i.y > self.y or i.y < self.y < i.y + i.height:
                     return i
         return None
+
+
+class ShotgunBullet(Bullet):
+    def draw(self, surface, scroll):
+        pygame.draw.circle(surface, (255, 255, 50), (self.x - scroll[0], self.y - scroll[1]), radius=5)
+
+
+class AssaultRifleBullet(Bullet):
+    pass
 
 
 class EnemySoldier(Enemy):
