@@ -61,6 +61,8 @@ clock = pygame.time.Clock()
 pygame.mixer.pre_init(44100, 16, 2, 4096)
 pygame.mixer.music.set_volume(0.4)
 location = Location("1.txt")
+window_rect = pygame.Rect(location.scroll[0], location.scroll[1],
+                          WINDOW_SIZE[0], WINDOW_SIZE[1])
 bullets = []
 enemy_bullets = []
 enemies = []
@@ -72,11 +74,15 @@ with open(file='data\\saves\\starter_enemies.txt') as starter_enemies_file:
     starter_enemies = starter_enemies_file.read().replace('\n', '')
 
 
+def check_on_screen(obj):
+    return obj.rect.colliderect(window_rect)
+
+
 def draw_enemies(enemies, surface):
     global location
     for enemy in enemies:
         if enemy.location == player.location:
-            if not abs(enemy.x - player.x) > 1100 and not abs(enemy.y - player.y) > 600:
+            if check_on_screen(enemy):
                 enemy.draw(surface, location.scroll)
 
 
@@ -85,8 +91,8 @@ def update_enemies(enemies):
     for enemy in enemies:
         if enemy.location == player.location:
             if type(enemy) != Boss:
-                enemy.check_collision_with_objects(location.walls)
-                if not abs(enemy.x - player.x) > 1100 and not abs(enemy.y - player.y) > 600:
+                if check_on_screen(enemy):
+                    enemy.check_collision_with_objects(location.walls)
                     enemy.update()
                     enemy.ai(player)
             elif type(enemy) == Boss:
@@ -100,7 +106,7 @@ def draw_bonuses(bonuses, surface):
     global location, player
     for bonus in bonuses:
         if bonus.location == player.location:
-            if not abs(bonus.x - player.x) > 1100 and not abs(bonus.y - player.y) > 600:
+            if check_on_screen(bonus):
                 bonus.draw(surface, location.scroll)
 
 
@@ -108,7 +114,7 @@ def update_bonuses(bonuses):
     global location, player
     for bonus in bonuses:
         if bonus.location == player.location:
-            if not abs(bonus.x - player.x) > 1100 and not abs(player.y - bonus.y) > 600:
+            if check_on_screen(bonus):
                 bonus.update()
                 if bonus.check_collision_with_player(player):
                     bonuses.remove(bonus)
@@ -563,8 +569,6 @@ while main:
             draw(screen, background)
             for background_tile in location.background_tiles:
                 background_tile.draw(screen, location.scroll)
-            location.update_scroll(player)
-            player.check_collision_with_objects(location.walls)
 
             draw_bonuses(bonuses, screen)
 
@@ -572,17 +576,17 @@ while main:
 
             for bullet in enemy_bullets:
                 if bullet.location == player.location:
-                    if not abs(player.x - bullet.x) > 1000 and not abs(player.y - bullet.y) > 600:
+                    if check_on_screen(bullet):
                         bullet.draw(screen, location.scroll)
                 else:
                     enemy_bullets.remove(bullet)
 
             for wall in location.walls:
-                if not abs(player.x - wall.x) > 1000 and not abs(player.y - wall.y) > 600:
+                if check_on_screen(wall):
                     wall.draw(screen, location.scroll)
 
             for bullet in bullets[:]:
-                if not abs(player.x - bullet.x) > 1000 and not abs(player.y - bullet.y) > 600:
+                if check_on_screen(bullet):
                     bullet.draw(screen, location.scroll)
             player.draw(screen, location.scroll)
             screen.blit(transparent_game_menu_background, (0, 0))
@@ -641,7 +645,7 @@ while main:
         for bullet in enemy_bullets:
             bullet_removed = False
             if bullet.location == player.location:
-                if not abs(bullet.x - player.x) > 1000 and not abs(bullet.y - player.y) > 600:
+                if check_on_screen(bullet):
                     bullet.draw(screen, location.scroll)
                     bullet.update()
                 else:
@@ -682,7 +686,7 @@ while main:
         for bullet in bullets[:]:
             bullet_removed = False
             if bullet.location == player.location:
-                if not abs(bullet.x - player.x) > 1000 and not abs(bullet.y - player.y) > 600:
+                if check_on_screen(bullet):
                     bullet.draw(screen, location.scroll)
                 bullet.update()
                 if bullet.living_tick >= 85 and not bullet_removed:
@@ -728,7 +732,7 @@ while main:
         update_bonuses(bonuses)
 
         for wall in location.walls:
-            if not abs(wall.x - player.x) > 1000 and not abs(wall.y - player.y) > 600:
+            if check_on_screen(wall):
                 wall.draw(screen, location.scroll)
 
         for tp_zone in location.tp_zones:
@@ -793,5 +797,7 @@ while main:
         health_bar.draw(screen, player.hp)
         money_counter.draw(screen, player.money)
         location.update_scroll(player)
+        window_rect = pygame.Rect(location.scroll[0], location.scroll[1],
+                                  WINDOW_SIZE[0], WINDOW_SIZE[1])
         pygame.display.flip()
         clock.tick(60)
