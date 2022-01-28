@@ -71,6 +71,7 @@ class Wall:
         self.y = y
         self.width = CELL_SIZE[0]
         self.height = CELL_SIZE[1]
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def update(self):
         pass
@@ -86,6 +87,7 @@ class BackgroundTile:
         self.y = y
         self.width = CELL_SIZE[0]
         self.height = CELL_SIZE[1]
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def update(self):
         pass

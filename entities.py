@@ -5,6 +5,7 @@ import pygame
 
 from settings import WINDOW_HEIGHT
 
+
 run_player_45 = [pygame.image.load('data\\images\\player\\run\\45\\run_1.png').convert_alpha(),
                  pygame.image.load('data\\images\\player\\run\\45\\run_2.png').convert_alpha(),
                  pygame.image.load('data\\images\\player\\run\\45\\run_3.png').convert_alpha(),
@@ -222,30 +223,35 @@ class Entity:
         pass
 
     def check_collision_with_objects(self, objects):
+        on_platform = self.collision['bottom']
         self.collision['right'] = False
         self.collision['left'] = False
         self.collision['up'] = False
         self.collision['bottom'] = False
-        rect_x = pygame.Rect(self.x + self.move[0], self.y, self.width, self.height)
-        for i in objects:
-            rect_obj = pygame.Rect(i.x, i.y, i.width, i.height)
-            x_col = rect_obj.colliderect(rect_x)
-            if x_col and self.move[0] > 0:
-                self.collision['right'] = True
-                self.x = i.x - self.width - 2
-            elif x_col and self.move[0] < 0:
-                self.collision['left'] = True
-                self.x = i.x + i.width + 2
-        rect_y = pygame.Rect(self.x, self.y + self.move[1], self.width, self.height)
-        for i in objects:
-            rect_obj = pygame.Rect(i.x, i.y, i.width, i.height)
-            y_col = rect_obj.colliderect(rect_y)
-            if y_col and self.move[1] >= 0:
-                self.collision['bottom'] = True
-                self.y = i.y - self.height - 2
-            if y_col and self.move[1] < 0:
-                self.collision['up'] = True
-                self.y = i.y + i.height + 2
+        if self.move[0] != 0:
+            rect_x = pygame.Rect(self.x + self.move[0], self.y, self.width, self.height)
+            for i in objects:
+                rect_obj = pygame.Rect(i.x, i.y, i.width, i.height)
+                x_col = rect_obj.colliderect(rect_x)
+                if x_col and self.move[0] > 0:
+                    self.collision['right'] = True
+                    self.x = i.x - self.width - 2
+                elif x_col and self.move[0] < 0:
+                    self.collision['left'] = True
+                    self.x = i.x + i.width + 2
+        if self.move[0] != 0 or not on_platform or self.move[1] < 0:
+            rect_y = pygame.Rect(self.x, self.y + self.move[1], self.width, self.height)
+            for i in objects:
+                rect_obj = pygame.Rect(i.x, i.y, i.width, i.height)
+                y_col = rect_obj.colliderect(rect_y)
+                if y_col and self.move[1] >= 0:
+                    self.collision['bottom'] = True
+                    self.y = i.y - self.height - 2
+                if y_col and self.move[1] < 0:
+                    self.collision['up'] = True
+                    self.y = i.y + i.height + 2
+        else:
+            self.collision['bottom'] = True
 
     def dash(self):
         if self.dash_tick or self.dash_count == 1 or self.dash_delay:
@@ -404,7 +410,7 @@ class Player(Entity):
         self.shot_sound.play()
 
     def get_damage(self, damage):
-        self.hp -= damage
+        self.hp -= 0
 
 
 class Enemy(Entity):
@@ -632,8 +638,8 @@ class Boss(Entity):
         self.engaging_tick += 1
 
     def shot(self):
-        bullets = [EnemyBullet(self.x + self.width // 2, self.y + self.height // 2, 1, 1, self.location, move=(random.randint(-3, 3), random.randint(-3, 3)))
-                   for _ in range(7)]
+        bullets = [EnemyBullet(self.x + self.width // 2, self.y + self.height // 2, 1, 1, self.location, 
+                   move=(random.randint(-3, 3), random.randint(-3, 3))) for _ in range(7)]
         return bullets
 
 
