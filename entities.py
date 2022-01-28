@@ -1,9 +1,10 @@
 import math
 import random
 
+
 import pygame
 
-from settings import WINDOW_HEIGHT
+from weapons import *
 
 run_player_45 = [pygame.image.load('data\\images\\player\\run\\45\\run_1.png').convert_alpha(),
                  pygame.image.load('data\\images\\player\\run\\45\\run_2.png').convert_alpha(),
@@ -218,6 +219,8 @@ class Entity:
         self.animation_tick += 1
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
+
+
     def draw(self, surface, scroll):
         pass
 
@@ -279,9 +282,22 @@ class Player(Entity):
         self.shot_sound = pygame.mixer.Sound('data\\sounds\\player\\shot.wav')
         self.hp = hp
         self.location = location
-        self.shooting_tick = 3
         self.shooting = False
         self.bullet_start_pos = (0, 0)
+        self.weapons_inventory = [WeaponShotgun(1)]
+        self.current_weapon = self.weapons_inventory[0]
+
+    def update(self):
+        super(Player, self).update()
+        if self.current_weapon.current_shooting_tick < self.current_weapon.tick_need_for_shot:
+            self.current_weapon.current_shooting_tick += 1
+
+
+    def get_weapon(self, weapon):
+        if len(self.weapons_inventory) < 3:
+            self.weapons_inventory += weapon
+        elif len(self.weapons_inventory) == 3:
+            pass
 
     def draw(self, surface, scroll):
         image = image = idle_player_90[self.animation_tick // 60]  # default_image
@@ -389,13 +405,10 @@ class Player(Entity):
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1] - int(offset * 576)))
 
     def shot(self, scroll):
-        mx, my = pygame.mouse.get_pos()
-        start_pos = (self.x + self.bullet_start_pos[0], self.y + self.bullet_start_pos[1])
-        rot = math.atan2(my + scroll[1] - start_pos[1], mx + scroll[0] - start_pos[0])
-        move = math.cos(rot) * 10, math.sin(rot) * 10
-        bullet = Bullet(start_pos[0], start_pos[1], 1, 1, self.location, move=move)
-        self.play_shot_sound()
-        return bullet
+        return self.current_weapon.shot(location=self.location, scroll=scroll, coordinates=(self.x, self.y),
+                                        bullet_start_pos=self.bullet_start_pos)
+
+
 
     def play_dash_sound(self):
         self.dash_sound.play()
@@ -477,12 +490,27 @@ class Bullet(Entity):
 
 
 class ShotgunBullet(Bullet):
+    def __init__(self, x, y, width, height, location, move=(0, 0), damage=25):
+        super(ShotgunBullet, self).__init__(x, y, width, height, location, move, damage)
+        self.max_living_tick = 70
+
     def draw(self, surface, scroll):
         pygame.draw.circle(surface, (255, 255, 50), (self.x - scroll[0], self.y - scroll[1]), radius=5)
 
+    def update(self):
+        super(ShotgunBullet, self).update()
+        if self.move[0] > 0:
+            self.move[0] -= min(0.1, self.move[0] - 0)
+        elif self.move[0] < 0:
+            self.move[0] += min(0.1, abs(self.move[0]) - 0)
+
+
+
 
 class AssaultRifleBullet(Bullet):
-    pass
+    def __init__(self, x, y, width, height, location, move=(0, 0), damage=25):
+        super(AssaultRifleBullet, self).__init__(x, y, width, height, location, move, damage)
+        self.max_living_tick = 85
 
 
 class EnemySoldier(Enemy):
@@ -578,6 +606,10 @@ class EnemySoldier(Enemy):
 
 
 class EnemyBullet(Bullet):
+    def __init__(self, x, y, width, height, location, move=(0, 0), damage=25):
+        super(EnemyBullet, self).__init__(x, y, width, height, location, move, damage)
+        self.max_living_tick = 85
+
     def draw(self, surface, scroll):
         pygame.draw.circle(surface, 'red', (self.x - scroll[0], self.y - scroll[1] + self.height // 2), radius=7)
 
@@ -588,6 +620,14 @@ class EnemyBullet(Bullet):
                     player.get_damage(random.randrange(15, 25))
                     return True
         return False
+
+    def update(self):
+        super(EnemyBullet, self).update()
+        if self.move[0] > 1:
+            self.move[0] -= min(0.001, self.move[0] - 0)
+        elif self.move[0] < -1:
+            self.move[0] += min(0.001, abs(self.move[0]) - 0)
+
 
 
 class Particle:

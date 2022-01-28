@@ -11,6 +11,7 @@ from decorations import MoneyBonus, HealthBonus
 from entities import Player, EnemySoldier, Particle, Boss, ShotParticle
 from interface import Button, RadioButton, HealthBar, MoneyCounter
 from location import Location
+import weapons
 
 
 transparent_game_menu_background = pygame.Surface((WINDOW_SIZE[0], WINDOW_SIZE[1]), pygame.SRCALPHA)
@@ -328,11 +329,11 @@ def create_blood_particles(x, y, collision):
 def create_shot_particles(bullet):
     particles = []
     for _ in range(10):
-        move_x = bullet.move[0] + random.uniform(-1, 1)
-        move_y = bullet.move[1] + random.uniform(-1, 1)
-        particles.append(ShotParticle(bullet.x, bullet.y, move_x, move_y,
-                                      move=(move_x, move_y), ticks=5,
-                                      physics=False, color=(255, 155, 100)))
+            move_x = bullet.move[0] + random.uniform(-1, 1)
+            move_y = bullet.move[1] + random.uniform(-1, 1)
+            particles.append(ShotParticle(bullet.x, bullet.y, move_x, move_y,
+                                          move=(move_x, move_y), ticks=5,
+                                          physics=False, color=(255, 155, 100)))
     for _ in range(10):
         if random.choice((1, 2)) == 1:
             move_x = bullet.move[0] + random.uniform(-3, -2)
@@ -502,7 +503,6 @@ while main:
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     player.shooting = False
-                    player.shooting = 0
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     game_menu = True
@@ -527,11 +527,16 @@ while main:
                     player.dash()
 
         if player.shooting:
-            player.shooting_tick += 1
-            if player.shooting_tick % 15 == 0:
+            if player.current_weapon.current_shooting_tick == player.current_weapon.tick_need_for_shot:
                 bullet = player.shot(location.scroll)
-                particles.extend(create_shot_particles(bullet))
-                bullets.append(bullet)
+                if type(bullet) == list:
+                    bullets.extend(bullet)
+                    for b in bullet:
+                        particles.extend(create_shot_particles(b))
+                else:
+                    bullets.append(bullet)
+                    particles.extend(create_shot_particles(bullet))
+
 
         x, y = pygame.mouse.get_pos()
         if x >= player.x + player.width // 2 - location.scroll[0]:
@@ -647,7 +652,7 @@ while main:
                 else:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
-                if bullet.living_tick == 400 and not bullet_removed:
+                if bullet.living_tick == bullet.max_living_tick and not bullet_removed:
                     enemy_bullets.remove(bullet)
                     bullet_removed = True
                 if bullet.x > location.size[0] and not bullet_removed:
@@ -685,7 +690,7 @@ while main:
                 if not abs(bullet.x - player.x) > 1000 and not abs(bullet.y - player.y) > 600:
                     bullet.draw(screen, location.scroll)
                 bullet.update()
-                if bullet.living_tick >= 85 and not bullet_removed:
+                if bullet.living_tick >= bullet.max_living_tick and not bullet_removed:
                     bullets.remove(bullet)
                     bullet_removed = True
                 if bullet.x > location.size[0] and not bullet_removed:
@@ -703,7 +708,7 @@ while main:
                 if not bullet_removed:
                     enemy = bullet.check_collisions_with_entity(enemies)
                     if enemy:
-                        enemy.hp -= random.randrange(35, 60)
+                        enemy.hp -= random.randrange(bullet.damage)
                         if type(enemy) == Boss:
                             if enemy.hp <= 0:
                                 enemies.remove(enemy)
