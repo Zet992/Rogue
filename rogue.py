@@ -90,12 +90,9 @@ def update_enemies(enemies):
     global location
     for enemy in enemies:
         if enemy.location == player.location:
-            if type(enemy) != Boss:
-                if check_on_screen(enemy):
+            if check_on_screen(enemy):
+                if type(enemy) != Boss:
                     enemy.check_collision_with_objects(location.walls)
-                    enemy.update()
-                    enemy.ai(player)
-            elif type(enemy) == Boss:
                 enemy.update()
                 enemy.ai(player)
         else:
@@ -645,26 +642,18 @@ while main:
         for bullet in enemy_bullets:
             bullet_removed = False
             if bullet.location == player.location:
+                bullet.update()
                 if check_on_screen(bullet):
                     bullet.draw(screen, location.scroll)
-                    bullet.update()
-                else:
-                    enemy_bullets.remove(bullet)
-                    bullet_removed = True
                 if bullet.living_tick == 400 and not bullet_removed:
-                    enemy_bullets.remove(bullet)
                     bullet_removed = True
                 if bullet.x > location.size[0] and not bullet_removed:
-                    enemy_bullets.remove(bullet)
                     bullet_removed = True
                 elif bullet.y > location.size[1] and not bullet_removed:
-                    enemy_bullets.remove(bullet)
                     bullet_removed = True
                 elif bullet.x + bullet.width < 0 and not bullet_removed:
-                    enemy_bullets.remove(bullet)
                     bullet_removed = True
                 elif bullet.y + bullet.height < 0 and not bullet_removed:
-                    enemy_bullets.remove(bullet)
                     bullet_removed = True
                 if not bullet_removed:
                     if bullet.check_collisions_with_player(player):
@@ -680,29 +669,26 @@ while main:
                     wall = bullet.check_collision_with_walls(location.walls)
                     if wall:
                         enemy_bullets.remove(bullet)
+                else:
+                    enemy_bullets.remove(bullet)
             else:
                 enemy_bullets.remove(bullet)
 
         for bullet in bullets[:]:
             bullet_removed = False
             if bullet.location == player.location:
+                bullet.update()
                 if check_on_screen(bullet):
                     bullet.draw(screen, location.scroll)
-                bullet.update()
                 if bullet.living_tick >= 85 and not bullet_removed:
-                    bullets.remove(bullet)
                     bullet_removed = True
                 if bullet.x > location.size[0] and not bullet_removed:
-                    bullets.remove(bullet)
                     bullet_removed = True
                 elif bullet.y > location.size[1] and not bullet_removed:
-                    bullets.remove(bullet)
                     bullet_removed = True
                 elif bullet.x + bullet.width < 0 and not bullet_removed:
-                    bullets.remove(bullet)
                     bullet_removed = True
                 elif bullet.y + bullet.height < 0 and not bullet_removed:
-                    bullets.remove(bullet)
                     bullet_removed = True
                 if not bullet_removed:
                     enemy = bullet.check_collisions_with_entity(enemies)
@@ -727,6 +713,8 @@ while main:
                     wall = bullet.check_collision_with_walls(location.walls)
                     if wall:
                         bullets.remove(bullet)
+                else:
+                    bullets.remove(bullet)
 
         draw_bonuses(bonuses, screen)
         update_bonuses(bonuses)
@@ -777,7 +765,7 @@ while main:
                 if type(enemy) == EnemySoldier:
                     if enemy.engaging_tick % 25 == 0:
                         enemy_bullets.extend(enemy.shot())
-                if type(enemy) == Boss:
+                elif type(enemy) == Boss:
                     if enemy.location == player.location:
                         if enemy.engaging_tick % 20 == 0:
                             enemy_bullets.extend(enemy.shot())
