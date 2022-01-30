@@ -1,4 +1,5 @@
 import random
+import json
 
 import pygame
 
@@ -69,9 +70,9 @@ enemies = []
 particles = []
 bonuses = []
 player_location = []
-
-with open(file='data\\saves\\starter_enemies.txt') as starter_enemies_file:
-    starter_enemies = starter_enemies_file.read().replace('\n', '')
+save_data = {'location': None, 'hp': None, 'x': None,
+             'y': None, 'money': None, 
+             'locations': {'1': {'enemies': [], 'bonuses': []}}}
 
 
 def check_on_screen(obj):
@@ -142,34 +143,27 @@ def open_choose_save_menu():
 
 
 def read_save(n):
-    global running, choose_save_menu, player_location, save, enemies, bonuses
+    global running, choose_save_menu, player_location, save, enemies, bonuses, save_data
     running = True
     choose_save_menu = False
     with open(file=f'data\\saves\\save_{n}.txt', mode='r', encoding='utf-8') as save_file:
-        data = save_file.read().split('\n')
-        location = data[0].split()[-1]
-        hp = int(data[1].split()[-1])
-        x = float(data[2].split()[-1])
-        y = float(data[3].split()[-1])
-        money = int(data[4].split()[-1])
-        player = Player(x, y, 40, 86, int(location), (0, 0), hp)
+        save_data = json.load(save_file)
+        location = save_data['location']
+        hp = save_data['hp']
+        x = save_data['x']
+        y = save_data['y']
+        money = save_data['money']
+        player = Player(x, y, 40, 86, location, (0, 0), hp)
         player.money = money
 
-        enemies_temp = data[5].split('; ')
+        enemies_temp = save_data['locations'][location]['enemies']
+        for enemy in enemies_temp:
+            enemies.append(eval(enemy))
 
-        if enemies_temp != ['None']:
-            for enemy in enemies_temp:
-                enemies.append(eval(enemy))
-        else:
-            enemies = []
+        bonuses_temp = save_data['locations'][location]['bonuses']
+        for bonus in bonuses_temp:
+            bonuses.append(eval(bonus))
 
-        bonuses_temp = data[6].split('; ')
-
-        if bonuses_temp != ['None']:
-            for bonus in bonuses_temp:
-                bonuses.append(eval(bonus))
-        else:
-            bonuses = []
 
         location = Location(f'{location}.txt')
         player_location = [player, location]
@@ -194,34 +188,26 @@ def quit_game():
     main_menu = True
     game_menu = False
     running = False
+
     with open(file=f'data\\saves\\save_{save[0]}.txt', encoding='utf-8', mode='w') as save_file:
-        loc = location.name.split('.')[0]
-        enemies_line = 'None'
-        if enemies:
-            enemies_line = ''
-            for enemy in enemies:
-                if type(enemy) == EnemySoldier:
-                    enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move})'
-                if type(enemy) == Boss:
-                    enemies_line += f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, [0, 0])'
+        save_data['location'] = player.location
+        save_data['hp'] = player.hp
+        save_data['x'] = player.x
+        save_data['y'] = player.y
+        save_data['money'] = player.money
+        save_data['locations'][player.location]['enemies'] = []
+        save_data['locations'][player.location]['bonuses'] = []
+        for enemy in enemies:
+            enemy_string = f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move})'
+            save_data['locations'][enemy.location]['enemies'].append(enemy_string)
+        enemies.clear()
+        bullets.clear()
+        enemy_bullets.clear()
 
-                if enemy is not enemies[-1]:
-                    enemies_line += '; '
-            enemies.clear()
-            bullets.clear()
-            enemy_bullets.clear()
-
-        bonuses_line = 'None'
-        if bonuses:
-            bonuses_line = ''
-            for bonus in bonuses:
-                if bonuses[-1] is not bonus:
-                    bonuses_line += f'{bonus}({bonus.x}, {bonus.y}, {bonus.location}); '
-                else:
-                    bonuses_line += f'{bonus}({bonus.x}, {bonus.y}, {bonus.location})'
-        save_file.write(
-            f'location: {loc}\nhp: {player.hp}\nx: {player.x}\ny: {player.y}\nmoney: {player.money}\n{enemies_line}\n{bonuses_line}')
-        bonuses.clear()
+        for bonus in bonuses:
+            bonus_line = f'{bonus}({bonus.x}, {bonus.y}, {bonus.location}); '
+            save_data['locations'][bonus.location]['bonuses'].append(bonus_line)
+        json.dump(save_data, save_file, indent=2)
 
 
 def switch_music():
@@ -631,7 +617,6 @@ while main:
 
         player.check_collision_with_objects(location.walls)
         player.update()
-        player.location = int(location.name.split('.')[0])
 
         if player.hp <= 0:
             defeat_sound.play()
@@ -728,7 +713,32 @@ while main:
                 old_name = location.name[:-4]  # remove .txt
                 d_x = player.x - location.tp_zones[tp_zone].x
                 d_y = player.y - location.tp_zones[tp_zone].y
+
+                save_data['locations'][player.location]['enemies'] = []
+                save_data['locations'][player.location]['bonuses'] = []
+                for enemy in enemies:
+                    if enemy.location == player.location:
+                        enemy_string = f'{enemy}({enemy.x}, {enemy.y}, {enemy.width}, {enemy.height}, {enemy.location}, {enemy.hp}, {enemy.move})'
+                        save_data['locations'][player.location]['enemies'].append(enemy_string)
+                for bonus in bonuses:
+                    if bonus.location == player.location:
+                        bonus_line += f'{bonus}({bonus.x}, {bonus.y}, {bonus.location})'
+                        save_data['locations'][player.location]['bonuses'].append(bonus)
+
                 location = Location(f'{tp_zone[:-1]}.txt')
+                if tp_zone[:-1] not in save_data['locations']:
+                    save_data['locations'][tp_zone[:-1]] = {'enemies': [], 'bonuses': []}
+                    print(location.enemies, 'of location in rogue.py')
+                    enemies = location.enemies
+                    print()
+                    print(enemies, 'of rogue.py')
+                else:
+                    enemies = list(map(eval, save_data['locations'][tp_zone[:-1]]['enemies']))
+                if tp_zone[:-1] not in save_data['locations']:
+                    save_data['locations'][tp_zone[:-1]] = {'enemies': [], 'bonuses': []}
+                bonuses = list(map(eval, save_data['locations'][tp_zone[:-1]]['bonuses']))
+                player.location = tp_zone[:-1]
+
                 for new_tp_zone in location.tp_zones:
                     if new_tp_zone[:-1] == old_name:
                         position = new_tp_zone[-1]

@@ -186,7 +186,7 @@ class Entity:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         self.hp = 100
         self.money = 0
-        self.location = location
+        self.location = str(location)
         self.living_tick = 0
 
     def update(self):

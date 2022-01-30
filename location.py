@@ -2,6 +2,7 @@ import pygame
 import random
 
 from settings import WINDOW_SIZE
+from entities import EnemySoldier, Boss
 
 CELL_SIZE = (128, 128)
 
@@ -17,6 +18,7 @@ class Location:
         self.map = []
         self.walls = []
         self.background_tiles = []
+        self.enemies = []
         self.tp_zones = {}
         self.size = (0, 0)
         self.step = (450, 300)
@@ -27,7 +29,10 @@ class Location:
 
     def load_map(self, name):
         file = open("data/rooms/" + name, 'r')
-        self.map = [i.split() for i in file.read().split('\n')]
+        self.map = [i for i in file.read().split('\n')]
+        if self.map[-1]:
+            self.enemies = list(map(eval, self.map[-1].split('; ')))
+        self.map = list(map(lambda x: x.split(), self.map[:-1]))
         self.tp_zones = {}
         for y, row in enumerate(self.map):
             for x, cell in enumerate(row):
@@ -49,7 +54,7 @@ class Location:
         for i in self.tp_zones.keys():
             self.tp_zones[i] = pygame.Rect(*self.tp_zones[i])
 
-        self.size = (x * CELL_SIZE[0], y * CELL_SIZE[1])
+        self.size = (x * CELL_SIZE[0], (y - 1) * CELL_SIZE[1])
 
     def update_scroll(self, player):
         self.scroll[0] = player.x - self.step[0]
