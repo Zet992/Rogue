@@ -455,7 +455,7 @@ class Bullet(Entity):
         self.x += self.move[0]
         self.y += self.move[1]
         self.living_tick += 1
-        self.rect = pygame.Rect(self.x, y, width, height)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
     def draw(self, surface, scroll):
         pygame.draw.line(surface, (255, 255, 50), (self.x - scroll[0], self.y - scroll[1]),
