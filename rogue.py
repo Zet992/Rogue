@@ -728,10 +728,7 @@ while main:
                 location = Location(f'{tp_zone[:-1]}.txt')
                 if tp_zone[:-1] not in save_data['locations']:
                     save_data['locations'][tp_zone[:-1]] = {'enemies': [], 'bonuses': []}
-                    print(location.enemies, 'of location in rogue.py')
                     enemies = location.enemies
-                    print()
-                    print(enemies, 'of rogue.py')
                 else:
                     enemies = list(map(eval, save_data['locations'][tp_zone[:-1]]['enemies']))
                 if tp_zone[:-1] not in save_data['locations']:
