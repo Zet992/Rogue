@@ -2,19 +2,6 @@ import random
 
 import pygame
 
-health = pygame.image.load('data\\images\\bonuses\\health\\health.png').convert_alpha()
-health = pygame.transform.scale2x(health)
-
-money = [pygame.image.load('data\\images\\bonuses\\money\\money_1.png').convert_alpha(),
-         pygame.image.load('data\\images\\bonuses\\money\\money_2.png').convert_alpha(),
-         pygame.image.load('data\\images\\bonuses\\money\\money_3.png').convert_alpha(),
-         pygame.image.load('data\\images\\bonuses\\money\\money_4.png').convert_alpha(),
-         pygame.image.load('data\\images\\bonuses\\money\\money_5.png').convert_alpha(),
-         pygame.image.load('data\\images\\bonuses\\money\\money_1.png').convert_alpha()]
-
-for i in range(len(money)):
-    money[i] = pygame.transform.scale2x(money[i])
-
 
 class Decoration:
     def __init__(self, surface, x, y):
@@ -24,9 +11,9 @@ class Decoration:
 
 
 class TreeSpruce(Decoration):
+    tree_sprite = pygame.image.load('data\\images\\decorations\\spruce\\spruce.png')
     def draw(self):
-        tree_sprite = pygame.image.load('data\\images\\decorations\\spruce\\spruce.png')
-        self.surface.blit(tree_sprite, (self.x, self.y - 217))
+        self.surface.blit(self.tree_sprite, (self.x, self.y - 217))
 
 
 class Bonus:
@@ -44,8 +31,11 @@ class Bonus:
 
 
 class HealthBonus(Bonus):
+    health = pygame.image.load('data\\images\\bonuses\\health\\health.png').convert_alpha()
+    health = pygame.transform.scale2x(health)
+
     def draw(self, surface, scroll):
-        surface.blit(health, (self.x - scroll[0], self.y - scroll[1]))
+        surface.blit(self.health, (self.x - scroll[0], self.y - scroll[1]))
 
     def __str__(self):
         return 'HealthBonus'
@@ -59,8 +49,18 @@ class HealthBonus(Bonus):
 
 
 class MoneyBonus(Bonus):
+    money = [pygame.image.load('data\\images\\bonuses\\money\\money_1.png').convert_alpha(),
+             pygame.image.load('data\\images\\bonuses\\money\\money_2.png').convert_alpha(),
+             pygame.image.load('data\\images\\bonuses\\money\\money_3.png').convert_alpha(),
+             pygame.image.load('data\\images\\bonuses\\money\\money_4.png').convert_alpha(),
+             pygame.image.load('data\\images\\bonuses\\money\\money_5.png').convert_alpha(),
+             pygame.image.load('data\\images\\bonuses\\money\\money_1.png').convert_alpha()]
+
+    for i in range(len(money)):
+        money[i] = pygame.transform.scale2x(money[i])
+
     def draw(self, surface, scroll):
-        image = money[self.animation_tick // 10]
+        image = self.money[self.animation_tick // 10]
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1]))
 
     def __str__(self):

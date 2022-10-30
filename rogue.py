@@ -710,7 +710,7 @@ while main:
 
         for tp_zone in location.tp_zones:
             if player.rect.colliderect(location.tp_zones[tp_zone]):
-                old_name = location.name[:-4]  # remove .txt
+                old_name = location.name[:-4]  # removing .txt
                 d_x = player.x - location.tp_zones[tp_zone].x
                 d_y = player.y - location.tp_zones[tp_zone].y
 
@@ -722,8 +722,8 @@ while main:
                         save_data['locations'][player.location]['enemies'].append(enemy_string)
                 for bonus in bonuses:
                     if bonus.location == player.location:
-                        bonus_line += f'{bonus}({bonus.x}, {bonus.y}, {bonus.location})'
-                        save_data['locations'][player.location]['bonuses'].append(bonus)
+                        bonus_string = f'{bonus}({bonus.x}, {bonus.y}, {bonus.location})'
+                        save_data['locations'][player.location]['bonuses'].append(bonus_string)
 
                 location = Location(f'{tp_zone[:-1]}.txt')
                 if tp_zone[:-1] not in save_data['locations']:

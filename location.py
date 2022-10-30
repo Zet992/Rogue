@@ -6,12 +6,6 @@ from entities import EnemySoldier, Boss
 
 CELL_SIZE = (128, 128)
 
-tiles = [pygame.image.load('data\\images\\tile\\tile.png').convert(),]
-background_tiles = [pygame.image.load('data\\images\\tile\\background.jpg').convert(),]
-
-for i in range(len(tiles)):
-    tiles[i] = pygame.transform.scale(tiles[i], (128, 128))
-
 
 class Location:
     def __init__(self, name):
@@ -71,6 +65,11 @@ class Location:
 
 
 class Wall:
+    tiles = [pygame.image.load('data\\images\\tile\\tile.png').convert(),]
+    for i in range(len(tiles)):
+        tiles[i] = pygame.transform.scale(tiles[i], (128, 128))
+    default_image = tiles[0]
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -82,11 +81,14 @@ class Wall:
         pass
 
     def draw(self, surface, scroll):
-        image = tiles[0]
+        image = self.tiles[0]
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1], CELL_SIZE[0], CELL_SIZE[1]))
 
 
 class BackgroundTile:
+    background_tiles = [pygame.image.load('data\\images\\tile\\background.jpg').convert(),]
+    default_image = background_tiles[0]
+
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -98,5 +100,5 @@ class BackgroundTile:
         pass
 
     def draw(self, surface, scroll):
-        image = background_tiles[0]
+        image = self.background_tiles[0]
         surface.blit(image, (self.x - scroll[0], self.y - scroll[1], CELL_SIZE[0], CELL_SIZE[1]))

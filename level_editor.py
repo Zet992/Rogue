@@ -1,4 +1,5 @@
 import sys
+import logging
 
 import pygame
 
@@ -52,7 +53,7 @@ class MainWindow(BaseWidget):
         super().__init__(x, y, width, height, parent)
         self.widgets = []
 
-        self.cells_widget = CellsWidget(0, 23, 200, height - 23, self)
+        self.cells_widget = CellsWidget(5, 23, 200, height - 40, self)
         self.widgets.append(self.cells_widget)
         self.menu_bar = NavigationBar(0, 0, width, 22, self)
         self.widgets.append(self.menu_bar)
@@ -62,7 +63,7 @@ class MainWindow(BaseWidget):
         self.message = None
 
     def get_filename(self):
-        self.message = PopUpMessage(400, 200, 200, 200, 
+        self.message = PopUpMessage(400, 200, 200, 100, 
                                     'Введите название файла', self)
         self.widgets.append(self.message)
 
@@ -111,8 +112,11 @@ class LevelWidget(BaseWidget):
         self.walls = []
         self.background_tiles = []
         self.enemies = []
-        file = open(file_name, 'r')
-        level = [i for i in file.read().split('\n')]
+        try:
+            file = open(file_name, 'r')
+            level = [i for i in file.read().split('\n')]
+        except Exception:
+            return None  # write a logging message
         if level[-1]:
             self.enemies = list(map(eval, level[-1].split('; ')))
         level = list(map(lambda x: x.split(), level[:-1]))
@@ -136,9 +140,9 @@ class LevelWidget(BaseWidget):
                     self.background_tiles.append(back_tile)
 
         self.size = (x * CELL_SIZE[0], y * CELL_SIZE[1])
-        self.game_objects.extend(enemies)
-        self.game_objects.extend(walls)
-        self.game_objects.extend(background_tiles)
+        self.game_objects.extend(self.enemies)
+        self.game_objects.extend(self.walls)
+        self.game_objects.extend(self.background_tiles)
         file.close()
 
     def update(self, event):
@@ -160,7 +164,7 @@ class CellsWidget(BaseWidget):
         super().__init__(x, y, width, height, parent)
         self.items = [EnemySoldier, Wall, BackgroundTile]
 
-        self.scroll_bar = ScrollBar(width - 25, 5, 20, height - 10)
+        self.scroll_bar = ScrollBar(width - 45, 30, 20, height - 40)
         self.scroll = 0
 
     def update(self, event):
@@ -174,22 +178,24 @@ class CellsWidget(BaseWidget):
                 event.pos = (event.pos[0] - self.scroll_bar.x, 
                              event.pos[1] - self.scroll_bar.y - self.y)
                 self.scroll_bar.update(event)
-                self.scroll = scroll_bar.scroll
+                self.scroll = self.scroll_bar.scroll
         elif event.type == pygame.MOUSEBUTTONUP:
             self.scroll_bar.set_hovered(False)
 
     def draw(self, surface):
+        self.surface.fill((0, 0, 0))
         pygame.draw.rect(self.surface, (75, 255, 25), 
-                         (0, 0, self.width, self.height), 
+                         (self.x, self.y, self.width - 25, self.height - 25),
                          width=5)
         self.scroll_bar.draw(self.surface)
-        for i in range(len(self.items)):
-            pygame.draw.rect(self.surface, (150, 150, 50),
-                             (10, i * 138 + 10 + self.scroll, 128, 128))
+        self.draw_items(self.surface)
         surface.blit(self.surface, self.rect)
 
     def draw_items(self, surface):
-        pass
+        for i in range(len(self.items)):
+            surface.blit(self.items[i].default_image, 
+                         (10, i * 130 + 5 - self.scroll))
+
 
 
 class NavigationBar(BaseWidget):
@@ -244,10 +250,10 @@ class PopUpMessage(BaseWidget):
     def __init__(self, x, y, width, height, title, parent=None):
         super().__init__(x, y, width, height, parent)
 
-        self.ok_btn = Button(5, y - 25, 20, 20, "OK", None)
+        self.ok_btn = Button(5, height - 30, 30, 25, "OK", None)
         self.widgets.append(self.ok_btn)
 
-        self.canc_btn = Button(width - 25, height - 25, 20, 20,
+        self.canc_btn = Button(width - 55, height - 30, 50, 25,
                                "CANCEL", None)
         self.widgets.append(self.canc_btn)
 
@@ -306,14 +312,14 @@ class ScrollBar(BaseWidget):
                 d_y = event.pos[1] - self.first_pos_mouse[1]
                 self.pols = self.pols.move(0, d_y)
                 self.pols.y = max(0, self.pols.y)
+                self.pols.y = min(self.height, self.pols.y)
                 self.pols.bottom = min(self.height, self.pols.bottom)
                 self.first_pos_mouse = (self.first_pos_mouse[0],
                                         self.first_pos_mouse[1] + d_y)
                 self.scroll += d_y
 
     def draw(self, surface):
-        pygame.draw.rect(self.surface, (75, 75, 75),
-                         (0, 0, self.width, self.height))
+        self.surface.fill((75, 75, 75))
         pygame.draw.rect(self.surface, (125, 125, 125), self.pols)
         surface.blit(self.surface, self.rect)
 
@@ -341,7 +347,7 @@ class Button(BaseWidget):
         else:
             pygame.draw.rect(self.surface, (180, 180, 180), 
                              (0, 0, self.width, self.height))
-        text = self.FONT.render(self.text, True, (255, 255, 255))
+        text = self.FONT.render(self.text, True, (25, 25, 255))
         pos_x = (self.width - text.get_width()) // 2
         pos_y = (self.height - text.get_height()) // 2
         self.surface.blit(text, (pos_x, pos_y))
